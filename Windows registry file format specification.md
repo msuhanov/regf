@@ -2,7 +2,6 @@
 -------
 
 ## Table of contents
-  * [Table of contents](#table-of-contents)
   * [Types of files](#types-of-files)
     * [Examples of hives and supporting files](#examples-of-hives-and-supporting-files)
       * [Windows 8.1: System hive](#windows-81-system-hive)
@@ -106,6 +105,8 @@ Transactional registry and CLFS are out of the scope of this document.
 
 ## Format of primary files
 A primary file consists of a base block, also known as a file header, and a hive bins data. A hive bins data consists of hive bins. Each hive bin includes a header and cells, a cell is the actual storage of high-level registry entities (like keys, values, etc.). Primary files may contain padding of an arbitrary size after the end of the last hive bin.
+
+![Primary file layout](https://raw.githubusercontent.com/msuhanov/regf/master/images/primary.png "Primary file layout")
 
 ### Base block
 A base block is 4096 bytes in length, it contains the following structure, as of Windows XP (*hereinafter, all numbers are in the little-endian form*):
@@ -411,6 +412,8 @@ Offset|Length|Field|Description
 ### Old format
 A transaction log file (old format) consists of a base block, a dirty vector, and dirty pages.
 
+![Transaction log file layout (old format)](https://raw.githubusercontent.com/msuhanov/regf/master/images/old-log.png "Transaction log file layout (old format)")
+
 #### Base block
 A partial backup copy of a base block is stored in the first sector of a transaction log file, only the first *Clustering factor \* 512* bytes of a base block are written there.
 
@@ -464,6 +467,8 @@ The first dirty page corresponds to the first bit set to 1 in the bitmap of a di
 
 ### New format
 A transaction log file (new format) consists of a base block and log entries.
+
+![Transaction log file layout (new format)](https://raw.githubusercontent.com/msuhanov/regf/master/images/new-log.png "Transaction log file layout (new format)")
 
 #### Base block
 A modified partial backup copy of a base block is stored in the first sector of a transaction log file in the same way as in the old format and for the same purpose. However, the *File type* field is set to 6.
