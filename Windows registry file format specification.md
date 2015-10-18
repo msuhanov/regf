@@ -289,7 +289,7 @@ Offset|Length|Field|Value|Description
 44|4|Key security offset||In bytes, relative from the start of the hive bins data
 48|4|Class name offset||In bytes, relative from the start of the hive bins data
 52|4|Largest subkey name length||In bytes
-56|4|Largest subkey class length||In bytes
+56|4|Largest subkey class name length||In bytes
 60|4|Largest value name length||In bytes
 64|4|Largest value data size||In bytes
 68|4|WorkVar||Probably not used, the meaning of this field is unknown
@@ -301,8 +301,8 @@ Offset|Length|Field|Value|Description
 
 Mask|Name|Description
 ---|---|---
-0x0001|KEY_VOLATILE|
-0x0002|KEY_HIVE_EXIT|Is a mount point of another hive
+0x0001|KEY_VOLATILE|Is volatile
+0x0002|KEY_HIVE_EXIT|Is the mount point of another hive
 0x0004|KEY_HIVE_ENTRY|Is the root key for this hive
 0x0008|KEY_NO_DELETE|This key cannot be deleted
 0x0010|KEY_SYM_LINK|This key is a symlink
@@ -332,12 +332,12 @@ Offset|Length|Field|Value|Description
 4|4|Data size||In bytes, can be 0 (value is not set), the most significant bit has a special meaning (see below)
 8|4|Data offset||In bytes, relative from the start of the hive bins data (data is stored in a cell)
 12|4|Data type||Bit mask, see below
-16|2|Flags|Bit mask, see below
+16|2|Flags||Bit mask, see below
 18|2|Spare||Probably not used
 20|...|Name||ASCII string or UTF-16LE string
 
 ##### Data size
-When the most significant bit is 1, a data (4 bytes or less) is stored in the *Data offset* field directly. The most significant bit set to 1 should be ignored when calculating the data size.
+When the most significant bit is 1, a data (4 bytes or less) is stored in the *Data offset* field directly. The most significant bit (when set to 1) should be ignored when calculating the data size.
 
 ##### Data types
 
@@ -428,7 +428,7 @@ A backup copy of a base block is not an exact copy anyway, the following modific
 1. A partial backup copy of a base block is made using the data from memory, not from a primary file.
 2. A transaction log file is considered to be valid when it has an expected base block (including the modifications mentioned above), and its primary sequence number is equal to its secondary sequence number.
 3. A transaction log can be applied when a *Last written timestamp* in its base block is equal to a *Last written timestamp* in a base block of a primary file (when a base block of a primary file is invalid, a *Timestamp* from the first hive bin is used instead).
-4. If a base block of a primary file has a wrong *Checksum*, it's being recovered using a base block from a transaction log file.
+4. If a base block of a primary file has a wrong *Checksum*, it is being recovered using a base block from a transaction log file.
 
 #### Dirty vector
 Dirty vector is stored starting from the beginning of the second sector of a transaction log file, it has the following structure:
