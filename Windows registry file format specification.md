@@ -415,7 +415,7 @@ A transaction log file (old format) consists of a base block, a dirty vector, an
 ![Transaction log file layout (old format)](https://raw.githubusercontent.com/msuhanov/regf/master/images/old-log.png "Transaction log file layout (old format)")
 
 #### Base block
-A partial backup copy of a base block is stored in the first sector of a transaction log file, only the first *Clustering factor \* 512* bytes of a base block are written there.
+A partial backup copy of a base block is stored in the first sector of a transaction log file, only the first *Clustering factor * 512* bytes of a base block are written there.
 
 A backup copy of a base block is not an exact copy anyway, the following modifications are performed on it by a hive writer:
 1. *File type* field is set to 1 (1 means *transaction log*);
@@ -463,7 +463,7 @@ The first dirty page corresponds to the first bit set to 1 in the bitmap of a di
 
 ##### Notes
 1. The number of dirty pages is equal to the number of bits set to 1 in the bitmap of a dirty vector. Remnant dirty pages may be present after the end of the last dirty page.
-2. A dirty page will be written to a primary file at the following offset: *File offset = 4096 + 512 \* Bit position*, where *Bit position* is the index of a corresponding bit in the bitmap of a dirty vector.
+2. A dirty page will be written to a primary file at the following offset: *File offset = 4096 + 512 * Bit position*, where *Bit position* is the index of a corresponding bit in the bitmap of a dirty vector.
 
 ### New format
 A transaction log file (new format) consists of a base block and log entries.
