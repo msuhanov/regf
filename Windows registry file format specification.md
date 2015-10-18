@@ -195,7 +195,7 @@ Key value (vk)|Registry key value
 Key security (sk)|Security descriptor item
 Big data (db)|List of data fragments
 
-Also, *Cell data* may contain a raw data (*Key value* data) and any lists defined below. A padding may be present at the end of a cell.
+Also, *Cell data* may contain a raw data (e.g. *Key value* data) and any lists defined below. A padding may be present at the end of a cell.
 
 #### Index leaf
 Index leaf has the following structure:
