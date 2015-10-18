@@ -425,7 +425,7 @@ A backup copy of a base block is not an exact copy anyway, the following modific
 4. *Checksum* is recalculated with the modified data.
 
 ##### Notes
-1. A partial backup copy of a base block is made using the data from memory, not from a primary file.
+1. A partial backup copy of a base block is made using a data from memory, not from a primary file.
 2. A transaction log file is considered to be valid when it has an expected base block (including the modifications mentioned above), and its primary sequence number is equal to its secondary sequence number.
 3. A transaction log can be applied when a *Last written timestamp* in its base block is equal to a *Last written timestamp* in a base block of a primary file (when a base block of a primary file is invalid, a *Timestamp* from the first hive bin is used instead).
 4. If a base block of a primary file has a wrong *Checksum*, it is being recovered using a base block from a transaction log file.
