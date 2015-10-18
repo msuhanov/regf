@@ -418,6 +418,7 @@ A transaction log file (old format) consists of a base block, a dirty vector, an
 A partial backup copy of a base block is stored in the first sector of a transaction log file, only the first *Clustering factor * 512* bytes of a base block are written there.
 
 A backup copy of a base block is not an exact copy anyway, the following modifications are performed on it by a hive writer:
+
 1. *File type* field is set to 1 (1 means *transaction log*);
 2. *Primary sequence number* is incremented by 1 before writing a log of dirty data.
 3. *Secondary sequence number* is incremented by 1 after a log of dirty data was written.
