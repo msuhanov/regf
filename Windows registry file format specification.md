@@ -522,7 +522,7 @@ A switch to a new transaction log file may happen after an error occurs when app
 ### New format
 If multiple transaction log files are present and a hive is dirty, the first transaction log file (\*.LOG1) is used to recover a hive. If this succeeds, the second transaction log file (\*.LOG2) is used too.
 
-A switch to a new transaction log file may happen to split log entries.
+A switch to a new transaction log file may used to split log entries.
 
 ## Additional sources of information
 1. http://www.sentinelchicken.com/data/TheWindowsNTRegistryFileFormat.pdf
