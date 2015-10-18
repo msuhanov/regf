@@ -479,7 +479,7 @@ Log entries are stored starting from the beginning of the second sector. Each lo
 
 Log entry has the following structure:
 
-Offset|Length|Field|Value|Description
+Offset|Length|Field|Value(s)|Description
 ---|---|---|---|---
 0|4|Signature|HvLE|ASCII string
 4|4|Size||Size of a current log entry in bytes
