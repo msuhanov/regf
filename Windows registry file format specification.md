@@ -277,9 +277,9 @@ Offset|Length|Field|Value|Description
 ---|---|---|---|---
 0|2|Signature|nk|ASCII string
 2|2|Flags||Bit mask, see below
-4|8|Last written timestamp|FILETIME (UTC)
-12|4|Spare|Probably not used
-16|4|Parent|Offset of a parent key node in bytes, relative from the start of the hive bins data
+4|8|Last written timestamp||FILETIME (UTC)
+12|4|Spare||Probably not used
+16|4|Parent||Offset of a parent key node in bytes, relative from the start of the hive bins data
 20|4|Number of subkeys||
 24|4|Number of volatile subkeys||
 28|4|Subkeys list offset||In bytes, relative from the start of the hive bins data
