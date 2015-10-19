@@ -460,7 +460,7 @@ Bitmap length (*in bits*) is calculated using the following formula: *Bitmap len
 #### Dirty pages
 Dirty pages are stored starting from the beginning of the sector following the last sector of a dirty vector. Each dirty page is stored at an offset divisible by 512 bytes and has a length of 512 bytes.
 
-The first dirty page corresponds to the first bit set to 1 in the bitmap of a dirty vector, the second dirty page corresponds to the second bit set to 1 in the bitmap of a dirty vector, etc. During recovery, contiguous dirty pages belonging to the same hive bin of a primary file are processed together, and a dirty hive bin is verified for correctness (its *Signature* must be correct, its *Offset* must match a location of a dirty hive bin in a primary file); recovery aborts if a dirty hive bin is invalid.
+The first dirty page corresponds to the first bit set to 1 in the bitmap of a dirty vector, the second dirty page corresponds to the second bit set to 1 in the bitmap of a dirty vector, etc. During recovery, contiguous dirty pages belonging to the same hive bin in a primary file are processed together, and a dirty hive bin is verified for correctness (its *Signature* must be correct, its *Offset* must match a location of a dirty hive bin in a primary file); recovery aborts if a dirty hive bin is invalid.
 
 ##### Notes
 1. The number of dirty pages is equal to the number of bits set to 1 in the bitmap of a dirty vector. Remnant dirty pages may be present after the end of the last dirty page.
@@ -485,7 +485,7 @@ Offset|Length|Field|Value(s)|Description
 4|4|Size||Size of a current log entry in bytes
 8|4|Flags|0 or 1|The meaning of this field is unknown
 12|4|Sequence number||This number will be written both to a primary sequence number and to a secondary sequence number of a base block when applying a transaction
-16|4|Hive bins data size||This number will be written to the *Hive bins data size* field of a base block when applying a transaction, and a primary file will be grown to a new size
+16|4|Hive bins data size||*Hive bins data size* at the time of creation of a current log entry
 20|4|Dirty pages count||Number of dirty pages attached to a log entry
 24|8|Hash-1||See below
 32|8|Hash-2||See below
@@ -506,8 +506,10 @@ Dirty pages are attached to a log entry in the same order as in the *Dirty pages
 2. *Hash-2* is the Marvin32 hash of the first 32 bytes of a current log entry (including the *Hash-1* calculated before).
 3. The following seed is used for calculating the *Hash-1* and *Hash-2*: 14219357686671994754 (little-endian).
 4. A transaction log file may contain multiple log entries written at once, as well as old (already applied) log entries.
-5. If a base block of a primary file has a wrong *Checksum*, all log entries from a transaction log file are applied. Otherwise, if a primary file is dirty, but has a valid *Checksum*, only subsequent log entries are applied. A subsequent log entry is an entry with a sequence number equal to or greater than a primary sequence number of a base block in a primary file.
-6. If a log entry has a wrong value in the field *Hash-1* or *Hash-2*, recovery stops, only previous log entries are applied.
+5. If a primary file is dirty and has a valid *Checksum* (in the base block), only subsequent log entries are applied. A subsequent log entry is a log entry with a sequence number equal to or greater than a primary sequence number of a base block in a primary file.
+6. If a primary file is dirty and has a wrong *Checksum*, its base block is recovered from a transaction log file. Then subsequent log entries are applied.
+7. If a log entry has a wrong value in the field *Hash-1* or *Hash-2*, recovery stops, only previous log entries (up to a bogus one) are applied.
+8. Dirty hive bins are not verified for correctness during recovery (but they may be verified and healed later).
 
 ## Dirty state of a hive
 A hive is considered to be dirty when a base block in a primary file contains a wrong checksum, or its primary sequence number doesn't match its secondary sequence number. If a hive isn't dirty, but a transaction log file (new format) contains subsequent log entries, they are ignored.
@@ -520,7 +522,7 @@ If multiple transaction log files are present and a hive is dirty, an applicable
 A switch to a new transaction log file may happen after an error occurs when applying a transaction log to a primary file.
 
 ### New format
-If multiple transaction log files are present and a hive is dirty, the first transaction log file (\*.LOG1) is used to recover a hive. If this succeeds, the second transaction log file (\*.LOG2) is used too.
+If multiple transaction log files are present and a hive is dirty, the first transaction log file (\*.LOG1) and then the second transaction log file (\*.LOG2) are used to recover a hive.
 
 A switch to a new transaction log file may be used to split log entries.
 
