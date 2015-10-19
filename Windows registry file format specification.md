@@ -508,7 +508,7 @@ Dirty pages are attached to a log entry in the same order as in the *Dirty pages
 4. A transaction log file may contain multiple log entries written at once, as well as old (already applied) log entries.
 5. If a primary file is dirty and has a valid *Checksum* (in the base block), only subsequent log entries are applied. A subsequent log entry is a log entry with a sequence number equal to or greater than a primary sequence number of a base block in a primary file.
 6. If a primary file is dirty and has a wrong *Checksum*, its base block is recovered from a transaction log file. Then subsequent log entries are applied.
-7. If a log entry has a wrong value in the field *Hash-1* or *Hash-2*, recovery stops, only previous log entries (up to a bogus one) are applied.
+7. If a log entry has a wrong value in the field *Hash-1*, *Hash-2*, or *Hive bins data size*, recovery stops, only previous log entries (up to a bogus one) are applied.
 8. Dirty hive bins are not verified for correctness during recovery (but they may be verified and healed later).
 
 ## Dirty state of a hive
