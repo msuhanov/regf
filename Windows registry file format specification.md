@@ -391,8 +391,8 @@ Offset|Length|Field|Value|Description
 
 A list of segments has the following structure:
 
-Offset|Length|Field|Description
----|---|---|---
+Offset|Length|Field
+---|---|---
 0|...|List elements
 
 A list element has the following structure:
