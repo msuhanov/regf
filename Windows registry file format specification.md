@@ -158,7 +158,7 @@ The exact meaning of these new fields is unknown.
 3. *Boot type* and *Boot recover* fields are used for in-memory hive recovery management by a boot loader and a kernel, they are not written to a disk in most cases (when *Clustering factor* is 8, these fields may be written to a disk, but they have no meaning there).
 
 ### Hive bin
-A hive bin is variable in size and consists of a header and cells. A header is 32 bytes in length, it contains the following structure:
+The hive bin is variable in size and consists of a header and cells. A header is 32 bytes in length, it contains the following structure:
 
 Offset|Length|Field|Value(s)|Description
 ---|---|---|---|---
@@ -198,7 +198,7 @@ Big data (db)|List of data fragments
 Also, *Cell data* may contain a raw data (e.g. *Key value* data) and any lists defined below. A padding may be present at the end of a cell.
 
 #### Index leaf
-Index leaf has the following structure:
+The *Index leaf* has the following structure:
 
 Offset|Length|Field|Value|Description
 ---|---|---|---|---
@@ -213,7 +213,7 @@ Offset|Length|Field|Description
 0|4|Key node offset|In bytes, relative from the start of the hive bins data
 
 #### Fast leaf
-Fast leaf has the following structure:
+The *Fast leaf* has the following structure:
 
 Offset|Length|Field|Value|Description
 ---|---|---|---|---
@@ -229,7 +229,7 @@ Offset|Length|Field|Description
 4|4|Name hint|First four characters of a key name string (used to speed up lookups)
 
 #### Hash leaf
-Hash leaf has the following structure:
+The *Hash leaf* has the following structure:
 
 Offset|Length|Field|Value|Description
 ---|---|---|---|---
@@ -252,7 +252,7 @@ The hash is calculated using the following algorithm:
    * H is the hash value.
 
 #### Index root
-Index root has the following structure:
+The *Index root* has the following structure:
 
 Offset|Length|Field|Value|Description
 ---|---|---|---|---
@@ -271,7 +271,7 @@ Offset|Length|Field|Description
 2. A *Subkeys list* can't point to *Index root*.
 
 #### Key node
-Key node has the following structure:
+The *Key node* has the following structure:
 
 Offset|Length|Field|Value|Description
 ---|---|---|---|---
@@ -310,7 +310,7 @@ Mask|Name|Description
 0x0040|KEY_PREDEF_HANDLE|
 
 #### Key values list
-Key values list has the following structure:
+The *Key values list* has the following structure:
 
 Offset|Length|Field
 ---|---|---
@@ -323,7 +323,7 @@ Offset|Length|Field|Description
 0|4|Key value offset|In bytes, relative from the start of the hive bins data
 
 #### Key value
-Key value has the following structure:
+The *Key value* has the following structure:
 
 Offset|Length|Field|Value|Description
 ---|---|---|---|---
@@ -363,7 +363,7 @@ Mask|Meaning
 0x0001|Name is an ASCII string (otherwise it is a UTF-16LE string)
 
 #### Key security
-Key security item has the following structure:
+The *Key security item* has the following structure:
 
 Offset|Length|Field|Value|Description
 ---|---|---|---|---
@@ -381,7 +381,7 @@ Offset|Length|Field|Value|Description
 5. When a key security item acts as a list entry, flink and blink point to the next and the previous entries of this list respectively. If there is no next entry in a list, flink points to a list header. If there is no previous entry in a list, blink points to a list header.
 
 #### Big data
-Big data record has the following structure:
+The *Big data record* has the following structure:
 
 Offset|Length|Field|Value|Description
 ---|---|---|---|---
@@ -431,7 +431,7 @@ A backup copy of a base block is not an exact copy anyway, the following modific
 4. If a base block of a primary file has a wrong *Checksum*, it is being recovered using a base block from a transaction log file.
 
 #### Dirty vector
-Dirty vector is stored starting from the beginning of the second sector of a transaction log file, it has the following structure:
+The *Dirty vector* is stored starting from the beginning of the second sector of a transaction log file, it has the following structure:
 
 Offset|Length|Field|Value|Description
 ---|---|---|---|---
@@ -458,7 +458,7 @@ Bitmap length (*in bits*) is calculated using the following formula: *Bitmap len
 4. A padding is likely to be present after the end of a bitmap (up to a sector boundary).
 
 #### Dirty pages
-Dirty pages are stored starting from the beginning of the sector following the last sector of a dirty vector. Each dirty page is stored at an offset divisible by 512 bytes and has a length of 512 bytes.
+*Dirty pages* are stored starting from the beginning of the sector following the last sector of a dirty vector. Each dirty page is stored at an offset divisible by 512 bytes and has a length of 512 bytes.
 
 The first dirty page corresponds to the first bit set to 1 in the bitmap of a dirty vector, the second dirty page corresponds to the second bit set to 1 in the bitmap of a dirty vector, etc. During recovery, contiguous dirty pages belonging to the same hive bin in a primary file are processed together, and a dirty hive bin is verified for correctness (its *Signature* must be correct, its *Offset* must match a location of a dirty hive bin in a primary file); recovery aborts if a dirty hive bin is invalid.
 
@@ -475,7 +475,7 @@ A transaction log file (new format) consists of a base block and log entries.
 A modified partial backup copy of a base block is stored in the first sector of a transaction log file in the same way as in the old format and for the same purpose. However, the *File type* field is set to 6.
 
 #### Log entries
-Log entries are stored starting from the beginning of the second sector. Each log entry is stored at an offset divisible by 512 bytes and has a variable size.
+*Log entries* are stored starting from the beginning of the second sector. Each log entry is stored at an offset divisible by 512 bytes and has a variable size.
 
 Log entry has the following structure:
 
@@ -499,7 +499,7 @@ Offset|Length|Field|Description
 0|4|Offset|Offset of a page in a primary file, relative from the start of the hive bins data
 4|4|Size|Size of a page in bytes
 
-Dirty pages are attached to a log entry in the same order as in the *Dirty pages references* without an alignment or gaps.
+*Dirty pages* are attached to a log entry in the same order as in the *Dirty pages references* without an alignment or gaps.
 
 ##### Notes
 1. *Hash-1* is the Marvin32 hash of the data starting from the beginning of the first page reference of a current log entry with the length of *Size - 40* bytes.
