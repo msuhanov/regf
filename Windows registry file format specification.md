@@ -109,7 +109,7 @@ A primary file consists of a base block, also known as a file header, and a hive
 ![Primary file layout](https://raw.githubusercontent.com/msuhanov/regf/master/images/primary.png "Primary file layout")
 
 ### Base block
-A base block is 4096 bytes in length, it contains the following structure, as of Windows XP (*hereinafter, all numbers are in the little-endian form*):
+The base block is 4096 bytes in length, it contains the following structure, as of Windows XP (*hereinafter, all numbers are in the little-endian form*):
 
 Offset|Length|Field|Value(s)|Description
 ---|---|---|---|---
@@ -389,7 +389,7 @@ Offset|Length|Field|Value|Description
 2|2|Number of segments||
 4|4|Offset to a list of segments||In bytes, relative from the start of the hive bins data
 
-A list of segments has the following structure:
+The list of segments has the following structure:
 
 Offset|Length|Field
 ---|---|---
@@ -477,7 +477,7 @@ A modified partial backup copy of a base block is stored in the first sector of 
 #### Log entries
 *Log entries* are stored starting from the beginning of the second sector. Each log entry is stored at an offset divisible by 512 bytes and has a variable size.
 
-Log entry has the following structure:
+The log entry has the following structure:
 
 Offset|Length|Field|Value(s)|Description
 ---|---|---|---|---
