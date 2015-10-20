@@ -170,7 +170,7 @@ Offset|Length|Field|Value(s)|Description
 28|4|Spare||This field has no meaning on the disk
 
 #### Notes
-1. Hive bin's size is multiple of 4096 bytes.
+1. A hive bin's size is multiple of 4096 bytes.
 2. The *Spare* field is used when shifting hive bins and cells in-memory.
 3. A *Timestamp* in the header of the first hive bin acts as a backup copy of a *Last written timestamp* in the base block.
 
