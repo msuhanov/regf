@@ -267,8 +267,8 @@ Offset|Length|Field|Description
 0|4|Subkeys list offset|In bytes, relative from the start of the hive bins data
 
 ##### Notes
-1. *Index root* can't point to another *Index root*.
-2. A *Subkeys list* can't point to *Index root*.
+1. An *Index root* can't point to another *Index root*.
+2. A *Subkeys list* can't point to an *Index root*.
 
 #### Key node
 The *Key node* has the following structure:
