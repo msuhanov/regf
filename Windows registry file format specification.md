@@ -133,20 +133,26 @@ Offset|Length|Field|Value(s)|Description
 
 As of Windows 10, the following fields were allocated in the previously reserved areas:
 
-Offset|Length|Field|Description
----|---|---|---
-112|16|RmId|GUID
-128|16|LogId|GUID
-144|4|Flags|
-148|16|TmId|GUID
-164|4|GUID signature|
-168|4|Last reorganized timestamp|FILETIME (UTC)
+Offset|Length|Field|Value(s)|Description
+---|---|---|---|---
+112|16|RmId||GUID
+128|16|LogId||GUID
+144|4|Flags||Bit mask, see below
+148|16|TmId||GUID
+164|4||GUID signature|
+168|4|Last reorganized timestamp||FILETIME (UTC)
 |||
 4040|16|ThawTmId|GUID
 4056|16|ThawRmId|GUID
 4072|16|ThawLogId|GUID
 
-The exact meaning of these new fields is unknown.
+The *Flags* field is used to record the state of the Kernel Transaction Manager (KTM), possible flags are:
+Mask|Meaning
+---|---
+0x00000000|KTM released the hive
+0x00000001|KTM locked the hive
+
+The exact meaning of GUID and GUID-related fields is unknown.
 
 #### Notes
 1. *File offset of a root cell = 4096 + Root cell offset*. This formula also applies to any other offset relative to the start of the hive bins data.
@@ -156,6 +162,7 @@ The exact meaning of these new fields is unknown.
    * split D into non-overlapping groups of 32 bits, and for each group, G[i], do the following: C = C xor G[i];
    * C is the checksum.
 3. *Boot type* and *Boot recover* fields are used for in-memory hive recovery management by a boot loader and a kernel, they are not written to a disk in most cases (when *Clustering factor* is 8, these fields may be written to a disk, but they have no meaning there).
+4. The *Last reorganized timestamp* field contains a timestamp of the latest hive defragmentation (it happens once a week when a hive isn't locked).
 
 ### Hive bin
 The hive bin is variable in size and consists of a header and cells. A header is 32 bytes in length, it contains the following structure:
@@ -179,7 +186,7 @@ Cells fill the remaining space of a hive bin, they contain various types of reco
 
 Offset|Length|Field|Description
 ---|---|---|---
-0|4|Size|Size of a current cell in bytes, including this field (aligned to 8 bytes): the size is positive if the cell is unallocated or negative if the cell is allocated (use absolute values for calculations)
+0|4|Size|Size of a current cell in bytes, including this field (aligned to 8 bytes): the size is positive if a cell is unallocated or negative if a cell is allocated (use absolute values for calculations)
 4|...|Cell data|
 
 *Cell data* may contain one of the following records:
@@ -299,6 +306,8 @@ Offset|Length|Field|Value|Description
 
 ##### Flags
 
+As of Windows XP:
+
 Mask|Name|Description
 ---|---|---
 0x0001|KEY_VOLATILE|Is volatile
@@ -328,8 +337,8 @@ The *Key value* has the following structure:
 Offset|Length|Field|Value|Description
 ---|---|---|---|---
 0|2|Signature|vk|ASCII string
-2|2|Name length||In bytes, can be 0 (name is not set)
-4|4|Data size||In bytes, can be 0 (value is not set), the most significant bit has a special meaning (see below)
+2|2|Name length||In bytes, can be 0 (name isn't set)
+4|4|Data size||In bytes, can be 0 (value isn't set), the most significant bit has a special meaning (see below)
 8|4|Data offset||In bytes, relative from the start of the hive bins data (data is stored in a cell)
 12|4|Data type||Bit mask, see below
 16|2|Flags||Bit mask, see below
@@ -417,7 +426,7 @@ A transaction log file (old format) consists of a base block, a dirty vector, an
 #### Base block
 A partial backup copy of a base block is stored in the first sector of a transaction log file, only the first *Clustering factor * 512* bytes of a base block are written there.
 
-A backup copy of a base block is not an exact copy anyway, the following modifications are performed on it by a hive writer:
+A backup copy of a base block isn't an exact copy anyway, the following modifications are performed on it by a hive writer:
 
 1. *File type* field is set to 1 (1 means *transaction log*);
 2. *Primary sequence number* is incremented by 1 before writing a log of dirty data.
@@ -452,7 +461,7 @@ Bit|Meaning
 Bitmap length (*in bits*) is calculated using the following formula: *Bitmap length = Hive bins data size / 512*.
 
 ##### Notes
-1. The state of a base block is not recorded in a dirty vector.
+1. The state of a base block isn't recorded in a dirty vector.
 2. Dirty vector is stored in-memory as a *RTL_BITMAP* structure. However, only the *Buffer* field of this structure is written to a transaction log file.
 3. Windows tracks changes to a hive bins data in 4096-byte blocks. This means that a dirty vector's bitmap is *expected* to contain only the following *bytes*: 0x00 and 0xFF.
 4. A padding is likely to be present after the end of a bitmap (up to a sector boundary).
@@ -460,7 +469,7 @@ Bitmap length (*in bits*) is calculated using the following formula: *Bitmap len
 #### Dirty pages
 *Dirty pages* are stored starting from the beginning of the sector following the last sector of a dirty vector. Each dirty page is stored at an offset divisible by 512 bytes and has a length of 512 bytes.
 
-The first dirty page corresponds to the first bit set to 1 in the bitmap of a dirty vector, the second dirty page corresponds to the second bit set to 1 in the bitmap of a dirty vector, etc. During recovery, contiguous dirty pages belonging to the same hive bin in a primary file are processed together, and a dirty hive bin is verified for correctness (its *Signature* must be correct, its *Offset* must match a location of a dirty hive bin in a primary file); recovery aborts if a dirty hive bin is invalid.
+The first dirty page corresponds to the first bit set to 1 in the bitmap of a dirty vector, the second dirty page corresponds to the second bit set to 1 in the bitmap of a dirty vector, etc. During recovery, contiguous dirty pages belonging to the same hive bin in a primary file are processed together, and a dirty hive bin is verified for correctness (its *Signature* must be correct, its *Size* must be correct, its *Offset* must match a location of a corresponding hive bin in a primary file); recovery aborts if a dirty hive bin is invalid.
 
 ##### Notes
 1. The number of dirty pages is equal to the number of bits set to 1 in the bitmap of a dirty vector. Remnant dirty pages may be present after the end of the last dirty page.
@@ -483,9 +492,9 @@ Offset|Length|Field|Value(s)|Description
 ---|---|---|---|---
 0|4|Signature|HvLE|ASCII string
 4|4|Size||Size of a current log entry in bytes
-8|4|Flags|0 or 1|The meaning of this field is unknown
+8|4|Flags||Copy of the *Flags* field of a base block at the time of creation of a current log entry (see below)
 12|4|Sequence number||This number will be written both to a primary sequence number and to a secondary sequence number of a base block when applying a transaction
-16|4|Hive bins data size||*Hive bins data size* at the time of creation of a current log entry
+16|4|Hive bins data size||Copy of the *Hive bins data size* field at the time of creation of a current log entry
 20|4|Dirty pages count||Number of dirty pages attached to a log entry
 24|8|Hash-1||See below
 32|8|Hash-2||See below
@@ -508,8 +517,10 @@ Offset|Length|Field|Description
 4. A transaction log file may contain multiple log entries written at once, as well as old (already applied) log entries.
 5. If a primary file is dirty and has a valid *Checksum* (in the base block), only subsequent log entries are applied. A subsequent log entry is a log entry with a sequence number equal to or greater than a primary sequence number of a base block in a primary file.
 6. If a primary file is dirty and has a wrong *Checksum*, its base block is recovered from a transaction log file. Then subsequent log entries are applied.
-7. If a log entry has a wrong value in the field *Hash-1*, *Hash-2*, or *Hive bins data size*, recovery stops, only previous log entries (up to a bogus one) are applied.
-8. Dirty hive bins are not verified for correctness during recovery (but they may be verified and healed later).
+7. If a log entry has a wrong value in the field *Hash-1*, *Hash-2*, or *Hive bins data size* (i.e. it is not multiple of 4096 bytes), recovery stops, only previous log entries (up to a bogus one) are applied.
+8. A primary file is grown according to the *Hive bins data size* field of a log entry being applied.
+9. Dirty hive bins are verified for correctness during recovery (but recovery doesn't stop on a bad hive bin, a bad hive bin is healed instead).
+10. The *Flags* field of a log entry is set to a value of the *Flags* field of a base block. During recovery, the *Flags* field of a base block is set to a value taken from a log entry being applied.
 
 ## Dirty state of a hive
 A hive is considered to be dirty when a base block in a primary file contains a wrong checksum, or its primary sequence number doesn't match its secondary sequence number. If a hive isn't dirty, but a transaction log file (new format) contains subsequent log entries, they are ignored.
