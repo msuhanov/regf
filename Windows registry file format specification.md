@@ -168,7 +168,7 @@ The exact meaning of GUID and GUID-related fields is unknown.
 ### Hive bin
 The hive bin is variable in size and consists of a header and cells. A header is 32 bytes in length, it contains the following structure:
 
-Offset|Length|Field|Value(s)|Description
+Offset|Length|Field|Value|Description
 ---|---|---|---|---
 0|4|Signature|hbin|ASCII string
 4|4|Offset||Offset of a current hive bin in bytes, relative from the start of the hive bins data
@@ -489,7 +489,7 @@ A modified partial backup copy of a base block is stored in the first sector of 
 
 The log entry has the following structure:
 
-Offset|Length|Field|Value(s)|Description
+Offset|Length|Field|Value|Description
 ---|---|---|---|---
 0|4|Signature|HvLE|ASCII string
 4|4|Size||Size of a current log entry in bytes
