@@ -133,18 +133,18 @@ Offset|Length|Field|Value(s)|Description
 
 As of Windows 10, the following fields were allocated in the previously reserved areas:
 
-Offset|Length|Field|Value(s)|Description
----|---|---|---|---
-112|16|RmId||GUID
-128|16|LogId||GUID
-144|4|Flags||Bit mask, see below
-148|16|TmId||GUID
-164|4|GUID signature||
-168|4|Last reorganized timestamp||FILETIME (UTC)
+Offset|Length|Field|Description
+---|---|---|---
+112|16|RmId|GUID
+128|16|LogId|GUID
+144|4|Flags|Bit mask, see below
+148|16|TmId|GUID
+164|4|GUID signature|
+168|4|Last reorganized timestamp|FILETIME (UTC)
 |||
-4040|16|ThawTmId||GUID
-4056|16|ThawRmId||GUID
-4072|16|ThawLogId||GUID
+4040|16|ThawTmId|GUID
+4056|16|ThawRmId|GUID
+4072|16|ThawLogId|GUID
 
 The *Flags* field is used to record the state of the Kernel Transaction Manager (KTM), possible flags are:
 
