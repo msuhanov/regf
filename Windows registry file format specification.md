@@ -516,7 +516,7 @@ Offset|Length|Field|Description
 2. *Hash-2* is the Marvin32 hash of the first 32 bytes of a current log entry (including the *Hash-1* calculated before).
 3. The following seed is used for calculating the *Hash-1* and *Hash-2*: 14219357686671994754 (little-endian).
 4. A transaction log file may contain multiple log entries written at once, as well as old (already applied) log entries.
-5. If a primary file is dirty and has a valid *Checksum* (in the base block), only subsequent log entries are applied. A subsequent log entry is a log entry with a sequence number equal to or greater than a primary sequence number of a base block in a primary file.
+5. If a primary file is dirty and has a valid *Checksum* (in the base block), only subsequent log entries are applied. A subsequent log entry is a log entry with a sequence number equal to or greater than a primary sequence number of the base block in a primary file.
 6. If a primary file is dirty and has a wrong *Checksum*, its base block is recovered from a transaction log file. Then subsequent log entries are applied.
 7. If a log entry has a wrong value in the field *Hash-1*, *Hash-2*, or *Hive bins data size* (i.e. it is not multiple of 4096 bytes), recovery stops, only previous log entries (up to a bogus one) are applied.
 8. A primary file is grown according to the *Hive bins data size* field of a log entry being applied.
