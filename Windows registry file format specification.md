@@ -147,6 +147,7 @@ Offset|Length|Field|Value(s)|Description
 4072|16|ThawLogId|GUID
 
 The *Flags* field is used to record the state of the Kernel Transaction Manager (KTM), possible flags are:
+
 Mask|Meaning
 ---|---
 0x00000000|KTM released the hive
