@@ -121,8 +121,8 @@ Offset|Length|Field|Value(s)|Description
 24|4|Minor version|3, 4, or 5|Minor version of a hive writer
 28|4|File type|0|0 means *primary file*
 32|4|File format|1|1 means *direct memory load*
-36|4|Root cell offset||The offset of a root cell in bytes, relative from the start of the hive bins data
-40|4|Hive bins data size||The size of the hive bins data in bytes
+36|4|Root cell offset||Offset of a root cell in bytes, relative from the start of the hive bins data
+40|4|Hive bins data size||Size of the hive bins data in bytes
 44|4|Clustering factor||Sector size of the underlying disk in bytes divided by 512
 48|64|Filename||UTF-16LE string (contains a partial file path to the primary file, or a file name of the primary file), used for debugging purposes
 112|396|Reserved||
