@@ -24,7 +24,7 @@
         * [Notes](#notes-2)
       * [Key node](#key-node)
         * [Flags](#flags)
-        * [Virtualization control flags] (#virtualization_control_flags)
+        * [Virtualization control flags] (#virtualization-control-flags)
       * [Key values list](#key-values-list)
       * [Key value](#key-value)
         * [Data size](#data-size)
