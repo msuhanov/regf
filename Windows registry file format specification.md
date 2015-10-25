@@ -24,6 +24,7 @@
         * [Notes](#notes-2)
       * [Key node](#key-node)
         * [Flags](#flags)
+        * [Virtalization control flags] (#virtalization_control_flags)
       * [Key values list](#key-values-list)
       * [Key value](#key-value)
         * [Data size](#data-size)
@@ -109,7 +110,7 @@ A primary file consists of a base block, also known as a file header, and a hive
 ![Primary file layout](https://raw.githubusercontent.com/msuhanov/regf/master/images/primary.png "Primary file layout")
 
 ### Base block
-The base block is 4096 bytes in length, it contains the following structure, as of Windows XP (*hereinafter, all numbers are in the little-endian form*):
+The base block is 4096 bytes in length, it contains the following structure, as of Windows XP (*hereinafter, all numbers are in the little-endian form, all data units are bytes, unless otherwise mentioned*):
 
 Offset|Length|Field|Value(s)|Description
 ---|---|---|---|---
@@ -128,8 +129,8 @@ Offset|Length|Field|Value(s)|Description
 112|396|Reserved||
 508|4|Checksum||XOR-32 checksum of the previous 508 bytes
 512|3576|Reserved||
-4088|4|Boot type||This field has no meaning on the disk
-4092|4|Boot recover||This field has no meaning on the disk
+4088|4|Boot type||This field has no meaning on a disk
+4092|4|Boot recover||This field has no meaning on a disk
 
 As of Windows 10, the following fields were allocated in the previously reserved areas:
 
@@ -137,7 +138,7 @@ Offset|Length|Field|Description
 ---|---|---|---
 112|16|RmId|GUID
 128|16|LogId|GUID
-144|4|Flags|Bit mask, see below
+144|4|Flags|Bit field, see below
 148|16|TmId|GUID
 164|4|GUID signature|
 168|4|Last reorganized timestamp|FILETIME (UTC)
@@ -175,7 +176,7 @@ Offset|Length|Field|Value|Description
 8|4|Size||Size of a current hive bin in bytes
 12|8|Reserved||
 20|8|Timestamp||FILETIME (UTC), defined for the first hive bin only (see below)
-28|4|Spare||This field has no meaning on the disk
+28|4|Spare||This field has no meaning on a disk
 
 #### Notes
 1. A hive bin's size is multiple of 4096 bytes.
@@ -284,30 +285,38 @@ The *Key node* has the following structure:
 Offset|Length|Field|Value|Description
 ---|---|---|---|---
 0|2|Signature|nk|ASCII string
-2|2|Flags||Bit mask, see below
+2|2|Flags||Bit field, see below
 4|8|Last written timestamp||FILETIME (UTC)
 12|4|Spare||Probably not used
 16|4|Parent||Offset of a parent key node in bytes, relative from the start of the hive bins data
 20|4|Number of subkeys||
 24|4|Number of volatile subkeys||
 28|4|Subkeys list offset||In bytes, relative from the start of the hive bins data
-32|4|Volatile subkeys list offset||In bytes, relative from the start of the hive bins data
+32|4|Volatile subkeys list offset||This field has no meaning on a disk (volatile keys are not written to a file)
 36|4|Number of key values||
 40|4|Key values list offset||In bytes, relative from the start of the hive bins data
 44|4|Key security offset||In bytes, relative from the start of the hive bins data
 48|4|Class name offset||In bytes, relative from the start of the hive bins data
-52|4|Largest subkey name length||In bytes
+52|4|Largest subkey name length||In bytes, a subkey name is treated as a UTF-16LE string (see below)
 56|4|Largest subkey class name length||In bytes
-60|4|Largest value name length||In bytes
+60|4|Largest value name length||In bytes, a value name is treated as a UTF-16LE string
 64|4|Largest value data size||In bytes
 68|4|WorkVar||Probably not used, the meaning of this field is unknown
 72|2|Key name length||In bytes
 74|2|Class name length||In bytes
 76|...|Key name string||ASCII string or UTF-16LE string
 
-##### Flags
+Starting from Windows 2003 SP2 and Windows XP SP3, the *Largest subkey name length* field has been split into 4 fields:
 
-As of Windows XP:
+Offset (bits)|Length (bits)|Field|Description
+---|---|---|---
+0|16|Largest subkey name length|
+16|4|User flags|Bit field
+20|4|Virtalization control flags|Bit field (see below)
+24|8|Debug|The meaning of this field is unknown
+
+##### Flags
+As of Windows XP (prior to SP3), the first 4 bits are reserved for user flags (set via the *NtSetInformationKey()* call), and other bits have the following meaning:
 
 Mask|Name|Description
 ---|---|---
@@ -317,7 +326,26 @@ Mask|Name|Description
 0x0008|KEY_NO_DELETE|This key cannot be deleted
 0x0010|KEY_SYM_LINK|This key is a symlink
 0x0020|KEY_COMP_NAME|Name is an ASCII string (otherwise it is a UTF-16LE string)
-0x0040|KEY_PREDEF_HANDLE|
+0x0040|KEY_PREDEF_HANDLE|Is a predefined handle
+
+It's plausible that registry key virtualization (when registry writes to sensitive locations are redirected to per-user locations in order to protect the Windows registry against corruption) required more flags than 4 bits in the beginning of this field can provide, that's why the *Largest subkey name length* field was split.
+
+As of Windows 8.1, the following bits are used:
+
+Mask|Name
+---|---
+0x0080|KEY_VIRT_MIRRORED
+0x0100|KEY_VIRT_TARGET
+0x0200|KEY_VIRT_STORE
+
+##### Virtalization control flags
+The *Virtalization control flags* field is set according to the following bit masks:
+
+Mask|Name|Meaning
+---|---|---
+0x2|REG_KEY_DONT_VIRTUALIZE|Disable registry write virtualization
+0x4|REG_KEY_DONT_SILENT_FAIL|Disable registry open virtualization
+0x8|REG_KEY_RECURSE_FLAG|Propagate virtualization flags to new child keys
 
 #### Key values list
 The *Key values list* has the following structure:
@@ -341,8 +369,8 @@ Offset|Length|Field|Value|Description
 2|2|Name length||In bytes, can be 0 (name isn't set)
 4|4|Data size||In bytes, can be 0 (value isn't set), the most significant bit has a special meaning (see below)
 8|4|Data offset||In bytes, relative from the start of the hive bins data (data is stored in a cell)
-12|4|Data type||Bit mask, see below
-16|2|Flags||Bit mask, see below
+12|4|Data type||Bit field, see below
+16|2|Flags||Bit field, see below
 18|2|Spare||Probably not used
 20|...|Name||ASCII string or UTF-16LE string
 
@@ -446,7 +474,7 @@ The *Dirty vector* is stored starting from the beginning of the second sector of
 Offset|Length|Field|Value|Description
 ---|---|---|---|---
 0|4|Signature|DIRT|ASCII string
-4|...|Bitmap||A bitmap of dirty pages
+4|...|Bitmap||Bitmap of dirty pages
 
 Each bit of a bitmap corresponds to the state of a specific *512-byte* page within a hive bins data of a primary file, regardless of a sector size of an underlying disk (these pages don't overlap, there are no gaps between them):
 * the first bit, bit #1, corresponds to the state of the first *512-byte* page within a hive bins data of a primary file;
@@ -518,10 +546,11 @@ Offset|Length|Field|Description
 4. A transaction log file may contain multiple log entries written at once, as well as old (already applied) log entries.
 5. If a primary file is dirty and has a valid *Checksum* (in the base block), only subsequent log entries are applied. A subsequent log entry is a log entry with a sequence number equal to or greater than a primary sequence number of the base block in a primary file.
 6. If a primary file is dirty and has a wrong *Checksum*, its base block is recovered from a transaction log file. Then subsequent log entries are applied.
-7. If a log entry has a wrong value in the field *Hash-1*, *Hash-2*, or *Hive bins data size* (i.e. it is not multiple of 4096 bytes), recovery stops, only previous log entries (up to a bogus one) are applied.
-8. A primary file is grown according to the *Hive bins data size* field of a log entry being applied.
-9. Dirty hive bins are verified for correctness during recovery (but recovery doesn't stop on a bad hive bin, a bad hive bin is healed instead).
-10. The *Flags* field of a log entry is set to a value of the *Flags* field of a base block. During recovery, the *Flags* field of a base block is set to a value taken from a log entry being applied.
+7. If a log entry with a sequence number *N* is *not* followed by a log entry with a sequence number *N + 1*, recovery stops after applying a log entry with a sequence number *N*.
+8. If a log entry has a wrong value in the field *Hash-1*, *Hash-2*, or *Hive bins data size* (i.e. it is not multiple of 4096 bytes), recovery stops, only previous log entries (up to a bogus one) are applied.
+9. A primary file is grown according to the *Hive bins data size* field of a log entry being applied.
+10. Dirty hive bins are verified for correctness during recovery (but recovery doesn't stop on a bad hive bin, a bad hive bin is healed instead).
+11. The *Flags* field of a log entry is set to a value of the *Flags* field of a base block. During recovery, the *Flags* field of a base block is set to a value taken from a log entry being applied.
 
 ## Dirty state of a hive
 A hive is considered to be dirty when a base block in a primary file contains a wrong checksum, or its primary sequence number doesn't match its secondary sequence number. If a hive isn't dirty, but a transaction log file (new format) contains subsequent log entries, they are ignored.
