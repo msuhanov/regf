@@ -330,7 +330,7 @@ Mask|Name|Description
 
 It's plausible that registry key virtualization (when registry writes to sensitive locations are redirected to per-user locations in order to protect the Windows registry against corruption) required more flags than 4 bits in the beginning of this field can provide, that's why the *Largest subkey name length* field was split.
 
-As of Windows 8.1, the following bits are used:
+As of Windows 8.1, the following bits are also used:
 
 Mask|Name
 ---|---
