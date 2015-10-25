@@ -24,7 +24,7 @@
         * [Notes](#notes-2)
       * [Key node](#key-node)
         * [Flags](#flags)
-        * [Virtalization control flags] (#virtalization_control_flags)
+        * [Virtualization control flags] (#virtualization_control_flags)
       * [Key values list](#key-values-list)
       * [Key value](#key-value)
         * [Data size](#data-size)
@@ -312,7 +312,7 @@ Offset (bits)|Length (bits)|Field|Description
 ---|---|---|---
 0|16|Largest subkey name length|
 16|4|User flags|Bit field
-20|4|Virtalization control flags|Bit field (see below)
+20|4|Virtualization control flags|Bit field (see below)
 24|8|Debug|The meaning of this field is unknown
 
 ##### Flags
@@ -338,8 +338,8 @@ Mask|Name
 0x0100|KEY_VIRT_TARGET
 0x0200|KEY_VIRT_STORE
 
-##### Virtalization control flags
-The *Virtalization control flags* field is set according to the following bit masks:
+##### Virtualization control flags
+The *Virtualization control flags* field is set according to the following bit masks:
 
 Mask|Name|Meaning
 ---|---|---
