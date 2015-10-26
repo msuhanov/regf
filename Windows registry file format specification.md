@@ -522,8 +522,8 @@ Offset|Length|Field|Value|Description
 ---|---|---|---|---
 0|4|Signature|HvLE|ASCII string
 4|4|Size||Size of a current log entry in bytes
-8|4|Flags||Copy of the *Flags* field of a base block at the time of creation of a current log entry (see below)
-12|4|Sequence number||This number will be written both to a primary sequence number and to a secondary sequence number of a base block when applying a transaction
+8|4|Flags||Copy of the *Flags* field of the base block at the time of creation of a current log entry (see below)
+12|4|Sequence number||This number will be written both to the primary sequence number and to the secondary sequence number of the base block when applying the transaction
 16|4|Hive bins data size||Copy of the *Hive bins data size* field at the time of creation of a current log entry
 20|4|Dirty pages count||Number of dirty pages attached to a log entry
 24|8|Hash-1||See below
