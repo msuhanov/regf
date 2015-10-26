@@ -164,7 +164,8 @@ The exact meaning of GUID and GUID-related fields is unknown.
    * split D into non-overlapping groups of 32 bits, and for each group, G[i], do the following: C = C xor G[i];
    * C is the checksum.
 3. *Boot type* and *Boot recover* fields are used for in-memory hive recovery management by a boot loader and a kernel, they are not written to a disk in most cases (when *Clustering factor* is 8, these fields may be written to a disk, but they have no meaning there).
-4. The *Last reorganized timestamp* field contains a timestamp of the latest hive defragmentation (it happens once a week when a hive isn't locked).
+4. New fields, except the *Last reorganized timestamp*, were introduced in Windows Vista. The *Last reorganized timestamp* was introduced in Windows 8 and Windows 2012.
+5. The *Last reorganized timestamp* field contains a timestamp of the latest hive defragmentation (it happens once a week when a hive isn't locked).
 
 ### Hive bin
 The hive bin is variable in size and consists of a header and cells. A header is 32 bytes in length, it contains the following structure:
@@ -235,7 +236,7 @@ A list element has the following structure:
 Offset|Length|Field|Description
 ---|---|---|---
 0|4|Key node offset|In bytes, relative from the start of the hive bins data
-4|4|Name hint|First four characters of a key name string (used to speed up lookups)
+4|4|Name hint|First 4 characters of a key name string (used to speed up lookups)
 
 #### Hash leaf
 The *Hash leaf* has the following structure:
@@ -328,8 +329,6 @@ Mask|Name|Description
 0x0020|KEY_COMP_NAME|Name is an ASCII string (otherwise it is a UTF-16LE string)
 0x0040|KEY_PREDEF_HANDLE|Is a predefined handle
 
-It's plausible that registry key virtualization (when registry writes to sensitive locations are redirected to per-user locations in order to protect the Windows registry against corruption) required more flags than 4 bits in the beginning of this field can provide, that's why the *Largest subkey name length* field was split.
-
 As of Windows 8.1, the following bits are also used:
 
 Mask|Name
@@ -337,6 +336,8 @@ Mask|Name
 0x0080|KEY_VIRT_MIRRORED
 0x0100|KEY_VIRT_TARGET
 0x0200|KEY_VIRT_STORE
+
+It's plausible that registry key virtualization (when registry writes to sensitive locations are redirected to per-user locations in order to protect the Windows registry against corruption) required more space than 4 bits in the beginning of this field can provide, that's why the *Largest subkey name length* field was split and the new fields were introduced. It should be noted that user flags were moved away from the first 4 bits of the *Flags* field to the new *User flags* bit field.
 
 ##### Virtualization control flags
 The *Virtualization control flags* field is set according to the following bit masks:
@@ -505,7 +506,7 @@ The first dirty page corresponds to the first bit set to 1 in the bitmap of a di
 2. A dirty page will be written to a primary file at the following offset: *File offset = 4096 + 512 * Bit position*, where *Bit position* is the index of a corresponding bit in the bitmap of a dirty vector.
 
 ### New format
-A transaction log file (new format) consists of a base block and log entries.
+A transaction log file (new format) consists of a base block and log entries. This format was introduced in Windows 8.1 and Windows Server 2012 R2.
 
 ![Transaction log file layout (new format)](https://raw.githubusercontent.com/msuhanov/regf/master/images/new-log.png "Transaction log file layout (new format)")
 
