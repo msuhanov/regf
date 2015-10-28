@@ -369,7 +369,7 @@ Offset|Length|Field|Value|Description
 0|2|Signature|vk|ASCII string
 2|2|Name length||In bytes, can be 0 (name isn't set)
 4|4|Data size||In bytes, can be 0 (value isn't set), the most significant bit has a special meaning (see below)
-8|4|Data offset||In bytes, relative from the start of the hive bins data (data is stored in a cell)
+8|4|Data offset||In bytes, relative from the start of the hive bins data (or a data itself, see below)
 12|4|Data type||Bit field, see below
 16|2|Flags||Bit field, see below
 18|2|Spare||Probably not used
