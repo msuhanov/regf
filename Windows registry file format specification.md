@@ -135,7 +135,7 @@ Offset|Length|Field|Value(s)|Description
 As of Windows 10, the following fields were allocated in the previously reserved areas:
 
 Offset|Length|Field|Value|Description
----|---|---|---
+---|---|---|---|---
 112|16|RmId||GUID, see below
 128|16|LogId||GUID, see below
 144|4|Flags||Bit field, see below
