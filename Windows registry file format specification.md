@@ -517,7 +517,7 @@ A modified partial backup copy of a base block is stored in the first sector of 
 #### Log entries
 *Log entries* are stored starting from the beginning of the second sector. Each log entry is stored at an offset divisible by 512 bytes and has a variable size.
 
-The log entry has the following structure:
+A log entry has the following structure:
 
 Offset|Length|Field|Value|Description
 ---|---|---|---|---
