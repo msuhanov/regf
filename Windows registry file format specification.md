@@ -525,7 +525,7 @@ Offset|Length|Field|Value|Description
 4|4|Size||Size of a current log entry in bytes
 8|4|Flags||Copy of the *Flags* field of the base block at the time of creation of a current log entry (see below)
 12|4|Sequence number||This number will be written both to the primary sequence number and to the secondary sequence number of the base block when applying a current log entry
-16|4|Hive bins data size||Copy of the *Hive bins data size* field at the time of creation of a current log entry
+16|4|Hive bins data size||Copy of the *Hive bins data size* of the base block field at the time of creation of a current log entry
 20|4|Dirty pages count||Number of dirty pages attached to a log entry
 24|8|Hash-1||See below
 32|8|Hash-2||See below
