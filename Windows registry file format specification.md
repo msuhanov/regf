@@ -134,18 +134,20 @@ Offset|Length|Field|Value(s)|Description
 
 As of Windows 10, the following fields were allocated in the previously reserved areas:
 
-Offset|Length|Field|Description
+Offset|Length|Field|Value|Description
 ---|---|---|---
-112|16|RmId|GUID
-128|16|LogId|GUID
-144|4|Flags|Bit field, see below
-148|16|TmId|GUID
-164|4|GUID signature|
-168|4|Last reorganized timestamp|FILETIME (UTC)
+112|16|RmId||GUID, see below
+128|16|LogId||GUID, see below
+144|4|Flags||Bit field, see below
+148|16|TmId||GUID, see below
+164|4|GUID signature|rmtm|ASCII string
+168|4|Last reorganized timestamp||FILETIME (UTC)
 |||
-4040|16|ThawTmId|GUID
-4056|16|ThawRmId|GUID
-4072|16|ThawLogId|GUID
+4040|16|ThawTmId||GUID, this field has no meaning on a disk
+4056|16|ThawRmId||GUID, this field has no meaning on a disk
+4072|16|ThawLogId||GUID, this field has no meaning on a disk
+
+The *RmId* and *LogId* fields contain a GUID of the Resource Manager (RM), and the *TmId* field contains a GUID used to generate a file name of a log file for the Transaction Manager (TM), see the *ZwCreateResourceManager()* and *ZwCreateTransactionManager()* routines. The *GUID signature* field is always set to the "rmtm" ASCII string.
 
 The *Flags* field is used to record the state of the Kernel Transaction Manager (KTM), possible flags are:
 
@@ -153,8 +155,6 @@ Mask|Meaning
 ---|---
 0x00000000|KTM released the hive
 0x00000001|KTM locked the hive
-
-The exact meaning of GUID and GUID-related fields is unknown.
 
 #### Notes
 1. *File offset of a root cell = 4096 + Root cell offset*. This formula also applies to any other offset relative to the start of the hive bins data.
@@ -164,8 +164,9 @@ The exact meaning of GUID and GUID-related fields is unknown.
    * split D into non-overlapping groups of 32 bits, and for each group, G[i], do the following: C = C xor G[i];
    * C is the checksum.
 3. *Boot type* and *Boot recover* fields are used for in-memory hive recovery management by a boot loader and a kernel, they are not written to a disk in most cases (when *Clustering factor* is 8, these fields may be written to a disk, but they have no meaning there).
-4. New fields, except the *Last reorganized timestamp*, were introduced in Windows Vista. The *Last reorganized timestamp* was introduced in Windows 8 and Windows Server 2012.
+4. New fields, except the *Last reorganized timestamp*, were introduced in Windows Vista as a part of the CLFS. The *Last reorganized timestamp* was introduced in Windows 8 and Windows Server 2012.
 5. The *Last reorganized timestamp* field contains a timestamp of the latest hive defragmentation (it happens once a week when a hive isn't locked).
+6. *ThawTmId*, *ThawRmId*, and *ThawLogId* fields are used to restore the state of *TmId*, *RmId*, and *LogId* fields respectively when thawing a hive (after it was frozen in order to create a shadow copy).
 
 ### Hive bin
 The hive bin is variable in size and consists of a header and cells. A header is 32 bytes in length, it contains the following structure:
