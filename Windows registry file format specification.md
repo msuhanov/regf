@@ -559,6 +559,8 @@ A hive is considered to be dirty when a base block in a primary file contains a 
 
 ## Multiple transaction log files
 
+A primary file may have one transaction log file (\*.LOG) or two transaction log files (\*.LOG1 and \*.LOG2). In the latter case, an empty third file (\*.LOG) may be present for backward compatibility.
+
 ### Old format
 If multiple transaction log files are present and a hive is dirty, an applicable one (i.e. having the same *Last written timestamp* in a base block as in a base block of a primary file, see above) is used to recover a hive.
 
