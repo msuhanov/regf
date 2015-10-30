@@ -24,7 +24,7 @@
         * [Notes](#notes-2)
       * [Key node](#key-node)
         * [Flags](#flags)
-        * [Virtualization control flags] (#virtualization-control-flags)
+        * [Virtualization control flags](#virtualization-control-flags)
       * [Key values list](#key-values-list)
       * [Key value](#key-value)
         * [Data size](#data-size)
@@ -558,8 +558,7 @@ Offset|Length|Field|Description
 A hive is considered to be dirty when a base block in a primary file contains a wrong checksum, or its primary sequence number doesn't match its secondary sequence number. If a hive isn't dirty, but a transaction log file (new format) contains subsequent log entries, they are ignored.
 
 ## Multiple transaction log files
-
-A primary file may have one transaction log file (\*.LOG) or two transaction log files (\*.LOG1 and \*.LOG2). In the latter case, an empty third file (\*.LOG) may be present for backward compatibility.
+A primary file may have either one transaction log file (\*.LOG) or two transaction log files (\*.LOG1 and \*.LOG2). In the latter case, an empty third file (\*.LOG) may be present for backward compatibility.
 
 ### Old format
 If multiple transaction log files are present and a hive is dirty, an applicable one (i.e. having the same *Last written timestamp* in a base block as in a base block of a primary file, see above) is used to recover a hive.
@@ -575,3 +574,6 @@ A switch to a new transaction log file may be used to split log entries.
 1. http://www.sentinelchicken.com/data/TheWindowsNTRegistryFileFormat.pdf
 2. https://github.com/libyal/libregf/blob/master/documentation/Windows%20NT%20Registry%20File%20(REGF)%20format.asciidoc
 3. http://amnesia.gtisc.gatech.edu/~moyix/suzibandit.ltd.uk/MSc/
+
+-------
+© 2015 Maxim Suhanov
