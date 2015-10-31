@@ -141,7 +141,7 @@ Offset|Length|Field|Value|Description
 144|4|Flags||Bit field, see below
 148|16|TmId||GUID, see below
 164|4|GUID signature|rmtm|ASCII string
-168|4|Last reorganized timestamp||FILETIME (UTC)
+168|8|Last reorganized timestamp||FILETIME (UTC)
 |||
 4040|16|ThawTmId||GUID, this field has no meaning on a disk
 4056|16|ThawRmId||GUID, this field has no meaning on a disk
