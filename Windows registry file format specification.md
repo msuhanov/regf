@@ -371,7 +371,7 @@ Offset|Length|Field|Value|Description
 2|2|Name length||In bytes, can be 0 (name isn't set)
 4|4|Data size||In bytes, can be 0 (value isn't set), the most significant bit has a special meaning (see below)
 8|4|Data offset||In bytes, relative from the start of the hive bins data (or a data itself, see below)
-12|4|Data type||Bit field, see below
+12|4|Data type||See below
 16|2|Flags||Bit field, see below
 18|2|Spare||Probably not used
 20|...|Name||ASCII string or UTF-16LE string
@@ -381,7 +381,7 @@ When the most significant bit is 1, a data (4 bytes or less) is stored in the *D
 
 ##### Data types
 
-Mask|Name(s)
+Value|Name(s)
 ---|---
 0x00000000|REG_NONE
 0x00000001|REG_SZ
