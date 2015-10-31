@@ -478,9 +478,9 @@ Offset|Length|Field|Value|Description
 0|4|Signature|DIRT|ASCII string
 4|...|Bitmap||Bitmap of dirty pages
 
-Each bit of a bitmap corresponds to the state of a specific *512-byte* page within a hive bins data of a primary file, regardless of a sector size of an underlying disk (these pages don't overlap, there are no gaps between them):
-* the first bit, bit #1, corresponds to the state of the first *512-byte* page within a hive bins data of a primary file;
-* bit #2 corresponds to the state of the second *512-byte* page within a hive bins data of a primary file, etc.
+Each bit of a bitmap corresponds to the state of a specific *512-byte* page within a hive bins data to be written to a primary file from memory, regardless of a sector size of an underlying disk (these pages don't overlap, there are no gaps between them):
+* the first bit, bit #1, corresponds to the state of the first *512-byte* page within a hive bins data;
+* bit #2 corresponds to the state of the second *512-byte* page within a hive bins data, etc.
 
 The meaning of each bit in a bitmap is the following:
 
