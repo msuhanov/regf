@@ -338,7 +338,7 @@ Mask|Name
 0x0100|KEY_VIRT_TARGET
 0x0200|KEY_VIRT_STORE
 
-It's plausible that registry key virtualization (when registry writes to sensitive locations are redirected to per-user locations in order to protect the Windows registry against corruption) required more space than 4 bits in the beginning of this field can provide, that's why the *Largest subkey name length* field was split and the new fields were introduced. It should be noted that user flags were moved away from the first 4 bits of the *Flags* field to the new *User flags* bit field.
+It is plausible that registry key virtualization (when registry writes to sensitive locations are redirected to per-user locations in order to protect the Windows registry against corruption) required more space than 4 bits in the beginning of this field can provide, that is why the *Largest subkey name length* field was split and the new fields were introduced. It should be noted that user flags were moved away from the first 4 bits of the *Flags* field to the new *User flags* bit field.
 
 ##### Virtualization control flags
 The *Virtualization control flags* field is set according to the following bit masks:
@@ -468,7 +468,7 @@ A backup copy of a base block isn't an exact copy anyway, the following modifica
 1. A partial backup copy of a base block is made using a data from memory, not from a primary file.
 2. A transaction log file is considered to be valid when it has an expected base block (including the modifications mentioned above), and its primary sequence number is equal to its secondary sequence number.
 3. A transaction log can be applied when a *Last written timestamp* in its base block is equal to a *Last written timestamp* in a base block of a primary file (when a base block of a primary file is invalid, a *Timestamp* from the first hive bin is used instead).
-4. If a base block of a primary file has a wrong *Checksum*, it is being recovered using a base block from a transaction log file.
+4. If a base block of a primary file has a wrong *Checksum*, it is being recovered using a base block from a transaction log file (and the *File type* field is set back to 0).
 
 #### Dirty vector
 The *Dirty vector* is stored starting from the beginning of the second sector of a transaction log file, it has the following structure:
