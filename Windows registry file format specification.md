@@ -151,7 +151,7 @@ The *RmId* and *LogId* fields contain a GUID of the Resource Manager (RM), and t
 
 The *Flags* field is used to record the state of the Kernel Transaction Manager (KTM), possible flags are:
 
-Mask|Meaning
+Mask|Description
 ---|---
 0x00000000|KTM released the hive
 0x00000001|KTM locked the hive
@@ -343,7 +343,7 @@ It is plausible that registry key virtualization (when registry writes to sensit
 ##### Virtualization control flags
 The *Virtualization control flags* field is set according to the following bit masks:
 
-Mask|Name|Meaning
+Mask|Name|Description
 ---|---|---
 0x2|REG_KEY_DONT_VIRTUALIZE|Disable registry write virtualization
 0x4|REG_KEY_DONT_SILENT_FAIL|Disable registry open virtualization
@@ -398,7 +398,7 @@ Mask|Name(s)
 
 ##### Flags
 
-Mask|Meaning
+Mask|Description
 ---|---
 0x0001|Name is an ASCII string (otherwise it is a UTF-16LE string)
 
@@ -484,7 +484,7 @@ Each bit of a bitmap corresponds to the state of a specific *512-byte* page with
 
 The meaning of each bit in a bitmap is the following:
 
-Bit|Meaning
+Bit|Description
 ---|---
 0|A corresponding page is clean
 1|A corresponding page is dirty
