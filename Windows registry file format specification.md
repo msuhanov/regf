@@ -552,7 +552,7 @@ Offset|Length|Field|Description
 8. If a log entry has a wrong value in the field *Hash-1*, *Hash-2*, or *Hive bins data size* (i.e. it is not multiple of 4096 bytes), recovery stops, only previous log entries (up to a bogus one) are applied.
 9. A primary file is grown according to the *Hive bins data size* field of a log entry being applied.
 10. Dirty hive bins are verified for correctness during recovery (but recovery doesn't stop on a bad hive bin, a bad hive bin is healed instead).
-11. The *Flags* field of a log entry is set to a value of the *Flags* field of a base block. During recovery, the *Flags* field of a base block is set to a value taken from a log entry being applied.
+11. The *Flags* field of a log entry is set to a value of the *Flags* field of the base block. During recovery, the *Flags* field of the base block is set to a value taken from a log entry being applied.
 
 ## Dirty state of a hive
 A hive is considered to be dirty when a base block in a primary file contains a wrong checksum, or its primary sequence number doesn't match its secondary sequence number. If a hive isn't dirty, but a transaction log file (new format) contains subsequent log entries, they are ignored.
