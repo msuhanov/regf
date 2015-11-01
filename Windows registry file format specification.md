@@ -313,9 +313,9 @@ Starting from Windows Vista, Windows 2003 SP2, and Windows XP SP3, the *Largest 
 Offset (bits)|Length (bits)|Field|Description
 ---|---|---|---
 0|16|Largest subkey name length|
-16|4|User flags|Bit field
-20|4|Virtualization control flags|Bit field (see below)
-24|8|Debug|The meaning of this field is unknown
+16|8|Debug|The meaning of this field is unknown
+24|4|Virtualization control flags|Bit field (see below)
+28|4|User flags|Bit field
 
 ##### Flags
 As of Windows XP (prior to SP3), the first 4 bits are reserved for user flags (set via the *NtSetInformationKey()* call), and other bits have the following meaning:
