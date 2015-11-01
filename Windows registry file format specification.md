@@ -313,8 +313,8 @@ Starting from Windows Vista, Windows 2003 SP2, and Windows XP SP3, the *Largest 
 Offset (bits)|Length (bits)|Field|Description
 ---|---|---|---
 0|16|Largest subkey name length|
-16|4|User flags|Bit mask
-20|4|Virtualization control flags|Bit mask, see below
+16|4|Virtualization control flags|Bit mask, see below
+20|4|User flags|Bit mask
 24|8|Debug|The meaning of this field is unknown
 
 ##### Flags
