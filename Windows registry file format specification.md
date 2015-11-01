@@ -318,6 +318,7 @@ Offset (bits)|Length (bits)|Field|Description
 24|8|Debug|The meaning of this field is unknown
 
 **Warning**
+
 When implementing the structure defined above in a program, keep in mind that a compiler may pack the *Virtualization control flags* and *User flags* bit fields in a different way. In C, two or more bit fields inside an integer may be packed right-to-left, so the first bit field defined in an integer may reside in the less significant (right) bits. In debug symbols for Windows, the *UserFlags* bit field is defined before the *VirtControlFlags* exactly for this reason (however, these field are written to a file in the order indicated in the table above).
 
 ##### Flags
