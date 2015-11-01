@@ -110,7 +110,7 @@ A primary file consists of a base block, also known as a file header, and a hive
 ![Primary file layout](https://raw.githubusercontent.com/msuhanov/regf/master/images/primary.png "Primary file layout")
 
 ### Base block
-The base block is 4096 bytes in length, it contains the following structure, as of Windows XP (*hereinafter, all numbers are in the little-endian form, all data units are bytes, unless otherwise mentioned*):
+The base block is 4096 bytes in length, it contains the following structure, as of Windows XP (*hereinafter, all numbers and bit masks are in the little-endian form, all data units are bytes, unless otherwise mentioned*):
 
 Offset|Length|Field|Value(s)|Description
 ---|---|---|---|---
@@ -138,7 +138,7 @@ Offset|Length|Field|Value|Description
 ---|---|---|---|---
 112|16|RmId||GUID, see below
 128|16|LogId||GUID, see below
-144|4|Flags||Bit field, see below
+144|4|Flags||Bit mask, see below
 148|16|TmId||GUID, see below
 164|4|GUID signature|rmtm|ASCII string
 168|8|Last reorganized timestamp||FILETIME (UTC)
@@ -287,7 +287,7 @@ The *Key node* has the following structure:
 Offset|Length|Field|Value|Description
 ---|---|---|---|---
 0|2|Signature|nk|ASCII string
-2|2|Flags||Bit field, see below
+2|2|Flags||Bit mask, see below
 4|8|Last written timestamp||FILETIME (UTC)
 12|4|Spare||Probably not used
 16|4|Parent||Offset of a parent key node in bytes, relative from the start of the hive bins data
@@ -313,8 +313,8 @@ Starting from Windows Vista, Windows 2003 SP2, and Windows XP SP3, the *Largest 
 Offset (bits)|Length (bits)|Field|Description
 ---|---|---|---
 0|16|Largest subkey name length|
-16|4|User flags|Bit field
-20|4|Virtualization control flags|Bit field (see below)
+16|4|User flags|Bit mask
+20|4|Virtualization control flags|Bit mask, see below
 24|8|Debug|The meaning of this field is unknown
 
 ##### Flags
@@ -338,7 +338,7 @@ Mask|Name
 0x0100|KEY_VIRT_TARGET
 0x0200|KEY_VIRT_STORE
 
-It is plausible that registry key virtualization (when registry writes to sensitive locations are redirected to per-user locations in order to protect the Windows registry against corruption) required more space than 4 bits in the beginning of this field can provide, that is why the *Largest subkey name length* field was split and the new fields were introduced. It should be noted that user flags were moved away from the first 4 bits of the *Flags* field to the new *User flags* bit field.
+It is plausible that registry key virtualization (when registry writes to sensitive locations are redirected to per-user locations in order to protect the Windows registry against corruption) required more space than 4 bits in the beginning of this field can provide, that is why the *Largest subkey name length* field was split and the new fields were introduced. It should be noted that user flags were moved away from the first 4 bits of the *Flags* field to the new *User flags* bit mask.
 
 ##### Virtualization control flags
 The *Virtualization control flags* field is set according to the following bit masks:
@@ -372,7 +372,7 @@ Offset|Length|Field|Value|Description
 4|4|Data size||In bytes, can be 0 (value isn't set), the most significant bit has a special meaning (see below)
 8|4|Data offset||In bytes, relative from the start of the hive bins data (or a data itself, see below)
 12|4|Data type||See below
-16|2|Flags||Bit field, see below
+16|2|Flags||Bit mask, see below
 18|2|Spare||Probably not used
 20|...|Name||ASCII string or UTF-16LE string
 
