@@ -381,7 +381,7 @@ Offset|Length|Field|Value|Description
 20|...|Name||ASCII string or UTF-16LE string
 
 ##### Data size
-When the most significant bit is 1, a data (4 bytes or less) is stored in the *Data offset* field directly (when a data contains less than 4 bytes, it is being written as is to the beginning of the *Data offset* field). The most significant bit (when set to 1) should be ignored when calculating the data size.
+When the most significant bit is 1, a data (4 bytes or less) is stored in the *Data offset* field directly (when a data contains less than 4 bytes, it is being stored as is in the beginning of the *Data offset* field). The most significant bit (when set to 1) should be ignored when calculating the data size.
 
 ##### Data types
 
