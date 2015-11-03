@@ -329,10 +329,10 @@ Mask|Name|Description
 0x0001|KEY_VOLATILE|Is volatile
 0x0002|KEY_HIVE_EXIT|Is the mount point of another hive
 0x0004|KEY_HIVE_ENTRY|Is the root key for this hive
-0x0008|KEY_NO_DELETE|This key cannot be deleted
-0x0010|KEY_SYM_LINK|This key is a symlink
+0x0008|KEY_NO_DELETE|This key can't be deleted
+0x0010|KEY_SYM_LINK|This key is a symlink (a target key is specified as a string in a value named "SymbolicLinkValue")
 0x0020|KEY_COMP_NAME|Name is an ASCII string (otherwise it is a UTF-16LE string)
-0x0040|KEY_PREDEF_HANDLE|Is a predefined handle
+0x0040|KEY_PREDEF_HANDLE|Is a predefined handle (a handle is stored in the *Number of key values* field)
 
 As of Windows 8.1, the following bits are also used:
 
@@ -341,6 +341,8 @@ Mask|Name
 0x0080|KEY_VIRT_MIRRORED
 0x0100|KEY_VIRT_TARGET
 0x0200|KEY_VIRT_STORE
+
+The exact meaning of these bits is unknown.
 
 It is plausible that registry key virtualization (when registry writes to sensitive locations are redirected to per-user locations in order to protect the Windows registry against corruption) required more space than 4 bits in the beginning of this field can provide, that is why the *Largest subkey name length* field was split and the new fields were introduced. It should be noted that user flags were moved away from the first 4 bits of the *Flags* field to the new *User flags* bit mask.
 
