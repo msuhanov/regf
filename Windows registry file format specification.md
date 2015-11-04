@@ -314,7 +314,7 @@ Offset (bits)|Length (bits)|Field|Description
 ---|---|---|---
 0|16|Largest subkey name length|
 16|4|Virtualization control flags|Bit mask, see below
-20|4|User flags|Bit mask
+20|4|User flags (Wow64 flags)|Bit mask
 24|8|Debug|The meaning of this field is unknown
 
 **Warning**
@@ -334,17 +334,15 @@ Mask|Name|Description
 0x0020|KEY_COMP_NAME|Name is an ASCII string (otherwise it is a UTF-16LE string)
 0x0040|KEY_PREDEF_HANDLE|Is a predefined handle (a handle is stored in the *Number of key values* field)
 
-As of Windows 8.1, the following bits are also used:
+The following bits are also used since Windows Vista:
 
-Mask|Name
----|---
-0x0080|KEY_VIRT_MIRRORED
-0x0100|KEY_VIRT_TARGET
-0x0200|KEY_VIRT_STORE
+Mask|Name|Description
+---|---|---
+0x0080|VirtualSource|This key was virtualized at least once
+0x0100|VirtualTarget|Is virtual
+0x0200|VirtualStore|Is a part of a virtual store path
 
-The exact meaning of these bits is unknown.
-
-It is plausible that registry key virtualization (when registry writes to sensitive locations are redirected to per-user locations in order to protect the Windows registry against corruption) required more space than 4 bits in the beginning of this field can provide, that is why the *Largest subkey name length* field was split and the new fields were introduced. It should be noted that user flags were moved away from the first 4 bits of the *Flags* field to the new *User flags* bit mask.
+It is plausible that registry key virtualization (when registry writes to sensitive locations are redirected to per-user locations in order to protect a Windows registry against corruption) required more space than 4 bits in the beginning of this field can provide, that is why the *Largest subkey name length* field was split and the new fields were introduced. It should be noted that user flags were moved away from the first 4 bits of the *Flags* field to the new *User flags* bit field (see above). These user flags in the new location are also called *Wow64 flags*.
 
 ##### Virtualization control flags
 The *Virtualization control flags* field is set according to the following bit masks:
@@ -418,7 +416,8 @@ Offset|Length|Field|Value|Description
 4|4|Flink||See below
 8|4|Blink||See below
 12|4|Reference count||
-16|...|Security descriptor||
+16|4|Security descriptor size|In bytes
+20|...|Security descriptor||
 
 ##### Notes
 1. Flink and blink are offsets in bytes, relative from the start of the hive bins data.
