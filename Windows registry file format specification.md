@@ -330,7 +330,7 @@ Mask|Name|Description
 0x0002|KEY_HIVE_EXIT|Is the mount point of another hive
 0x0004|KEY_HIVE_ENTRY|Is the root key for this hive
 0x0008|KEY_NO_DELETE|This key can't be deleted
-0x0010|KEY_SYM_LINK|This key is a symlink (a target key is specified as a string in a value named "SymbolicLinkValue")
+0x0010|KEY_SYM_LINK|This key is a symlink (a target key is specified as a string (REG_LINK) in a value named "SymbolicLinkValue")
 0x0020|KEY_COMP_NAME|Name is an ASCII string (otherwise it is a UTF-16LE string)
 0x0040|KEY_PREDEF_HANDLE|Is a predefined handle (a handle is stored in the *Number of key values* field)
 
@@ -407,7 +407,7 @@ Mask|Description
 0x0001|Name is an ASCII string (otherwise it is a UTF-16LE string)
 
 #### Key security
-The *Key security item* has the following structure:
+The *Key security* item has the following structure:
 
 Offset|Length|Field|Value|Description
 ---|---|---|---|---
