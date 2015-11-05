@@ -550,7 +550,7 @@ Offset|Length|Field|Description
 ##### Notes
 1. *Hash-1* is the Marvin32 hash of the data starting from the beginning of the first page reference of a current log entry with the length of *Size - 40* bytes.
 2. *Hash-2* is the Marvin32 hash of the first 32 bytes of a current log entry (including the *Hash-1* calculated before).
-3. The following seed is used for calculating the *Hash-1* and *Hash-2*: 14219357686671994754 (little-endian).
+3. The following seed is used for calculating the *Hash-1* and *Hash-2*: 0x82EF4D887A4E55C5.
 4. A transaction log file may contain multiple log entries written at once, as well as old (already applied) log entries.
 5. If a primary file is dirty and has a valid *Checksum* (in the base block), only subsequent log entries are applied. A subsequent log entry is a log entry with a sequence number equal to or greater than a secondary sequence number of the base block in a primary file.
 6. If a primary file is dirty and has a wrong *Checksum*, its base block is recovered from a transaction log file. Then subsequent log entries are applied.
