@@ -110,7 +110,7 @@ A primary file consists of a base block, also known as a file header, and a hive
 ![Primary file layout](https://raw.githubusercontent.com/msuhanov/regf/master/images/primary.png "Primary file layout")
 
 ### Base block
-The base block is 4096 bytes in length, it contains the following structure, as of Windows XP (*hereinafter, all numbers and bit masks are in the little-endian form, all data units are bytes, unless otherwise mentioned*):
+The base block is 4096 bytes in length, it contains the following structure, at the time of Windows XP (*hereinafter, all numbers and bit masks are in the little-endian form, all data units are bytes, unless otherwise mentioned*):
 
 Offset|Length|Field|Value(s)|Description
 ---|---|---|---|---
@@ -132,7 +132,7 @@ Offset|Length|Field|Value(s)|Description
 4088|4|Boot type||This field has no meaning on a disk
 4092|4|Boot recover||This field has no meaning on a disk
 
-As of Windows 10, the following fields were allocated in the previously reserved areas:
+At the time of Windows 10, the following fields were allocated in the previously reserved areas:
 
 Offset|Length|Field|Value|Description
 ---|---|---|---|---
@@ -322,7 +322,7 @@ Offset (bits)|Length (bits)|Field|Description
 When implementing the structure defined above in a program, keep in mind that a compiler may pack the *Virtualization control flags* and *User flags* bit fields in a different way. In C, two or more bit fields inside an integer may be packed right-to-left, so the first bit field defined in an integer may reside in the less significant (right) bits. In debug symbols for Windows, the *UserFlags* field is defined before the *VirtControlFlags* field exactly for this reason (however, these fields are written to a file in the order indicated in the table above).
 
 ##### Flags
-As of Windows XP (prior to SP3), the first 4 bits are reserved for user flags (set via the *NtSetInformationKey()* call), and other bits have the following meaning:
+At the time of Windows XP (prior to SP3), the first 4 bits are reserved for user flags (set via the *NtSetInformationKey()* call), and other bits have the following meaning:
 
 Mask|Name|Description
 ---|---|---
@@ -474,7 +474,7 @@ A backup copy of a base block isn't an exact copy anyway, the following modifica
 2. A transaction log file is considered to be valid when it has an expected base block (including the modifications mentioned above), and its primary sequence number is equal to its secondary sequence number.
 3. A transaction log can be applied when a *Last written timestamp* in its base block is equal to a *Last written timestamp* in a base block of a primary file (when a base block of a primary file is invalid, a *Timestamp* from the first hive bin is used instead).
 4. If a base block of a primary file has a wrong *Checksum*, it is being recovered using a base block from a transaction log file (and the *File type* field is set back to 0).
-5. As of Windows XP SP2, the same memory region is used to write a base block both to a transaction log file and to a primary file, that is why, after a successful write operation, a base block of a primary file will contain two sequence numbers equal to *N*, and a base block of a transaction log file will contain two sequence numbers equal to *N - 1* (sequence numbers are incremented by 1 for a transaction log file first, and then they are incremented by 1 again for a primary file). As of Windows Vista SP2, a copy of a base block is used when writing to a transaction log file, that is why a transaction log file and a primary file will contain the same sequence numbers in their base blocks after a successful write operation.
+5. At the time of Windows XP SP2, the same memory region is used to write a base block both to a transaction log file and to a primary file, that is why, after a successful write operation, a base block of a primary file will contain two sequence numbers equal to *N*, and a base block of a transaction log file will contain two sequence numbers equal to *N - 1* (sequence numbers are incremented by 1 for a transaction log file first, and then they are incremented by 1 again for a primary file). As the time of Windows Vista SP2, a copy of a base block is used when writing to a transaction log file, that is why a transaction log file and a primary file will contain the same sequence numbers in their base blocks after a successful write operation.
 
 #### Dirty vector
 The *Dirty vector* is stored starting from the beginning of the second sector of a transaction log file, it has the following structure:
