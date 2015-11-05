@@ -334,7 +334,7 @@ Mask|Name|Description
 0x0020|KEY_COMP_NAME|Name is an ASCII string (otherwise it is a UTF-16LE string)
 0x0040|KEY_PREDEF_HANDLE|Is a predefined handle (a handle is stored in the *Number of key values* field)
 
-The following bits are also used since Windows Vista:
+The following bits are also used as of Windows Vista:
 
 Mask|Name|Description
 ---|---|---
