@@ -290,7 +290,7 @@ Offset|Length|Field|Value|Description
 2|2|Flags||Bit mask, see below
 4|8|Last written timestamp||FILETIME (UTC)
 12|4|Spare||Probably not used
-16|4|Parent||Offset of a parent key node in bytes, relative from the start of the hive bins data
+16|4|Parent||Offset of a parent key node in bytes, relative from the start of the hive bins data (this field has no meaning on a disk for a root key node)
 20|4|Number of subkeys||
 24|4|Number of volatile subkeys||
 28|4|Subkeys list offset||In bytes, relative from the start of the hive bins data
@@ -303,12 +303,12 @@ Offset|Length|Field|Value|Description
 56|4|Largest subkey class name length||In bytes
 60|4|Largest value name length||In bytes, a value name is treated as a UTF-16LE string
 64|4|Largest value data size||In bytes
-68|4|WorkVar||Probably not used, the meaning of this field is unknown
+68|4|WorkVar||The meaning of this field is unknown
 72|2|Key name length||In bytes
 74|2|Class name length||In bytes
 76|...|Key name string||ASCII string or UTF-16LE string
 
-Starting from Windows Vista, Windows 2003 SP2, and Windows XP SP3, the *Largest subkey name length* field has been split into 4 fields:
+Starting from Windows Vista, Windows Server 2003 SP2, and Windows XP SP3, the *Largest subkey name length* field has been split into 4 fields:
 
 Offset (bits)|Length (bits)|Field|Description
 ---|---|---|---
@@ -322,7 +322,7 @@ Offset (bits)|Length (bits)|Field|Description
 When implementing the structure defined above in a program, keep in mind that a compiler may pack the *Virtualization control flags* and *User flags* bit fields in a different way. In C, two or more bit fields inside an integer may be packed right-to-left, so the first bit field defined in an integer may reside in the less significant (right) bits. In debug symbols for Windows, the *UserFlags* field is defined before the *VirtControlFlags* field exactly for this reason (however, these fields are written to a file in the order indicated in the table above).
 
 ##### Flags
-In Windows XP (prior to SP3), the first 4 bits are reserved for user flags (set via the *NtSetInformationKey()* call), and other bits have the following meaning:
+In Windows XP and Windows Server 2003, the first 4 bits are reserved for user flags (set via the *NtSetInformationKey()* call). Other bits have the following meaning:
 
 Mask|Name|Description
 ---|---|---
@@ -342,7 +342,11 @@ Mask|Name|Description
 0x0100|VirtualTarget|Is virtual
 0x0200|VirtualStore|Is a part of a virtual store path
 
-It is plausible that registry key virtualization (when registry writes to sensitive locations are redirected to per-user locations in order to protect a Windows registry against corruption) required more space than 4 bits in the beginning of this field can provide, that is why the *Largest subkey name length* field was split and the new fields were introduced. It should be noted that user flags were moved away from the first 4 bits of the *Flags* field to the new *User flags* bit field (see above). These user flags in the new location are also called *Wow64 flags*.
+It is plausible that a registry key virtualization (when registry writes to sensitive locations are redirected to per-user locations in order to protect a Windows registry against corruption) required more space than 4 bits in the beginning of this field can provide, that is why the *Largest subkey name length* field was split and the new fields were introduced.
+
+Starting from Windows Vista, user flags were moved away from the first 4 bits of the *Flags* field to the new *User flags* bit field (see above). These user flags in the new location are also called *Wow64 flags*. In Windows XP and Windows Server 2003, user flags are stored in the old location anyway.
+
+It is unclear whether the first 4 bits of the *Flags* field are still reserved or not in recent versions of Windows. For example, in Windows Vista and Windows 7, the 4th bit of the *Flags* field is set to 1 in many key nodes belonging to different hives, and in Windows XP Professional x64 SP2, the 3rd or the 4th bit of this field can be set.
 
 ##### Virtualization control flags
 The *Virtualization control flags* field is set according to the following bit masks:
@@ -506,7 +510,7 @@ Bitmap length (*in bits*) is calculated using the following formula: *Bitmap len
 #### Dirty pages
 *Dirty pages* are stored starting from the beginning of the sector following the last sector of a dirty vector. Each dirty page is stored at an offset divisible by 512 bytes and has a length of 512 bytes.
 
-The first dirty page corresponds to the first bit set to 1 in the bitmap of a dirty vector, the second dirty page corresponds to the second bit set to 1 in the bitmap of a dirty vector, etc. During recovery, contiguous dirty pages belonging to the same hive bin in a primary file are processed together, and a dirty hive bin is verified for correctness (its *Signature* must be correct, its *Size* must be correct, its *Offset* must match a location of a corresponding hive bin in a primary file); recovery aborts if a dirty hive bin is invalid.
+The first dirty page corresponds to the first bit set to 1 in the bitmap of a dirty vector, the second dirty page corresponds to the second bit set to 1 in the bitmap of a dirty vector, etc. During recovery, contiguous dirty pages belonging to the same hive bin in a primary file are processed together, and a dirty hive bin is verified for correctness (its *Signature* must be correct, its *Size* must not be less than 4096 bytes, its *Offset* must match the *Offset* of a corresponding hive bin in a primary file); recovery stops if a dirty hive bin is invalid, an invalid dirty hive bin is ignored.
 
 ##### Notes
 1. The number of dirty pages is equal to the number of bits set to 1 in the bitmap of a dirty vector. Remnant dirty pages may be present after the end of the last dirty page.
@@ -555,7 +559,7 @@ Offset|Length|Field|Description
 5. If a primary file is dirty and has a valid *Checksum* (in the base block), only subsequent log entries are applied. A subsequent log entry is a log entry with a sequence number equal to or greater than a secondary sequence number of the base block in a primary file.
 6. If a primary file is dirty and has a wrong *Checksum*, its base block is recovered from a transaction log file. Then subsequent log entries are applied.
 7. If a log entry with a sequence number *N* is *not* followed by a log entry with a sequence number *N + 1*, recovery stops after applying a log entry with a sequence number *N*. If the first log entry doesn't contain an expected sequence number (equal to a secondary sequence number of the base block in a primary file), recovery stops.
-8. If a log entry has a wrong value in the field *Hash-1*, *Hash-2*, or *Hive bins data size* (i.e. it is not multiple of 4096 bytes), recovery stops, only previous log entries (up to a bogus one) are applied.
+8. If a log entry has a wrong value in the field *Hash-1*, *Hash-2*, or *Hive bins data size* (i.e. it is not multiple of 4096 bytes), recovery stops, only previous log entries (preceding a bogus one) are applied.
 9. A primary file is grown according to the *Hive bins data size* field of a log entry being applied.
 10. Dirty hive bins are verified for correctness during recovery (but recovery doesn't stop on a bad hive bin, a bad hive bin is healed instead).
 11. The *Flags* field of a log entry is set to a value of the *Flags* field of the base block. During recovery, the *Flags* field of the base block is set to a value taken from a log entry being applied.
