@@ -420,7 +420,7 @@ Offset|Length|Field|Value|Description
 4|4|Flink||See below
 8|4|Blink||See below
 12|4|Reference count||
-16|4|Security descriptor size|In bytes
+16|4|Security descriptor size||In bytes
 20|...|Security descriptor||
 
 ##### Notes
