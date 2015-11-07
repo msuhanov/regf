@@ -346,7 +346,7 @@ It is plausible that a registry key virtualization (when registry writes to sens
 
 Starting from Windows Vista, user flags were moved away from the first 4 bits of the *Flags* field to the new *User flags* bit field (see above). These user flags in the new location are also called *Wow64 flags*. In Windows XP and Windows Server 2003, user flags are stored in the old location anyway.
 
-It is unclear whether the first 4 bits of the *Flags* field are still reserved or not in recent versions of Windows. For example, in Windows Vista and Windows 7, the 4th bit of the *Flags* field is set to 1 in many key nodes belonging to different hives, and in Windows XP Professional x64 SP2, the 3rd or the 4th bit of this field can be set.
+It is unclear whether the first 4 bits of the *Flags* field are still reserved or not in recent versions of Windows. For example, in Windows Vista and Windows 7, the 4th bit of the *Flags* field is set to 1 in many key nodes belonging to different hives. However, this bit can't be read through the *NtQueryKey()* call.
 
 ##### Virtualization control flags
 The *Virtualization control flags* field is set according to the following bit masks:
