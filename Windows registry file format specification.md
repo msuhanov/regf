@@ -166,7 +166,7 @@ Mask|Description
 3. The *Boot type* and *Boot recover* fields are used for in-memory hive recovery management by a boot loader and a kernel, they are not written to a disk in most cases (when *Clustering factor* is 8, these fields may be written to a disk, but they have no meaning there).
 4. New fields, except the *Last reorganized timestamp*, were introduced in Windows Vista as a part of the CLFS. The *Last reorganized timestamp* was introduced in Windows 8 and Windows Server 2012.
 5. The *Last reorganized timestamp* field contains a timestamp of the latest hive defragmentation (it happens once a week when a hive isn't locked).
-6. *ThawTmId*, *ThawRmId*, and *ThawLogId* fields are used to restore the state of *TmId*, *RmId*, and *LogId* fields respectively when thawing a hive (after it was frozen in order to create a shadow copy).
+6. The *ThawTmId*, *ThawRmId*, and *ThawLogId* fields are used to restore the state of *TmId*, *RmId*, and *LogId* fields respectively when thawing a hive (after it was frozen in order to create a shadow copy).
 
 ### Hive bin
 The hive bin is variable in size and consists of a header and cells. A header is 32 bytes in length, it contains the following structure:
