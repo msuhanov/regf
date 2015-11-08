@@ -224,6 +224,8 @@ Offset|Length|Field|Description
 ---|---|---|---
 0|4|Key node offset|In bytes, relative from the start of the hive bins data
 
+All list elements are required to be sorted ascending by a key name string (case insensitive, comparison should be based on character codes).
+
 #### Fast leaf
 The *Fast leaf* has the following structure:
 
@@ -242,6 +244,8 @@ Offset|Length|Field|Description
 
 If a key name string is less than 4 characters in length, it is stored in the beginning of the *Name hint* field, unused bytes of this field are set to null. UTF-16LE characters are converted to ASCII, if possible (if it isn't, the first byte of the *Name hint* field is null).
 
+All list elements are required to be sorted (as described above).
+
 #### Hash leaf
 The *Hash leaf* has the following structure:
 
@@ -257,6 +261,8 @@ Offset|Length|Field|Description
 ---|---|---|---
 0|4|Key node offset|In bytes, relative from the start of the hive bins data
 4|4|Hash|Hash of a key name string, see below (used to speed up lookups)
+
+All list elements are required to be sorted (as described above).
 
 ##### Note
 The hash is calculated using the following algorithm:
@@ -283,8 +289,7 @@ Offset|Length|Field|Description
 ##### Notes
 1. An *Index root* can't point to another *Index root*.
 2. A *Subkeys list* can't point to an *Index root*.
-3. All list elements pointing to key nodes are required to be sorted ascending by a key name string (case insensitive, comparison should be based on character codes).
-4. When list elements belong to different subkeys lists, which are referenced by a single *Index root*, these list elements must be sorted as a whole (i.e. the first list element of the second subkeys list must be greater than the last element of the first subkeys list).
+3. List elements within subkeys lists referenced by a single *Index root* must be sorted as a whole (i.e. the first list element of the second subkeys list must be greater than the last element of the first subkeys list).
 
 #### Key node
 The *Key node* has the following structure:
