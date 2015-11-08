@@ -33,6 +33,7 @@
       * [Key security](#key-security)
         * [Notes](#notes-3)
       * [Big data](#big-data)
+        * [Data segment](#data-segment)
     * [Summary](#summary)
   * [Format of transaction log files](#format-of-transaction-log-files)
     * [Old format](#old-format)
@@ -204,7 +205,7 @@ Index root (ri)|List of subkeys lists (used to subdivide subkeys lists)
 Key node (nk)|Registry key node
 Key value (vk)|Registry key value
 Key security (sk)|Security descriptor item
-Big data (db)|List of data fragments
+Big data (db)|List of data segments
 
 Also, *Cell data* may contain a raw data (e.g. *Key value* data) and any lists defined below. A padding may be present at the end of a cell.
 
@@ -237,7 +238,9 @@ A list element has the following structure:
 Offset|Length|Field|Description
 ---|---|---|---
 0|4|Key node offset|In bytes, relative from the start of the hive bins data
-4|4|Name hint|First 4 characters of a key name string (used to speed up lookups)
+4|4|Name hint|The first 4 ASCII characters of a key name string (used to speed up lookups)
+
+If a key name string is less than 4 characters in length, it is stored in the beginning of the *Name hint* field, unused bytes of this field are set to null. UTF-16LE characters are converted to ASCII, if possible (if it isn't, the first byte of the *Name hint* field is null).
 
 #### Hash leaf
 The *Hash leaf* has the following structure:
@@ -280,6 +283,8 @@ Offset|Length|Field|Description
 ##### Notes
 1. An *Index root* can't point to another *Index root*.
 2. A *Subkeys list* can't point to an *Index root*.
+3. All list elements pointing to key nodes are required to be sorted ascending by a key name string (case insensitive, comparison should be based on character codes).
+4. When list elements belong to different subkeys lists, which are referenced by a single *Index root*, these list elements must be sorted as a whole (i.e. the first list element of the second subkeys list must be greater than the last element of the first subkeys list).
 
 #### Key node
 The *Key node* has the following structure:
@@ -322,7 +327,7 @@ Offset (bits)|Length (bits)|Field|Description
 When implementing the structure defined above in a program, keep in mind that a compiler may pack the *Virtualization control flags* and *User flags* bit fields in a different way. In C, two or more bit fields inside an integer may be packed right-to-left, so the first bit field defined in an integer may reside in the less significant (right) bits. In debug symbols for Windows, the *UserFlags* field is defined before the *VirtControlFlags* field exactly for this reason (however, these fields are written to a file in the order indicated in the table above).
 
 ##### Flags
-In Windows XP and Windows Server 2003, the first 4 bits are reserved for user flags (set via the *NtSetInformationKey()* call). Other bits have the following meaning:
+In Windows XP and Windows Server 2003, the first 4 bits are reserved for user flags (set via the *NtSetInformationKey()* call, read via the *NtQueryKey()* call). Other bits have the following meaning:
 
 Mask|Name|Description
 ---|---|---
@@ -387,6 +392,8 @@ Offset|Length|Field|Value|Description
 ##### Data size
 When the most significant bit is 1, a data (4 bytes or less) is stored in the *Data offset* field directly (when a data contains less than 4 bytes, it is being stored as is in the beginning of the *Data offset* field). The most significant bit (when set to 1) should be ignored when calculating the data size.
 
+When the most significant bit is 0, a data is stored in the *Cell data* field of another cell (pointed by the *Data offset* field) or in the *Cell data* fields of multiple cells (referenced in the *Big data* structure stored in a cell pointed by the *Data offset* field).
+
 ##### Data types
 
 Value|Name(s)
@@ -430,7 +437,7 @@ Offset|Length|Field|Value|Description
 5. When a key security item acts as a list entry, flink and blink point to the next and the previous entries of this list respectively. If there is no next entry in a list, flink points to a list header. If there is no previous entry in a list, blink points to a list header.
 
 #### Big data
-The *Big data record* has the following structure:
+The *Big data* record is used to reference a data larger than 16344 bytes (when the *Minor version* field of the base block is greater than 3), it has the following structure:
 
 Offset|Length|Field|Value|Description
 ---|---|---|---|---
@@ -449,6 +456,9 @@ A list element has the following structure:
 Offset|Length|Field|Description
 ---|---|---|---
 0|4|Data segment offset|In bytes, relative from the start of the hive bins data
+
+##### Data segment
+A data segment is stored in the *Cell data* field of a cell pointed by the *Data segment offset* field. Note that a single data segment has the maximum size of 16344 bytes (and a cell containing a data segment has an aligned size).
 
 ### Summary
 1. A *Base block* points to a root cell, which contains a *Key node*.
