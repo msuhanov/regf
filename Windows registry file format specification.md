@@ -224,7 +224,7 @@ Offset|Length|Field|Description
 ---|---|---|---
 0|4|Key node offset|In bytes, relative from the start of the hive bins data
 
-All list elements are required to be sorted ascending by a key name string (case insensitive, comparison should be based on character codes).
+All list elements are required to be sorted ascending by an uppercase version of a key name string (comparison should be based on character codes).
 
 #### Fast leaf
 The *Fast leaf* has the following structure:
@@ -463,7 +463,9 @@ Offset|Length|Field|Description
 0|4|Data segment offset|In bytes, relative from the start of the hive bins data
 
 ##### Data segment
-A data segment is stored in the *Cell data* field of a cell pointed by the *Data segment offset* field. Note that a single data segment has the maximum size of 16344 bytes (and a cell containing a data segment has an aligned size).
+A data segment is stored in the *Cell data* field of a cell pointed by the *Data segment offset* field. A data segment has the maximum size of 16344 bytes.
+
+Data segments of a *Big data* record, except the last one, have the maximum size.
 
 ### Summary
 1. A *Base block* points to a root cell, which contains a *Key node*.
