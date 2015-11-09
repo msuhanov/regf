@@ -289,7 +289,7 @@ Offset|Length|Field|Description
 ##### Notes
 1. An *Index root* can't point to another *Index root*.
 2. A *Subkeys list* can't point to an *Index root*.
-3. List elements within subkeys lists referenced by a single *Index root* must be sorted as a whole (i.e. the first list element of the second subkeys list must be greater than the last element of the first subkeys list).
+3. List elements within subkeys lists referenced by a single *Index root* must be sorted as a whole (i.e. the first list element of the second subkeys list must be greater than the last list element of the first subkeys list).
 
 #### Key node
 The *Key node* has the following structure:
