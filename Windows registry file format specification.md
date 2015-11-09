@@ -25,6 +25,7 @@
       * [Key node](#key-node)
         * [Flags](#flags)
         * [Virtualization control flags](#virtualization-control-flags)
+        * [Debug](#debug)
       * [Key values list](#key-values-list)
       * [Key value](#key-value)
         * [Data size](#data-size)
@@ -325,7 +326,7 @@ Offset (bits)|Length (bits)|Field|Description
 0|16|Largest subkey name length|
 16|4|Virtualization control flags|Bit mask, see below
 20|4|User flags (Wow64 flags)|Bit mask
-24|8|Debug|The meaning of this field is unknown
+24|8|Debug|See below
 
 **Warning**
 
@@ -366,6 +367,9 @@ Mask|Name|Description
 0x2|REG_KEY_DONT_VIRTUALIZE|Disable registry write virtualization
 0x4|REG_KEY_DONT_SILENT_FAIL|Disable registry open virtualization
 0x8|REG_KEY_RECURSE_FLAG|Propagate virtualization flags to new child keys
+
+##### Debug
+When the *Debug* field and the *CmpRegDebugBreakEnabled* kernel variable are set to 1, a checked Windows kernel will execute the *int 3* instruction on a key access. A retail Windows kernel has this feature disabled.
 
 #### Key values list
 The *Key values list* has the following structure:
