@@ -452,7 +452,7 @@ Offset|Length|Field|Value|Description
 ---|---|---|---|---
 0|2|Signature|db|ASCII string
 2|2|Number of segments||
-4|4|Offset to a list of segments||In bytes, relative from the start of the hive bins data
+4|4|Offset of a list of segments||In bytes, relative from the start of the hive bins data
 
 The list of segments has the following structure:
 
@@ -473,7 +473,7 @@ Data segments of a *Big data* record, except the last one, have the maximum size
 
 ### Summary
 1. A *Base block* points to a root cell, which contains a *Key node*.
-2. A *Key node* points to a parent *Key node*, to a *Subkeys list* (a subkey is a *Key node* too), to a *Key values list*, to a *Key security item*.
+2. A *Key node* points to a parent *Key node*, to a *Subkeys list* (a subkey is a *Key node* too), to a *Key values list*, to a *Key security* item.
 3. A *Subkeys list* can be subdivided with the help of the *Index root* structure.
 4. A *Key value* points to a data. A data may be stored in the *Data offset* field of a *Key value* structure, in a separate cell, or in a bunch of cells. In the latter case, a *Key value* points to the *Big data* structure in a cell.
 
