@@ -156,7 +156,7 @@ The *Flags* field is used to record the state of the Kernel Transaction Manager 
 Mask|Description
 ---|---
 0x00000000|KTM released the hive
-0x00000001|KTM locked the hive
+0x00000001|KTM locked the hive (there are unfinished transactions)
 
 #### Notes
 1. *File offset of a root cell = 4096 + Root cell offset*. This formula also applies to any other offset relative to the start of the hive bins data.
