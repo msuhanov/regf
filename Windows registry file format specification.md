@@ -369,7 +369,7 @@ Mask|Name|Description
 0x8|REG_KEY_RECURSE_FLAG|Propagate virtualization flags to new child keys
 
 ##### Debug
-When the *Debug* field and the *CmpRegDebugBreakEnabled* kernel variable are set to 1, a checked Windows kernel will execute the *int 3* instruction on a key access. A retail Windows kernel has this feature disabled.
+When the *Debug* field of a key node and the *CmpRegDebugBreakEnabled* kernel variable are set to 1, a checked Windows kernel will execute the *int 3* instruction on an access to the key. A retail Windows kernel has this feature disabled.
 
 #### Key values list
 The *Key values list* has the following structure:
