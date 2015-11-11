@@ -156,7 +156,7 @@ The *Flags* field is used to record the state of the Kernel Transaction Manager 
 Mask|Description
 ---|---
 0x00000000|KTM released the hive
-0x00000001|KTM locked the hive (there are unfinished transactions)
+0x00000001|KTM locked the hive (there are pending transactions)
 
 #### Notes
 1. *File offset of a root cell = 4096 + Root cell offset*. This formula also applies to any other offset relative to the start of the hive bins data.
@@ -171,7 +171,7 @@ Mask|Description
 6. The *ThawTmId*, *ThawRmId*, and *ThawLogId* fields are used to restore the state of the *TmId*, *RmId*, and *LogId* fields respectively when thawing a hive (after it was frozen in order to create a shadow copy).
 
 ### Hive bin
-The hive bin is variable in size and consists of a header and cells. A header is 32 bytes in length, it contains the following structure:
+The *hive bin* is variable in size and consists of a header and cells. A hive bin's header is 32 bytes in length, it contains the following structure:
 
 Offset|Length|Field|Value|Description
 ---|---|---|---|---
@@ -188,7 +188,7 @@ Offset|Length|Field|Value|Description
 3. A *Timestamp* in the header of the first hive bin acts as a backup copy of a *Last written timestamp* in the base block.
 
 ### Cell
-Cells fill the remaining space of a hive bin, they contain various types of records and other data. Each cell is variable in size and has the following structure:
+*Cells* fill the remaining space of a hive bin, each cell is variable in size and has the following structure:
 
 Offset|Length|Field|Description
 ---|---|---|---
@@ -446,7 +446,7 @@ Offset|Length|Field|Value|Description
 5. When a key security item acts as a list entry, flink and blink point to the next and the previous entries of this list respectively. If there is no next entry in a list, flink points to a list header. If there is no previous entry in a list, blink points to a list header.
 
 #### Big data
-The *Big data* record is used to reference a data larger than 16344 bytes (when the *Minor version* field of the base block is greater than 3), it has the following structure:
+The *Big data* is used to reference a data larger than 16344 bytes (when the *Minor version* field of the base block is greater than 3), it has the following structure:
 
 Offset|Length|Field|Value|Description
 ---|---|---|---|---
@@ -467,7 +467,7 @@ Offset|Length|Field|Description
 0|4|Data segment offset|In bytes, relative from the start of the hive bins data
 
 ##### Data segment
-A data segment is stored in the *Cell data* field of a cell pointed by the *Data segment offset* field. A data segment has the maximum size of 16344 bytes.
+A *data segment* is stored in the *Cell data* field of a cell pointed by the *Data segment offset* field. A data segment has the maximum size of 16344 bytes.
 
 Data segments of a *Big data* record, except the last one, have the maximum size.
 
