@@ -442,8 +442,8 @@ Offset|Length|Field|Value|Description
 ##### Notes
 1. Flink and blink are offsets in bytes, relative from the start of the hive bins data.
 2. Key security items form a doubly linked list. A key security item may act as a list header or a list entry (the only difference here is the meaning of flink and blink fields).
-4. When a key security item acts as a list header, flink and blink point to the first and the last entries of this list respectively. If a list is empty, flink and blink point to a list header (i.e. to a current cell).
-5. When a key security item acts as a list entry, flink and blink point to the next and the previous entries of this list respectively. If there is no next entry in a list, flink points to a list header. If there is no previous entry in a list, blink points to a list header.
+3. When a key security item acts as a list header, flink and blink point to the first and the last entries of this list respectively. If a list is empty, flink and blink point to a list header (i.e. to a current cell).
+4. When a key security item acts as a list entry, flink and blink point to the next and the previous entries of this list respectively. If there is no next entry in a list, flink points to a list header. If there is no previous entry in a list, blink points to a list header.
 
 #### Big data
 The *Big data* is used to reference a data larger than 16344 bytes (when the *Minor version* field of the base block is greater than 3), it has the following structure:
