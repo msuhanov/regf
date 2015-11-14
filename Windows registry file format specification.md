@@ -184,7 +184,7 @@ Offset|Length|Field|Value|Description
 
 #### Notes
 1. A hive bin's size is multiple of 4096 bytes.
-2. The *Spare* field is used when shifting hive bins and cells in-memory.
+2. The *Spare* field is used when shifting hive bins and cells in memory.
 3. A *Timestamp* in the header of the first hive bin acts as a backup copy of a *Last written timestamp* in the base block.
 
 ### Cell
@@ -524,7 +524,7 @@ Bitmap length (*in bits*) is calculated using the following formula: *Bitmap len
 
 ##### Notes
 1. The state of a base block isn't recorded in a dirty vector.
-2. A dirty vector is stored in-memory as a *RTL_BITMAP* structure. However, only the *Buffer* field of this structure is written to a transaction log file.
+2. A dirty vector is stored in memory as a *RTL_BITMAP* structure. However, only the *Buffer* field of this structure is written to a transaction log file.
 3. Windows tracks changes to a hive bins data in 4096-byte blocks. This means that a dirty vector's bitmap is *expected* to contain only the following *bytes*: 0x00 and 0xFF.
 4. A padding is likely to be present after the end of a bitmap (up to a sector boundary).
 
