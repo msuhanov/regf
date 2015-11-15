@@ -159,7 +159,7 @@ Mask|Description
 0x00000001|KTM locked the hive (there are pending transactions)
 
 #### Notes
-1. *File offset of a root cell = 4096 + Root cell offset*. This formula also applies to any other offset relative to the start of the hive bins data.
+1. *File offset of a root cell = 4096 + Root cell offset*. This formula also applies to any other offset relative from the start of the hive bins data.
 2. The XOR-32 checksum is calculated using the following algorithm:
    * let C be a 32-bit value, initial value is zero;
    * let D be a data containing 508 bytes;
@@ -471,7 +471,7 @@ Offset|Length|Field|Description
 ##### Data segment
 A *data segment* is stored in the *Cell data* field of a cell pointed by the *Data segment offset* field. A data segment has the maximum size of 16344 bytes.
 
-Data segments of a *Big data* record, except the last one, have the maximum size.
+Data segments of a *Big data* record, except the last one, always have the maximum size.
 
 ### Summary
 1. A *Base block* points to a root cell, which contains a *Key node*.
