@@ -159,7 +159,7 @@ Mask|Description
 0x00000001|KTM locked the hive (there are pending transactions)
 
 #### Notes
-1. *File offset of a root cell = 4096 + Root cell offset*. This formula also applies to any other offset relative from the start of the hive bins data.
+1. *File offset of a root cell = 4096 + Root cell offset*. This formula also applies to any other offset relative from the start of the hive bins data (however, if such a relative offset is equal to -1, it doesn't point anywhere).
 2. The XOR-32 checksum is calculated using the following algorithm:
    * let C be a 32-bit value, initial value is zero;
    * let D be a data containing 508 bytes;
@@ -386,6 +386,8 @@ Offset|Length|Field|Description
 ---|---|---|---
 0|4|Key value offset|In bytes, relative from the start of the hive bins data
 
+List elements are not required to be sorted.
+
 #### Key value
 The *Key value* has the following structure:
 
@@ -584,7 +586,7 @@ Offset|Length|Field|Description
 7. If a log entry with a sequence number *N* is *not* followed by a log entry with a sequence number *N + 1*, recovery stops after applying a log entry with a sequence number *N*. If the first log entry doesn't contain an expected sequence number (equal to a secondary sequence number of the base block in a primary file), recovery stops.
 8. If a log entry has a wrong value in the field *Hash-1*, *Hash-2*, or *Hive bins data size* (i.e. it is not multiple of 4096 bytes), recovery stops, only previous log entries (preceding a bogus one) are applied.
 9. A primary file is grown according to the *Hive bins data size* field of a log entry being applied.
-10. Dirty hive bins are verified for correctness during recovery (but recovery doesn't stop on a bad hive bin, a bad hive bin is healed instead).
+10. Dirty hive bins are verified for correctness during recovery (but recovery doesn't stop on an invalid hive bin, an invalid hive bin is healed instead).
 11. The *Flags* field of a log entry is set to a value of the *Flags* field of the base block. During recovery, the *Flags* field of the base block is set to a value taken from a log entry being applied.
 
 ## Dirty state of a hive
