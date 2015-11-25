@@ -118,7 +118,7 @@ Offset|Length|Field|Value(s)|Description
 ---|---|---|---|---
 0|4|Signature|regf|ASCII string
 4|4|Primary sequence number||This number is incremented by 1 in the beginning of a write operation on the hive
-8|4|Secondary sequence number||This number is incremented by 1 at the end of a write operation on the hive, primary sequence number and secondary sequence number should be equal after a successful write operation
+8|4|Secondary sequence number||This number is incremented by 1 at the end of a write operation on the hive, a primary sequence number and a secondary sequence number should be equal after a successful write operation
 12|8|Last written timestamp||FILETIME (UTC)
 20|4|Major version|1|Major version of a hive writer
 24|4|Minor version|3, 4, or 5|Minor version of a hive writer
@@ -493,10 +493,10 @@ A partial backup copy of a base block is stored in the first sector of a transac
 
 A backup copy of a base block isn't an exact copy anyway, the following modifications are performed on it by a hive writer:
 
-1. *File type* field is set to 1 (1 means *transaction log*).
-2. *Primary sequence number* is incremented by 1 before writing a log of dirty data.
-3. *Secondary sequence number* is incremented by 1 after a log of dirty data was written.
-4. *Checksum* is recalculated with the modified data.
+1. The *File type* field is set to 1 (1 means *transaction log*).
+2. A *primary sequence number* is incremented by 1 before writing a log of dirty data.
+3. A *secondary sequence number* is incremented by 1 after a log of dirty data was written.
+4. The *Checksum* field is recalculated with the modified data.
 
 ##### Notes
 1. A partial backup copy of a base block is made using a data from memory, not from a primary file.
@@ -559,7 +559,7 @@ Offset|Length|Field|Value|Description
 0|4|Signature|HvLE|ASCII string
 4|4|Size||Size of a current log entry in bytes
 8|4|Flags||Copy of the *Flags* field of the base block at the time of creation of a current log entry (see below)
-12|4|Sequence number||This number will be written both to the primary sequence number and to the secondary sequence number of the base block when applying a current log entry
+12|4|Sequence number||This number will be written both to the *Primary sequence number* field and to the *Secondary sequence number* field of the base block when applying a current log entry
 16|4|Hive bins data size||Copy of the *Hive bins data size* field of the base block at the time of creation of a current log entry
 20|4|Dirty pages count||Number of dirty pages attached to a log entry
 24|8|Hash-1||See below
