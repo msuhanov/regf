@@ -173,7 +173,7 @@ Mask|Description
 8. The *ThawTmId*, *ThawRmId*, and *ThawLogId* fields are used to restore the state of the *TmId*, *RmId*, and *LogId* fields respectively when thawing a hive (after it was frozen in order to create a shadow copy).
 
 ### Hive bin
-The *hive bin* is variable in size and consists of a header and cells. A hive bin's header is 32 bytes in length, it contains the following structure:
+The *Hive bin* is variable in size and consists of a header and cells. A hive bin's header is 32 bytes in length, it contains the following structure:
 
 Offset|Length|Field|Value|Description
 ---|---|---|---|---
@@ -185,7 +185,7 @@ Offset|Length|Field|Value|Description
 28|4|Spare||This field has no meaning on a disk
 
 #### Notes
-1. A hive bin's size is multiple of 4096 bytes.
+1. A hive bin size is multiple of 4096 bytes.
 2. The *Spare* field is used when shifting hive bins and cells in memory.
 3. A *Timestamp* in the header of the first hive bin acts as a backup copy of a *Last written timestamp* in the base block.
 
