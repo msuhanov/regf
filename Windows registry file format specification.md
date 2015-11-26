@@ -571,7 +571,7 @@ A dirty page reference describes a single page to be written to a primary file, 
 
 Offset|Length|Field|Description
 ---|---|---|---
-0|4|Offset|Offset of a page in a primary file, relative from the start of the hive bins data
+0|4|Offset|Offset of a page in a primary file (in bytes), relative from the start of the hive bins data
 4|4|Size|Size of a page in bytes
 
 *Dirty pages* are attached to a log entry in the same order as in the *Dirty pages references* without an alignment or gaps.
