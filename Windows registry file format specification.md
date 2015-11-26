@@ -533,13 +533,13 @@ Bitmap length (*in bits*) is calculated using the following formula: *Bitmap len
 4. A padding is likely to be present after the end of a bitmap (up to a sector boundary).
 
 #### Dirty pages
-*Dirty pages* are stored starting from the beginning of the sector following the last sector of a dirty vector. Each dirty page is stored at an offset divisible by 512 bytes and has a length of 512 bytes.
+*Dirty pages* are stored starting from the beginning of the sector following the last sector of a dirty vector. Each dirty page is stored at an offset divisible by 512 bytes and has a length of 512 bytes, there are no gaps between dirty pages.
 
 The first dirty page corresponds to the first bit set to 1 in the bitmap of a dirty vector, the second dirty page corresponds to the second bit set to 1 in the bitmap of a dirty vector, etc. During recovery, contiguous dirty pages belonging to the same hive bin in a primary file are processed together, and a dirty hive bin is verified for correctness (its *Signature* must be correct, its *Size* must not be less than 4096 bytes, its *Offset* must match the *Offset* of a corresponding hive bin in a primary file); recovery stops if a dirty hive bin is invalid, an invalid dirty hive bin is ignored.
 
 ##### Notes
 1. The number of dirty pages is equal to the number of bits set to 1 in the bitmap of a dirty vector. Remnant dirty pages may be present after the end of the last dirty page.
-2. A dirty page will be written to a primary file at the following offset: *File offset = 4096 + 512 * Bit position*, where *Bit position* is the index of a corresponding bit in the bitmap of a dirty vector.
+2. A dirty page will be written to a primary file at the following offset: *File offset = 4096 + 512 * Bit position*, where *Bit position* is the index (zero-based) of a corresponding bit in the bitmap of a dirty vector.
 
 ### New format
 A transaction log file (new format) consists of a base block and log entries. This format was introduced in Windows 8.1 and Windows Server 2012 R2.
