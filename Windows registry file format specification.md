@@ -207,7 +207,7 @@ Hash leaf (lh)|Subkeys list with name hashes
 Index root (ri)|List of subkeys lists (used to subdivide subkeys lists)
 Key node (nk)|Registry key node
 Key value (vk)|Registry key value
-Key security (sk)|Security descriptor item
+Key security (sk)|Security descriptor
 Big data (db)|List of data segments
 
 Also, *Cell data* may contain a raw data (e.g. *Key value* data) and any lists defined below. A padding may be present at the end of a cell.
