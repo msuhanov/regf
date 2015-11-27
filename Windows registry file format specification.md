@@ -104,7 +104,7 @@ Registry hives consist of primary files, transaction log files, and backup copie
 ## Transactional registry (TxR)
 Transactional registry, introduced in Windows Vista, is a feature that allows a program to accumulate multiple modifications of a registry hive within a transaction, which can be committed or rolled back as a single unit (like a database transaction). Such a transaction is written to storage files of the Common Log File System (CLFS).
 
-Transactional registry and CLFS are out of the scope of this document.
+Transactional registry and storage files of the CLFS are out of the scope of this document.
 
 ## Format of primary files
 A primary file consists of a base block, also known as a file header, and a hive bins data. A hive bins data consists of hive bins. Each hive bin includes a header and cells, a cell is the actual storage of high-level registry entities (like keys, values, etc.). Primary files may contain padding of an arbitrary size after the end of the last hive bin.
@@ -426,9 +426,9 @@ Value|Name(s)
 
 ##### Flags
 
-Mask|Description
----|---
-0x0001|Name is an ASCII string (otherwise it is a UTF-16LE string)
+Mask|Name|Description
+---|---|---
+0x0001|VALUE_COMP_NAME|Name is an ASCII string (otherwise it is a UTF-16LE string)
 
 #### Key security
 The *Key security* item has the following structure:
