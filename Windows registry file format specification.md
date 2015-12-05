@@ -493,7 +493,7 @@ A partial backup copy of a base block is stored in the first sector of a transac
 
 A backup copy of a base block isn't an exact copy anyway, the following modifications are performed on it by a hive writer:
 
-1. The *File type* field is set to 1 (1 means *transaction log*).
+1. As of Windows XP, the *File type* field is set to 1 (1 means *transaction log*). In Windows 2000, the *File type* field is set to 2 (while 1 is reserved for in-memory hive recovery management using an alternate file).
 2. A *primary sequence number* is incremented by 1 before writing a log of dirty data.
 3. A *secondary sequence number* is incremented by 1 after a log of dirty data was written.
 4. The *Checksum* field is recalculated with the modified data.
