@@ -590,7 +590,7 @@ Offset|Length|Field|Description
 11. The *Flags* field of a log entry is set to a value of the *Flags* field of the base block. During recovery, the *Flags* field of the base block is set to a value taken from a log entry being applied.
 
 ## Dirty state of a hive
-A hive is considered to be dirty when a base block in a primary file contains a wrong checksum, or its primary sequence number doesn't match its secondary sequence number. If a hive isn't dirty, but a transaction log file (new format) contains subsequent log entries, they are ignored.
+A hive is considered to be dirty (requiring recovery) when a base block in a primary file contains a wrong checksum, or its primary sequence number doesn't match its secondary sequence number. If a hive isn't dirty, but a transaction log file (new format) contains subsequent log entries, they are ignored.
 
 ## Multiple transaction log files
 A primary file may have either one transaction log file (\*.LOG) or two transaction log files (\*.LOG1 and \*.LOG2). In the latter case, a dummy third file (\*.LOG) may be present for backward compatibility.
