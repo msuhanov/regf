@@ -378,7 +378,7 @@ Mask|Name|Description
 ---|---|---
 0x2|REG_KEY_DONT_VIRTUALIZE|Disable registry write virtualization
 0x4|REG_KEY_DONT_SILENT_FAIL|Disable registry open virtualization
-0x8|REG_KEY_RECURSE_FLAG|Propagate virtualization flags to new child keys
+0x8|REG_KEY_RECURSE_FLAG|Propagate virtualization flags to new child keys (subkeys)
 
 ##### Debug
 When the *Debug* field of a key node and the *CmpRegDebugBreakEnabled* kernel variable are set to 1, a checked Windows kernel will execute the *int 3* instruction on an access to the registry key. A retail Windows kernel has this feature disabled.
