@@ -376,8 +376,8 @@ The *Virtualization control flags* field is set according to the following bit m
 
 Mask|Name|Description
 ---|---|---
-0x2|REG_KEY_DONT_VIRTUALIZE|Disable registry write virtualization
-0x4|REG_KEY_DONT_SILENT_FAIL|Disable registry open virtualization
+0x2|REG_KEY_DONT_VIRTUALIZE|Disable registry write virtualization for this key
+0x4|REG_KEY_DONT_SILENT_FAIL|Disable registry open virtualization for this key
 0x8|REG_KEY_RECURSE_FLAG|Propagate virtualization flags to new child keys (subkeys)
 
 ##### Debug
