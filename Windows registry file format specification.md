@@ -328,7 +328,7 @@ Offset (bits)|Length (bits)|Field|Description
 ---|---|---|---
 0|16|Largest subkey name length|
 16|4|Virtualization control flags|Bit mask, see below
-20|4|User flags (Wow64 flags)|Bit mask
+20|4|User flags (Wow64 flags)|Bit mask, see below
 24|8|Debug|See below
 
 **Warning**
