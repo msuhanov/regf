@@ -272,7 +272,7 @@ All list elements are required to be sorted (as described above).
 The hash is calculated using the following algorithm:
    * let H be a 32-bit value, initial value is zero;
    * let N be an *uppercase* name of a key;
-   * split N into characters, and for each character (two bytes in the case of UTF-16LE), treated as a number (character code), C[i], do the following: H = 37 * H + C[i];
+   * split N into characters, and for each character (exactly two bytes in the case of UTF-16LE, also known as a *wide character*), treated as a number (character code), C[i], do the following: H = 37 * H + C[i];
    * H is the hash value.
 
 #### Index root
