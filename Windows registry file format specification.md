@@ -23,6 +23,7 @@
       * [Index root](#index-root)
         * [Notes](#notes-2)
       * [Key node](#key-node)
+        * [WorkVar](#workvar)
         * [Flags](#flags)
         * [User flags](#user-flags)
         * [Virtualization control flags](#virtualization-control-flags)
@@ -317,7 +318,7 @@ Offset|Length|Field|Value|Description
 56|4|Largest subkey class name length||In bytes
 60|4|Largest value name length||In bytes, a value name is treated as a UTF-16LE string
 64|4|Largest value data size||In bytes
-68|4|WorkVar||The meaning of this field is unknown
+68|4|WorkVar||Cached index (see below)
 72|2|Key name length||In bytes
 74|2|Class name length||In bytes
 76|...|Key name string||ASCII string or UTF-16LE string
@@ -334,6 +335,11 @@ Offset (bits)|Length (bits)|Field|Description
 **Warning**
 
 When implementing the structure defined above in a program, keep in mind that a compiler may pack the *Virtualization control flags* and *User flags* bit fields in a different way. In C, two or more bit fields inside an integer may be packed right-to-left, so the first bit field defined in an integer may reside in the less significant (right) bits. In debug symbols for Windows, the *UserFlags* field is defined before the *VirtControlFlags* field exactly for this reason (however, these fields are written to a file in the order indicated in the table above).
+
+##### WorkVar
+In Windows 2000, the *WorkVar* field may contain a zero-based index of a subkey in a subkeys list found at the last successful lookup (used to speed up lookups when the same subkey is accessed many times consecutively: a list element with the cached index is always tried first); such a cached index may point to a list element either in a subkeys list or in a volatile subkeys list, the latter is examined last.
+
+This field is not used as of Windows XP.
 
 ##### Flags
 In Windows XP and Windows Server 2003, the first 4 bits are reserved for user flags (set via the *NtSetInformationKey()* call, read via the *NtQueryKey()* call). Other bits have the following meaning:
@@ -356,7 +362,7 @@ Mask|Name|Description
 0x0100|VirtualTarget|Is virtual
 0x0200|VirtualStore|Is a part of a virtual store path
 
-It is plausible that a registry key virtualization (when registry writes to sensitive locations are redirected to per-user locations in order to protect a Windows registry against corruption) required more space than 4 bits in the beginning of this field can provide, that is why the *Largest subkey name length* field was split and the new fields were introduced.
+It is plausible that both a registry key virtualization (when registry writes to sensitive locations are redirected to per-user locations in order to protect a Windows registry against corruption) and a registry key reflection (when registry changes are synchronized between keys in 32-bit and 64-bit views; this feature was removed in Windows 7) required more space than 4 bits in the beginning of this field can provide, that is why the *Largest subkey name length* field was split and the new fields were introduced.
 
 Starting from Windows Vista, user flags were moved away from the first 4 bits of the *Flags* field to the new *User flags* bit field (see above). These user flags in the new location are also called *Wow64 flags*. In Windows XP and Windows Server 2003, user flags are stored in the old location anyway.
 
@@ -367,9 +373,11 @@ The *User flags* field (in the appropriate location for a version of Windows bei
 
 Mask|Description
 ---|---
-0x1|Is a 32-bit key
+0x1|Is a 32-bit key: this key was created through the Wow64 subsystem or this key shall not be used by a 64-bit program (e.g. by a 64-bit driver during the boot)
 0x2|The meaning of this bit is unknown
 0x4|Disable registry reflection for this key
+
+Starting from Windows 7, the bit mask 0x1 doesn't seem to be used to mark 32-bit keys.
 
 ##### Virtualization control flags
 The *Virtualization control flags* field is set according to the following bit masks:
