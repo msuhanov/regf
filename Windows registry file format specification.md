@@ -377,7 +377,7 @@ Mask|Description
 0x2|The meaning of this bit is unknown
 0x4|Disable registry reflection for this key
 
-Starting from Windows 7, the bit mask 0x1 doesn't seem to be used to mark 32-bit keys.
+Starting from Windows 7, the bit mask 0x1 doesn't seem to be used to mark 32-bit keys created by userspace programs.
 
 ##### Virtualization control flags
 The *Virtualization control flags* field is set according to the following bit masks:
