@@ -215,6 +215,8 @@ Big data (db)|List of data segments
 
 Also, *Cell data* may contain a raw data (e.g. *Key value* data) and any lists defined below. A padding may be present at the end of a cell.
 
+When a record contains an offset field pointing to another record, the offset points to a cell containing the latter record. As already mentioned above, an offset relative from the start of the hive bins data doesn't point anywhere when it is equal to -1.
+
 #### Index leaf
 The *Index leaf* has the following structure:
 
