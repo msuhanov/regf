@@ -305,7 +305,7 @@ Offset|Length|Field|Value|Description
 0|2|Signature|nk|ASCII string
 2|2|Flags||Bit mask, see below
 4|8|Last written timestamp||FILETIME (UTC)
-12|4|Access bits||Bit mask, see below (this field is used as of Windows 8 and Windows Server 2012)
+12|4|Access bits||Bit mask, see below (this field is used as of Windows 8 and Windows Server 2012; in previous versions of Windows, this field is reserved and called *Spare*)
 16|4|Parent||Offset of a parent key node in bytes, relative from the start of the hive bins data (this field has no meaning on a disk for a root key node)
 20|4|Number of subkeys||
 24|4|Number of volatile subkeys||
