@@ -23,6 +23,7 @@
       * [Index root](#index-root)
         * [Notes](#notes-2)
       * [Key node](#key-node)
+        * [Access bits](#access-bits)
         * [WorkVar](#workvar)
         * [Flags](#flags)
         * [User flags](#user-flags)
@@ -168,7 +169,7 @@ Mask|Description
    * split D into non-overlapping groups of 32 bits, and for each group, G[i], do the following: C = C xor G[i];
    * C is the checksum.
 3. The *Boot type* and *Boot recover* fields are used for in-memory hive recovery management by a boot loader and a kernel, they are not written to a disk in most cases (when *Clustering factor* is 8, these fields may be written to a disk, but they have no meaning there).
-4. New fields, except the *Last reorganized timestamp*, were introduced in Windows Vista as a part of the CLFS. The *Last reorganized timestamp* was introduced in Windows 8 and Windows Server 2012.
+4. New fields, except the *Last reorganized timestamp*, were introduced in Windows Vista as a part of the CLFS. The *Last reorganized timestamp* field was introduced in Windows 8 and Windows Server 2012.
 5. The *Last reorganized timestamp* field contains a timestamp of the latest hive defragmentation (it happens once a week when a hive isn't locked).
 6. The *LogId* field is reserved for future use, it usually contains the same value as the *RmId* field.
 7. When the *RmId* field is null, the *LogId* and *TmId* fields may contain garbage data.
@@ -304,7 +305,7 @@ Offset|Length|Field|Value|Description
 0|2|Signature|nk|ASCII string
 2|2|Flags||Bit mask, see below
 4|8|Last written timestamp||FILETIME (UTC)
-12|4|Spare||Probably not used
+12|4|Access bits||Bit mask, see below (this field is used as of Windows 8 and Windows Server 2012)
 16|4|Parent||Offset of a parent key node in bytes, relative from the start of the hive bins data (this field has no meaning on a disk for a root key node)
 20|4|Number of subkeys||
 24|4|Number of volatile subkeys||
@@ -335,6 +336,16 @@ Offset (bits)|Length (bits)|Field|Description
 **Warning**
 
 When implementing the structure defined above in a program, keep in mind that a compiler may pack the *Virtualization control flags* and *User flags* bit fields in a different way. In C, two or more bit fields inside an integer may be packed right-to-left, so the first bit field defined in an integer may reside in the less significant (right) bits. In debug symbols for Windows, the *UserFlags* field is defined before the *VirtControlFlags* field exactly for this reason (however, these fields are written to a file in the order indicated in the table above).
+
+##### Access bits
+Access bits are used to track when key nodes are being accessed, the field is set according to the following bit masks:
+
+Mask|Description
+---|---
+0x1|This key was accessed before a Windows registry was initialized with the *NtInitializeRegistry()* routine
+0x2|This key was accessed after a Windows registry was initialized with the *NtInitializeRegistry()* routine
+
+When the *Access bits* field is equal to 0, the access history of a key is clear.
 
 ##### WorkVar
 In Windows 2000, the *WorkVar* field may contain a zero-based index of a subkey in a subkeys list found at the last successful lookup (used to speed up lookups when the same subkey is accessed many times consecutively: a list element with the cached index is always tried first); such a cached index may point to a list element either in a subkeys list or in a volatile subkeys list, the latter is examined last.
@@ -457,7 +468,7 @@ Offset|Length|Field|Value|Description
 2|2|Reserved||
 4|4|Flink||See below
 8|4|Blink||See below
-12|4|Reference count||
+12|4|Reference count||The number of key nodes pointing to this item
 16|4|Security descriptor size||In bytes
 20|...|Security descriptor||
 
