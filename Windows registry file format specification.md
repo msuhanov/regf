@@ -581,7 +581,7 @@ A transaction log file (new format) consists of a base block and log entries. Th
 A modified partial backup copy of a base block is stored in the first sector of a transaction log file in the same way as in the old format and for the same purpose. However, the *File type* field is set to 6.
 
 #### Log entries
-*Log entries* are stored starting from the beginning of the second sector. Each log entry is stored at an offset divisible by 512 bytes and has a variable size (aligned to 4096 bytes), there are no gaps between log entries.
+*Log entries* are stored starting from the beginning of the second sector. Each log entry is stored at an offset divisible by 512 bytes and has a variable size (aligned to 512 bytes), there are no gaps between log entries.
 
 A log entry has the following structure:
 
