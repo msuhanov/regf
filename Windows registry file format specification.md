@@ -387,7 +387,7 @@ The *User flags* field (in the appropriate location for a version of Windows bei
 Mask|Description
 ---|---
 0x1|Is a 32-bit key: this key was created through the Wow64 subsystem or this key shall not be used by a 64-bit program (e.g. by a 64-bit driver during the boot)
-0x2|The meaning of this bit is unknown
+0x2|This key was created by the reflection process
 0x4|Disable registry reflection for this key
 
 Starting from Windows 7, the bit mask 0x1 doesn't seem to be used to mark 32-bit keys created by userspace programs.
