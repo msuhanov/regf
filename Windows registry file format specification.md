@@ -193,7 +193,7 @@ Offset|Length|Field|Value|Description
 3. A *Timestamp* in the header of the first hive bin acts as a backup copy of a *Last written timestamp* in the base block.
 
 ### Cell
-*Cells* fill the remaining space of a hive bin, each cell is variable in size and has the following structure:
+*Cells* fill the remaining space of a hive bin (without gaps), each cell is variable in size and has the following structure:
 
 Offset|Length|Field|Description
 ---|---|---|---
@@ -581,7 +581,7 @@ A transaction log file (new format) consists of a base block and log entries. Th
 A modified partial backup copy of a base block is stored in the first sector of a transaction log file in the same way as in the old format and for the same purpose. However, the *File type* field is set to 6.
 
 #### Log entries
-*Log entries* are stored starting from the beginning of the second sector. Each log entry is stored at an offset divisible by 512 bytes and has a variable size.
+*Log entries* are stored starting from the beginning of the second sector. Each log entry is stored at an offset divisible by 512 bytes and has a variable size (aligned to 4096 bytes), there are no gaps between log entries.
 
 A log entry has the following structure:
 
