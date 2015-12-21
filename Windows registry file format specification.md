@@ -193,7 +193,7 @@ Offset|Length|Field|Value|Description
 3. A *Timestamp* in the header of the first hive bin acts as a backup copy of a *Last written timestamp* in the base block.
 
 ### Cell
-*Cells* fill the remaining space of a hive bin (without gaps), each cell is variable in size and has the following structure:
+*Cells* fill the remaining space of a hive bin (without gaps between them), each cell is variable in size and has the following structure:
 
 Offset|Length|Field|Description
 ---|---|---|---
