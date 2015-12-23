@@ -375,7 +375,7 @@ Mask|Name|Description
 0x0100|VirtualTarget|Is virtual
 0x0200|VirtualStore|Is a part of a virtual store path
 
-It is plausible that both a registry key virtualization (when registry writes to sensitive locations are redirected to per-user locations in order to protect a Windows registry against corruption) and a registry key reflection (when registry changes are synchronized between keys in 32-bit and 64-bit views; this feature was removed in Windows 7) required more space than 4 bits in the beginning of this field can provide, that is why the *Largest subkey name length* field was split and the new fields were introduced.
+It is plausible that both a registry key virtualization (when registry writes to sensitive locations are redirected to per-user locations in order to protect a Windows registry against corruption) and a registry key reflection (when registry changes are synchronized between keys in 32-bit and 64-bit views; this feature was removed in Windows 7 and Windows Server 2008 R2) required more space than 4 bits in the beginning of this field can provide, that is why the *Largest subkey name length* field was split and the new fields were introduced.
 
 Starting from Windows Vista, user flags were moved away from the first 4 bits of the *Flags* field to the new *User flags* bit field (see above). These user flags in the new location are also called *Wow64 flags*. In Windows XP and Windows Server 2003, user flags are stored in the old location anyway.
 
@@ -387,10 +387,11 @@ The *User flags* field (in the appropriate location for a version of Windows bei
 Mask|Description
 ---|---
 0x1|Is a 32-bit key: this key was created through the Wow64 subsystem or this key shall not be used by a 64-bit program (e.g. by a 64-bit driver during the boot)
-0x2|This key was created by the reflection process
+0x2|This key was created by the reflection process (when reflecting a key from another view)
 0x4|Disable registry reflection for this key
+0x8|Execute the *int 3* instruction on an access to this key (a checked Windows kernel only), this bit was superseded by the *Debug* field (see below)
 
-Starting from Windows 7, the bit mask 0x1 doesn't seem to be used to mark 32-bit keys created by userspace programs.
+In Windows 7 and more recent versions of Windows, the bit mask 0x1 doesn't seem to be used to mark 32-bit keys created by userspace programs.
 
 ##### Virtualization control flags
 The *Virtualization control flags* field is set according to the following bit masks:
