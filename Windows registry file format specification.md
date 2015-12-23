@@ -389,7 +389,7 @@ Mask|Description
 0x1|Is a 32-bit key: this key was created through the Wow64 subsystem or this key shall not be used by a 64-bit program (e.g. by a 64-bit driver during the boot)
 0x2|This key was created by the reflection process (when reflecting a key from another view)
 0x4|Disable registry reflection for this key
-0x8|Execute the *int 3* instruction on an access to this key (a checked Windows kernel only), this bit was superseded by the *Debug* field (see below)
+0x8|Execute the *int 3* instruction on an access to this key (both retail and checked Windows kernels), this bit was superseded by the *Debug* field (see below)
 
 In Windows 7 and more recent versions of Windows, the bit mask 0x1 doesn't seem to be used to mark 32-bit keys created by userspace programs.
 
