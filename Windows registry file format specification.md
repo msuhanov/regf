@@ -471,7 +471,7 @@ Offset|Length|Field|Value|Description
 2|2|Reserved||
 4|4|Flink||See below
 8|4|Blink||See below
-12|4|Reference count||The number of key nodes pointing to this item
+12|4|Reference count||Number of key nodes pointing to this item
 16|4|Security descriptor size||In bytes
 20|...|Security descriptor||
 
