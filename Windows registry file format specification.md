@@ -431,7 +431,7 @@ Offset|Length|Field|Value|Description
 8|4|Data offset||In bytes, relative from the start of the hive bins data (or a data itself, see below)
 12|4|Data type||See below
 16|2|Flags||Bit mask, see below
-18|2|Spare||Probably not used
+18|2|Spare||Not used
 20|...|Name||ASCII string or UTF-16LE string
 
 ##### Data size
@@ -570,7 +570,7 @@ Bitmap length (*in bits*) is calculated using the following formula: *Bitmap len
 The first dirty page corresponds to the first bit set to 1 in the bitmap of a dirty vector, the second dirty page corresponds to the second bit set to 1 in the bitmap of a dirty vector, etc. During recovery, contiguous dirty pages belonging to the same hive bin in a primary file are processed together, and a dirty hive bin is verified for correctness (its *Signature* must be correct, its *Size* must not be less than 4096 bytes, its *Offset* must match the *Offset* of a corresponding hive bin in a primary file); recovery stops if a dirty hive bin is invalid, an invalid dirty hive bin is ignored.
 
 ##### Notes
-1. The number of dirty pages is equal to the number of bits set to 1 in the bitmap of a dirty vector. Remnant dirty pages may be present after the end of the last dirty page.
+1. The number of dirty pages is equal to the number of bits set to 1 in the bitmap of a dirty vector. Remnants of previous dirty pages may be present after the end of the last dirty page.
 2. A dirty page will be written to a primary file at the following offset: *File offset = 4096 + 512 * Bit position*, where *Bit position* is the index (zero-based) of a corresponding bit in the bitmap of a dirty vector.
 
 ### New format
@@ -593,7 +593,7 @@ Offset|Length|Field|Value|Description
 8|4|Flags||Copy of the *Flags* field of the base block at the time of creation of a current log entry (see below)
 12|4|Sequence number||This number will be written both to the *Primary sequence number* field and to the *Secondary sequence number* field of the base block when applying a current log entry
 16|4|Hive bins data size||Copy of the *Hive bins data size* field of the base block at the time of creation of a current log entry
-20|4|Dirty pages count||Number of dirty pages attached to a log entry
+20|4|Dirty pages count||Number of dirty pages attached to a current log entry
 24|8|Hash-1||See below
 32|8|Hash-2||See below
 40|...|Dirty pages references||
