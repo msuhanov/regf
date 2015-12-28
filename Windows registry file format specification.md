@@ -110,7 +110,7 @@ Transactional registry, introduced in Windows Vista, is a feature that allows a 
 Transactional registry and storage files of the CLFS are out of the scope of this document.
 
 ## Format of primary files
-A primary file consists of a base block, also known as a file header, and a hive bins data. A hive bins data consists of hive bins. Each hive bin includes a header and cells, cells are the actual storage of high-level registry entities (like keys, values, etc.). Primary files may contain padding of an arbitrary size after the end of the last hive bin.
+A primary file consists of a base block, also known as a file header, and a hive bins data. A hive bins data consists of hive bins. Each hive bin includes a header and cells, cells are the actual storage of high-level registry entities (like keys, values, etc.). Primary files may contain a padding of an arbitrary size after the end of the last hive bin.
 
 ![Primary file layout](https://raw.githubusercontent.com/msuhanov/regf/master/images/primary.png "Primary file layout")
 
@@ -546,8 +546,10 @@ Offset|Length|Field|Value|Description
 4|...|Bitmap||Bitmap of dirty pages
 
 Each bit of a bitmap corresponds to the state of a specific *512-byte* page within a hive bins data to be written to a primary file from memory, regardless of a sector size of an underlying disk (these pages don't overlap, there are no gaps between them):
-* the first bit, bit #1, corresponds to the state of the first *512-byte* page within a hive bins data;
-* bit #2 corresponds to the state of the second *512-byte* page within a hive bins data, etc.
+* the first bit, *bit #1*, corresponds to the state of the first *512-byte* page within a hive bins data;
+* *bit #2* corresponds to the state of the second *512-byte* page within a hive bins data, etc.
+
+Bits of a bitmap are checked using the *bt* instruction or its equivalent based on bit shifting. This means that bits are packed into bytes, the first byte of a bitmap contains bits #1-#8, the second byte contains bits #9-#16, and so on. Within a byte, bit numbering starts at the least significant bit.
 
 The meaning of each bit in a bitmap is the following:
 
