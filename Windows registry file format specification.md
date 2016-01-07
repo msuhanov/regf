@@ -250,7 +250,7 @@ Offset|Length|Field|Description
 0|4|Key node offset|In bytes, relative from the start of the hive bins data
 4|4|Name hint|The first 4 ASCII characters of a key name string (used to speed up lookups)
 
-If a key name string is less than 4 characters in length, it is stored in the beginning of the *Name hint* field, unused bytes of this field are set to null. UTF-16LE characters are converted to ASCII, if possible (if it isn't, the first byte of the *Name hint* field is null).
+If a key name string is less than 4 characters in length, it is stored in the beginning of the *Name hint* field (hereinafter, *the beginning of the field* means *the first few bytes at lower addresses in the field*), unused bytes of this field are set to null. UTF-16LE characters are converted to ASCII, if possible (if it isn't, the first byte of the *Name hint* field is null).
 
 All list elements are required to be sorted (as described above).
 
@@ -270,7 +270,7 @@ Offset|Length|Field|Description
 0|4|Key node offset|In bytes, relative from the start of the hive bins data
 4|4|Hash|Hash of a key name string, see below (used to speed up lookups)
 
-All list elements are required to be sorted (as described above).
+All list elements are required to be sorted (as described above). The *Hash leaf* is used when the *Minor version* field of the base block is greater than 4.
 
 ##### Note
 The hash is calculated using the following algorithm:
@@ -326,7 +326,7 @@ Offset|Length|Field|Value|Description
 74|2|Class name length||In bytes
 76|...|Key name string||ASCII string or UTF-16LE string
 
-Starting from Windows Vista, Windows Server 2003 SP2, and Windows XP SP3, the *Largest subkey name length* field has been split into 4 fields:
+Starting from Windows Vista, Windows Server 2003 SP2, and Windows XP SP3, the *Largest subkey name length* field has been split into 4 fields (the offsets below are relative from the beginning of the old *Largest subkey name length* field):
 
 Offset (bits)|Length (bits)|Field|Description
 ---|---|---|---
@@ -355,7 +355,7 @@ In Windows 2000, the *WorkVar* field may contain a zero-based index of a subkey 
 This field is not used as of Windows XP.
 
 ##### Flags
-In Windows XP and Windows Server 2003, the first 4 bits are reserved for user flags (set via the *NtSetInformationKey()* call, read via the *NtQueryKey()* call). Other bits have the following meaning:
+In Windows XP and Windows Server 2003, the first 4 bits, counting from the most significant bit, are reserved for user flags (set via the *NtSetInformationKey()* call, read via the *NtQueryKey()* call). Other bits have the following meaning:
 
 Mask|Name|Description
 ---|---|---
@@ -375,7 +375,7 @@ Mask|Name|Description
 0x0100|VirtualTarget|Is virtual
 0x0200|VirtualStore|Is a part of a virtual store path
 
-It is plausible that both a registry key virtualization (when registry writes to sensitive locations are redirected to per-user locations in order to protect a Windows registry against corruption) and a registry key reflection (when registry changes are synchronized between keys in 32-bit and 64-bit views; this feature was removed in Windows 7 and Windows Server 2008 R2) required more space than 4 bits in the beginning of this field can provide, that is why the *Largest subkey name length* field was split and the new fields were introduced.
+It is plausible that both a registry key virtualization (when registry writes to sensitive locations are redirected to per-user locations in order to protect a Windows registry against corruption) and a registry key reflection (when registry changes are synchronized between keys in 32-bit and 64-bit views; this feature was removed in Windows 7 and Windows Server 2008 R2) required more space than this field can provide, that is why the *Largest subkey name length* field was split and the new fields were introduced.
 
 Starting from Windows Vista, user flags were moved away from the first 4 bits of the *Flags* field to the new *User flags* bit field (see above). These user flags in the new location are also called *Wow64 flags*. In Windows XP and Windows Server 2003, user flags are stored in the old location anyway.
 
@@ -533,7 +533,7 @@ A backup copy of a base block isn't an exact copy anyway, the following modifica
 ##### Notes
 1. A partial backup copy of a base block is made using a data from memory, not from a primary file.
 2. A transaction log file is considered to be valid when it has an expected base block (including the modifications mentioned above), and its primary sequence number is equal to its secondary sequence number.
-3. A transaction log can be applied when a *Last written timestamp* in its base block is equal to a *Last written timestamp* in a base block of a primary file (when a base block of a primary file is invalid, i.e. it has a wrong *Checksum*, a *Timestamp* from the first hive bin is used instead).
+3. A transaction log file can be applied when a *Last written timestamp* in its base block is equal to a *Last written timestamp* in a base block of a primary file (when a base block of a primary file is invalid, i.e. it has a wrong *Checksum*, a *Timestamp* from the first hive bin is used instead).
 4. If a base block of a primary file has a wrong *Checksum*, it is being recovered using a base block from a transaction log file (and the *File type* field is set back to 0).
 5. In Windows XP SP2, the same memory region is used to write a base block both to a transaction log file and to a primary file, that is why, after a successful write operation, a base block of a primary file will contain two sequence numbers equal to *N*, and a base block of a transaction log file will contain two sequence numbers equal to *N - 1* (sequence numbers are incremented by 1 for a transaction log file first, and then they are incremented by 1 again for a primary file). In Windows Vista SP2, a copy of a base block is used when writing to a transaction log file, that is why a transaction log file and a primary file will contain the same sequence numbers in their base blocks after a successful write operation.
 
@@ -645,4 +645,4 @@ A switch to a new transaction log file may be used to split log entries.
 3. http://amnesia.gtisc.gatech.edu/~moyix/suzibandit.ltd.uk/MSc/
 
 -------
-© 2015 Maxim Suhanov
+© 2015-2016 Maxim Suhanov
