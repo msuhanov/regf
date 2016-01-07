@@ -250,7 +250,7 @@ Offset|Length|Field|Description
 0|4|Key node offset|In bytes, relative from the start of the hive bins data
 4|4|Name hint|The first 4 ASCII characters of a key name string (used to speed up lookups)
 
-If a key name string is less than 4 characters in length, it is stored in the beginning of the *Name hint* field (hereinafter, *the beginning of the field* means *the first few bytes at lower addresses in the field*), unused bytes of this field are set to null. UTF-16LE characters are converted to ASCII, if possible (if it isn't, the first byte of the *Name hint* field is null).
+If a key name string is less than 4 characters in length, it is stored in the beginning of the *Name hint* field (hereinafter, *the beginning of the field* means *the first byte at the lowest address or the first few bytes at lower addresses in the field*), unused bytes of this field are set to null. UTF-16LE characters are converted to ASCII, if possible (if it isn't, the first byte of the *Name hint* field is null).
 
 All list elements are required to be sorted (as described above).
 
@@ -525,7 +525,7 @@ A partial backup copy of a base block is stored in the first sector of a transac
 
 A backup copy of a base block isn't an exact copy anyway, the following modifications are performed on it by a hive writer:
 
-1. As of Windows XP, the *File type* field is set to 1 (1 means *transaction log*). In Windows 2000, the *File type* field is set to 2 (while 1 is reserved for in-memory hive recovery management using an alternate file for the System hive – *\WINNT\system32\config\SYSTEM.ALT*, an alternate file is a mirror of a primary file).
+1. As of Windows XP, the *File type* field is set to 1 (1 means *transaction log*). In Windows 2000, the *File type* field is set to 2 (while 1 is reserved for in-memory hive recovery management using an alternate file for the System hive – *\WINNT\system32\config\SYSTEM.ALT*, an alternate file is a mirror of a primary file used as a backup).
 2. A *primary sequence number* is incremented by 1 before writing a log of dirty data.
 3. A *secondary sequence number* is incremented by 1 after a log of dirty data was written.
 4. The *Checksum* field is recalculated with the modified data.
