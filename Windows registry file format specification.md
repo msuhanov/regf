@@ -569,7 +569,7 @@ Bitmap length (*in bits*) is calculated using the following formula: *Bitmap len
 #### Dirty pages
 *Dirty pages* are stored starting from the beginning of the sector following the last sector of a dirty vector. Each dirty page is stored at an offset divisible by 512 bytes and has a length of 512 bytes, there are no gaps between dirty pages.
 
-The first dirty page corresponds to the first bit set to 1 in the bitmap of a dirty vector, the second dirty page corresponds to the second bit set to 1 in the bitmap of a dirty vector, etc. During recovery, contiguous dirty pages belonging to the same hive bin in a primary file are processed together, and a dirty hive bin is verified for correctness (its *Signature* must be correct, its *Size* must not be less than 4096 bytes, its *Offset* must match the *Offset* of a corresponding hive bin in a primary file); recovery stops if a dirty hive bin is invalid, an invalid dirty hive bin is ignored.
+The first dirty page corresponds to the first bit set to 1 in the bitmap of a dirty vector, the second dirty page corresponds to the second bit set to 1 in the bitmap of a dirty vector, etc. During recovery, contiguous dirty pages belonging to the same hive bin in a primary file are processed together, and a dirty hive bin is verified for correctness (its *Signature* must be correct, its *Size* must not be less than 4096 bytes, its *Offset* must match the *Offset* of a corresponding hive bin in a primary file); recovery stops if a dirty hive bin is invalid, an invalid dirty hive bin is ignored (the self-healing process will fix this corruption).
 
 ##### Notes
 1. The number of dirty pages is equal to the number of bits set to 1 in the bitmap of a dirty vector. Remnants of previous dirty pages may be present after the end of the last dirty page.
@@ -627,17 +627,17 @@ Offset|Length|Field|Description
 A hive is considered to be dirty (i.e. requiring recovery) when a base block in a primary file contains a wrong checksum, or its primary sequence number doesn't match its secondary sequence number. If a hive isn't dirty, but a transaction log file (new format) contains subsequent log entries, they are ignored.
 
 ## Multiple transaction log files
-A primary file may have either one transaction log file (\*.LOG) or two transaction log files (\*.LOG1 and \*.LOG2). In the latter case, a dummy third file (\*.LOG) may be present for backward compatibility.
+A hive writer may use either a single transaction log file (\*.LOG) or two transaction log files (\*.LOG1 and \*.LOG2). In the latter case, also known as a dual-logging scheme, a dummy third transaction log file (\*.LOG) may be present for backward compatibility. When a hive writer is using a single transaction log file, two empty transaction log files from the dual-logging scheme (\*.LOG1 and \*.LOG2) may be present as well.
 
 ### Old format
-If multiple transaction log files are present and a hive is dirty, an applicable one (i.e. having the same *Last written timestamp* in a base block as in a base block of a primary file, see above) is used to recover a hive.
+If a hive is dirty and multiple transaction log files are present, an applicable one (i.e. having the same *Last written timestamp* in a base block as in a base block of a primary file, see above) is used to recover a hive.
 
-A switch to a new transaction log file may happen after an error occurs when applying a transaction log to a primary file.
+Under normal circumstances, only the first transaction log file (\*.LOG1) is used. If an error occurs when writing to a primary file, a switch to the second transaction log file (\*.LOG2) is performed (this file will contain a cumulative log of dirty data, i.e. dirty pages that weren't written to a primary file due to an error and pages dirtied since the failed write, on the next write attempt). If write errors persist, a hive writer will change the transaction log file being used on every write attempt (\*.LOG2 to \*.LOG1 and vice versa), keeping a cumulative log of dirty data. After a successful write operation on a primary file, the first transaction log file will be used again. If an error occurs when writing a base block to a primary file in the beginning of a write operation (in order to alter the primary sequence number in a base block), the whole operation fails without changing the log file being used.
 
 ### New format
-If multiple transaction log files are present and a hive is dirty, the first transaction log file (\*.LOG1) and then the second transaction log file (\*.LOG2) are used to recover a hive.
+If a hive is dirty and multiple transaction log files are present, the first transaction log file (\*.LOG1) and then the second transaction log file (\*.LOG2), or vice versa, are used to recover a hive.
 
-A switch to a new transaction log file may be used to split log entries.
+A switch to a new transaction log file may be used to split log entries. Note that the second transaction log file may contain earlier log entries, so it has to be applied first sometimes.
 
 ## Additional sources of information
 1. http://www.sentinelchicken.com/data/TheWindowsNTRegistryFileFormat.pdf
