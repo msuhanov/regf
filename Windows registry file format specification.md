@@ -69,6 +69,8 @@ Registry hives consist of primary files, transaction log files, and backup copie
   * \Windows\System32\config\SYSTEM.LOG
   * \Windows\System32\config\SYSTEM.LOG1
   * \Windows\System32\config\SYSTEM.LOG2
+* Backup copy of a primary file:
+  * \Windows\System32\config\RegBack\SYSTEM
 
 #### Windows 8.1: BCD hive
 * Primary file:
@@ -85,8 +87,10 @@ Registry hives consist of primary files, transaction log files, and backup copie
   * \Windows\System32\config\SYSTEM.LOG
   * \Windows\System32\config\SYSTEM.LOG1
   * \Windows\System32\config\SYSTEM.LOG2
-* Backup copy of a primary file:
+* Backup copies of a primary file:
   * \Windows\System32\config\SYSTEM.SAV
+  * \Windows\System32\config\RegBack\SYSTEM
+  * \Windows\System32\config\RegBack\SYSTEM.OLD
 
 #### Windows Vista: SAM hive
 * Primary file:
@@ -95,6 +99,9 @@ Registry hives consist of primary files, transaction log files, and backup copie
   * \Windows\System32\config\SAM.LOG
   * \Windows\System32\config\SAM.LOG1
   * \Windows\System32\config\SAM.LOG2
+* Backup copies of a primary file:
+  * \Windows\System32\config\RegBack\SAM
+  * \Windows\System32\config\RegBack\SAM.OLD
 
 #### Windows XP: System hive
 * Primary file:
