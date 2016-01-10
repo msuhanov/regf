@@ -359,7 +359,7 @@ When the *Access bits* field is equal to 0, the access history of a key is clear
 ##### WorkVar
 In Windows 2000, the *WorkVar* field may contain a zero-based index of a subkey in a subkeys list found at the last successful lookup (used to speed up lookups when the same subkey is accessed many times consecutively: a list element with the cached index is always tried first); such a cached index may point to a list element either in a subkeys list or in a volatile subkeys list, the latter is examined last.
 
-This field is not used as of Windows XP.
+This field isn't used as of Windows XP.
 
 ##### Flags
 In Windows XP and Windows Server 2003, the first 4 bits, counting from the most significant bit, are reserved for user flags (set via the *NtSetInformationKey()* call, read via the *NtQueryKey()* call). Other bits have the following meaning:
@@ -600,7 +600,7 @@ Offset|Length|Field|Value|Description
 0|4|Signature|HvLE|ASCII string
 4|4|Size||Size of a current log entry in bytes
 8|4|Flags||Copy of the *Flags* field of the base block at the time of creation of a current log entry (see below)
-12|4|Sequence number||This number will be written both to the *Primary sequence number* field and to the *Secondary sequence number* field of the base block when applying a current log entry
+12|4|Sequence number||This number constitutes a possible value of the *Primary sequence number* and *Secondary sequence number* fields of the base block after a current log entry is applied (these fields are not modified before the write operation on the recovered hive)
 16|4|Hive bins data size||Copy of the *Hive bins data size* field of the base block at the time of creation of a current log entry
 20|4|Dirty pages count||Number of dirty pages attached to a current log entry
 24|8|Hash-1||See below
@@ -625,7 +625,7 @@ Offset|Length|Field|Description
 5. If a primary file is dirty and has a valid *Checksum* (in the base block), only subsequent log entries are applied. A subsequent log entry is a log entry with a sequence number equal to or greater than a secondary sequence number of the base block in a primary file.
 6. If a primary file is dirty and has a wrong *Checksum*, its base block is recovered from a transaction log file. Then subsequent log entries are applied.
 7. If a log entry with a sequence number *N* is *not* followed by a log entry with a sequence number *N + 1*, recovery stops after applying a log entry with a sequence number *N*. If the first log entry doesn't contain an expected sequence number (equal to a secondary sequence number of the base block in a primary file), recovery stops.
-8. If a log entry has a wrong value in the field *Hash-1*, *Hash-2*, or *Hive bins data size* (i.e. it is not multiple of 4096 bytes), recovery stops, only previous log entries (preceding a bogus one) are applied.
+8. If a log entry has a wrong value in the field *Hash-1*, *Hash-2*, or *Hive bins data size* (i.e. it isn't multiple of 4096 bytes), recovery stops, only previous log entries (preceding a bogus one) are applied.
 9. A primary file is grown according to the *Hive bins data size* field of a log entry being applied.
 10. Dirty hive bins are verified for correctness during recovery (but recovery doesn't stop on an invalid hive bin, an invalid hive bin is healed instead).
 11. The *Flags* field of a log entry is set to a value of the *Flags* field of the base block. During recovery, the *Flags* field of the base block is set to a value taken from a log entry being applied.
