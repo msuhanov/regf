@@ -55,6 +55,7 @@
   * [Multiple transaction log files](#multiple-transaction-log-files)
     * [Old format](#old-format-1)
     * [New format](#new-format-1)
+  * [Hard-coded values](#hard-coded-values)
   * [Additional sources of information](#additional-sources-of-information)
 
 ## Types of files
@@ -636,10 +637,21 @@ A hive is considered to be dirty (i.e. requiring recovery) when a base block in 
 A hive writer may use either a single transaction log file (\*.LOG) or two transaction log files (\*.LOG1 and \*.LOG2). In the latter case, also known as a dual-logging scheme, a dummy third transaction log file (\*.LOG) may be present for backward compatibility. When a hive writer is using a single transaction log file, two empty transaction log files from the dual-logging scheme (\*.LOG1 and \*.LOG2) may be present as well.
 
 ### Old format
-Under normal circumstances, only the first transaction log (\*.LOG1) file is used. If an error occurs when writing to a primary file, a switch to the second transaction log file (\*.LOG2) is performed (this file will contain a cumulative log of dirty data, i.e. dirty pages that weren't written to a primary file due to an error and pages dirtied since the failed write, on the next write attempt). If write errors persist, a hive writer will change the transaction log file being used on every write attempt (\*.LOG2 to \*.LOG1 and vice versa), keeping a cumulative log of dirty data. After a successful write operation on a primary file, the first transaction log file will be used again. If an error occurs when writing a base block to a primary file in the beginning of a write operation (in order to update the *Primary sequence number* and *Last written timestamp* fields), the whole operation fails without changing the log file being used.
+Under normal circumstances, only the first transaction log (\*.LOG1) file is used. If an error occurs when writing to a primary file, a switch to the second transaction log file (\*.LOG2) is performed (this file will contain a cumulative log of dirty data, i.e. dirty pages that weren't written to a primary file due to an error and pages dirtied since the failed write, on the next write attempt). If write errors persist, a hive writer will swap the transaction log file being used on every write attempt (\*.LOG2 to \*.LOG1 and vice versa), keeping a cumulative log of dirty data. After a successful write operation on a primary file, the first transaction log file will be used again. If an error occurs when writing a base block to a primary file in the beginning of a write operation (in order to update the *Primary sequence number* and *Last written timestamp* fields), the whole operation fails without changing the log file being used.
+
+In the general case, the first transaction log file is used to recover a dirty hive. If a primary file contains an invalid base block, and the first transaction log file doesn't contain a valid backup copy of a base block (or, if this copy of a base block is valid, it doesn't contain a matching *Last written timestamp*, i.e. this transaction log file can't be applied to a dirty hive, see above), and the second transaction log file contains a valid backup copy of a base block with a mismatching *Last written timestamp* and a more recent log of dirty data than the first transaction log file (according to the *Last written timestamp* fields in the backup copies of a base block in these files), then the second transaction log file is used to recover a dirty hive.
 
 ### New format
-A hive writer will swap the transaction log file being used regularly (\*.LOG1 to \*.LOG2 and vice versa).
+A hive writer will regularly swap the transaction log file being used (\*.LOG1 to \*.LOG2 and vice versa). This may divide log entries between two transaction log files; the first transaction log file isn't guaranteed to contain earlier log entries.
+
+Both transaction log files are used to recover a dirty hive, i.e. log entries from both transaction log files are applied; the transaction log file with earlier log entries is used first.
+
+## Hard-coded values
+The following hard-coded values were observed in a hive writer:
+
+NT kernel version|Structure name|Field name|Value (hard-coded)|Additional notes
+---|---|---|---|---
+6.3.9600.16404 (32-bit)|Base block|Clustering factor|1|Sector size is assumed to be 512 bytes when working with related offsets
 
 ## Additional sources of information
 1. http://www.sentinelchicken.com/data/TheWindowsNTRegistryFileFormat.pdf
