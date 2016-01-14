@@ -55,7 +55,7 @@
   * [Multiple transaction log files](#multiple-transaction-log-files)
     * [Old format](#old-format-1)
     * [New format](#new-format-1)
-  * [Hard-coded values](#hard-coded-values)
+  * [Sector size and clustering factor](#sector-size-and-clustering-factor)
   * [Additional sources of information](#additional-sources-of-information)
 
 ## Types of files
@@ -539,7 +539,7 @@ A backup copy of a base block isn't an exact copy anyway, the following modifica
 
 ##### Notes
 1. A partial backup copy of a base block is made using a data from memory, not from a primary file.
-2. A transaction log file is considered to be valid when it has an expected base block (including the modifications mentioned above), and its *primary sequence number* is equal to its *secondary sequence number*. An invalid transaction log file can be repaired by the self-healing process (this will reset the fields of an invalid base block in memory to reasonable values, i.e. the *Signature* field will be reset to the proper value, the *Hive bins data size* field will be reset to a value calculated from the file size of a primary file, the *Clustering factor* field will be reset to a value for an underlying disk, the sequence numbers will be reset to 1, the *Checksum* field will be recalculated).
+2. A transaction log file is considered to be valid when it has an expected base block (including the modifications mentioned above), and its *primary sequence number* is equal to its *secondary sequence number*. An invalid transaction log file can be repaired by the self-healing process (this will reset the fields of a base block in memory to reasonable values, i.e. the *Signature* field will be reset to the proper value, the *Hive bins data size* field will be reset to a value calculated from the file size of a primary file, the *Clustering factor* field will be reset to a value for an underlying disk, the sequence numbers will be reset to 1, the *Checksum* field will be recalculated).
 3. A valid transaction log file can be applied to a dirty hive when a *Last written timestamp* in its base block is equal to a *Last written timestamp* in a base block of a primary file (when a base block of a primary file is invalid, i.e. it has a wrong *Checksum*, a *Timestamp* from the first hive bin is used instead). Also, a transaction log file can be applied to a dirty hive after the self-healing process.
 4. If a base block of a primary file has a wrong *Checksum*, it is being recovered using a base block from a transaction log file (and the *File type* field is set back to 0).
 5. In Windows 2000, Windows XP, and Windows Server 2003, the same memory region is used to write a base block both to a transaction log file and to a primary file, that is why, after a successful write operation, a base block of a primary file will contain two sequence numbers equal to *N*, and a base block of a transaction log file will contain two sequence numbers equal to *N - 1* (sequence numbers are incremented by 1 for a transaction log file first, and then they are incremented by 1 again for a primary file). As of Windows Vista, a copy of a base block is used when writing to a transaction log file, that is why a transaction log file and a primary file will contain the same sequence numbers in their base blocks after a successful write operation.
@@ -634,24 +634,24 @@ Offset|Length|Field|Description
 A hive is considered to be dirty (i.e. requiring recovery) when a base block in a primary file contains a wrong checksum, or its *primary sequence number* doesn't match its *secondary sequence number*. If a hive isn't dirty, but a transaction log file (new format) contains subsequent log entries, they are ignored.
 
 ## Multiple transaction log files
-A hive writer may use either a single transaction log file (\*.LOG) or two transaction log files (\*.LOG1 and \*.LOG2). In the latter case, also known as a dual-logging scheme, a dummy third transaction log file (\*.LOG) may be present for backward compatibility. When a hive writer is using a single transaction log file, two empty transaction log files from the dual-logging scheme (\*.LOG1 and \*.LOG2) may be present as well.
+A hive writer may use either a single transaction log file (\*.LOG) or two transaction log files (\*.LOG1 and \*.LOG2). In the latter case, also known as a dual-logging scheme (introduced in Windows Vista), a dummy third transaction log file (\*.LOG) may be present for backward compatibility. When a hive writer is using a single transaction log file, two empty transaction log files from the dual-logging scheme (\*.LOG1 and \*.LOG2) may be present as well.
 
 ### Old format
 Under normal circumstances, only the first transaction log (\*.LOG1) file is used. If an error occurs when writing to a primary file, a switch to the second transaction log file (\*.LOG2) is performed (this file will contain a cumulative log of dirty data, i.e. dirty pages that weren't written to a primary file due to an error and pages dirtied since the failed write, on the next write attempt). If write errors persist, a hive writer will swap the transaction log file being used on every write attempt (\*.LOG2 to \*.LOG1 and vice versa), keeping a cumulative log of dirty data. After a successful write operation on a primary file, the first transaction log file will be used again. If an error occurs when writing a base block to a primary file in the beginning of a write operation (in order to update the *Primary sequence number* and *Last written timestamp* fields), the whole operation fails without changing the log file being used.
 
-In the general case, the first transaction log file is used to recover a dirty hive. If a primary file contains an invalid base block, and the first transaction log file doesn't contain a valid backup copy of a base block (or, if this copy of a base block is valid, it doesn't contain a matching *Last written timestamp*, i.e. this transaction log file can't be applied to a dirty hive, see above), and the second transaction log file contains a valid backup copy of a base block with a mismatching *Last written timestamp* and a more recent log of dirty data than the first transaction log file (according to the *Last written timestamp* fields in the backup copies of a base block in these files), then the second transaction log file is used to recover a dirty hive.
+In the general case, the first transaction log file is used to recover a dirty hive. Before Windows 8, if a primary file contains an invalid base block (i.e. it has a wrong *Checksum*), and the first transaction log file doesn't contain a valid backup copy of a base block (or, if this copy of a base block is valid, it doesn't contain a matching *Last written timestamp*, i.e. this transaction log file can't be applied to a dirty hive, see above), and the second transaction log file contains a valid backup copy of a base block with a mismatching *Last written timestamp* and a more recent log of dirty data than the first transaction log file (according to the *Last written timestamp* fields of the backup copies of a base block in these files), then the second transaction log file is used to recover a dirty hive.
+
+Such a recovery algorithm is extremely ineffective, because it doesn't use the second transaction log file unless a base block of a primary file is invalid, and this base block is likely to be valid, because an error when writing a base block to a primary file in the beginning of a write operation will not trigger the switch to the second transaction log file, so the most probable event triggering this switch is a write error when storing a dirty data in a primary file, that is likely to leave a valid base block in a primary file (the mid-update state).
+
+In Windows 8, the second transaction log file is used to recover a dirty hive when the conditions mentioned above are met, with the following exceptions: the second transaction log file is used even if a base block of a primary file is valid, the second transaction log file is used even if its backup copy of a base block has a matching *Last written timestamp*. The new algorithm is much more sound.
 
 ### New format
 A hive writer will regularly swap the transaction log file being used (\*.LOG1 to \*.LOG2 and vice versa). This may divide log entries between two transaction log files; the first transaction log file isn't guaranteed to contain earlier log entries.
 
 Both transaction log files are used to recover a dirty hive, i.e. log entries from both transaction log files are applied; the transaction log file with earlier log entries is used first.
 
-## Hard-coded values
-The following hard-coded values were observed in a hive writer:
-
-NT kernel version|Structure name|Field name|Value (hard-coded)|Additional notes
----|---|---|---|---
-6.3.9600.16404 (32-bit)|Base block|Clustering factor|1|Sector size is assumed to be 512 bytes when working with related offsets
+## Sector size and clustering factor
+As of Windows 8, the *Clustering factor* field is always set to 1. Sector size is always assumed to be 512 bytes when working with related offsets and sizes. For example, a backup copy of a base block in a transaction log file is 512 bytes in length regardless of a sector size of an underlying disk.
 
 ## Additional sources of information
 1. http://www.sentinelchicken.com/data/TheWindowsNTRegistryFileFormat.pdf
