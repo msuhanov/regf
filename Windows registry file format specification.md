@@ -128,8 +128,8 @@ The base block is 4096 bytes in length, it contains the following structure in W
 Offset|Length|Field|Value(s)|Description
 ---|---|---|---|---
 0|4|Signature|regf|ASCII string
-4|4|Primary sequence number||This number is incremented by 1 in the beginning of a write operation on the hive
-8|4|Secondary sequence number||This number is incremented by 1 at the end of a write operation on the hive, a *primary sequence number* and a *secondary sequence number* should be equal after a successful write operation
+4|4|Primary sequence number||This number is incremented by 1 in the beginning of a write operation on the primary file
+8|4|Secondary sequence number||This number is incremented by 1 at the end of a write operation on the primary file, a *primary sequence number* and a *secondary sequence number* should be equal after a successful write operation
 12|8|Last written timestamp||FILETIME (UTC)
 20|4|Major version|1|Major version of a hive writer
 24|4|Minor version|3, 4, or 5|Minor version of a hive writer
