@@ -59,7 +59,7 @@
   * [Additional sources of information](#additional-sources-of-information)
 
 ## Types of files
-Registry hives consist of primary files, transaction log files, and backup copies of primary files. Primary files and their backup copies share the same format to hold an actual data making up a Windows registry, transaction log files are used to perform fault-tolerant writes to primary files.
+Registry hives consist of primary files, transaction log files, and backup copies of primary files. Primary files and their backup copies share the same format to hold an actual data making up a Windows registry, transaction log files are used to perform fault-tolerant writes to primary files. Before writing a modified (dirty) data to a primary file, a hive writer will store this data in a transaction log file. If an error occurs when writing to a transaction log file, a primary file will remain consistent; if an error occurs when writing to a primary file, a transaction log file will contain enough data to recover a primary file and bring it back to the consistent state.
 
 ### Examples of hives and supporting files
 
@@ -162,12 +162,13 @@ Offset|Length|Field|Value|Description
 
 The *RmId* field contains a GUID of the Resource Manager (RM), and the *TmId* field contains a GUID used to generate a file name of a log file for the Transaction Manager (TM), see the *ZwCreateResourceManager()* and *ZwCreateTransactionManager()* routines. The *GUID signature* field is always set to the "rmtm" ASCII string.
 
-The *Flags* field is used to record the state of the Kernel Transaction Manager (KTM), possible flags are:
+The *Flags* field is used to record the state of the Kernel Transaction Manager (KTM) and the hive, possible flags are:
 
 Mask|Description
 ---|---
 0x00000000|KTM released the hive
-0x00000001|KTM locked the hive (there are pending transactions)
+0x00000001|KTM locked the hive (there are pending or anticipated transactions)
+0x00000002|The hive was defragmented before the latest write operation
 
 #### Notes
 1. *File offset of a root cell = 4096 + Root cell offset*. This formula also applies to any other offset relative from the start of the hive bins data (however, if such a relative offset is equal to -1, it doesn't point anywhere).
