@@ -166,7 +166,6 @@ The *Flags* field is used to record the state of the Kernel Transaction Manager 
 
 Mask|Description
 ---|---
-0x00000000|KTM released the hive
 0x00000001|KTM locked the hive (there are pending or anticipated transactions)
 0x00000002|The hive was defragmented and it is being written to a disk
 
