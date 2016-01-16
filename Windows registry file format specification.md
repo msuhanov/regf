@@ -168,7 +168,7 @@ Mask|Description
 ---|---
 0x00000000|KTM released the hive
 0x00000001|KTM locked the hive (there are pending or anticipated transactions)
-0x00000002|The hive was defragmented before the latest write operation
+0x00000002|The hive was defragmented and it is being written to a disk
 
 #### Notes
 1. *File offset of a root cell = 4096 + Root cell offset*. This formula also applies to any other offset relative from the start of the hive bins data (however, if such a relative offset is equal to -1, it doesn't point anywhere).
