@@ -137,7 +137,7 @@ Offset|Length|Field|Value(s)|Description
 32|4|File format|1|1 means *direct memory load*
 36|4|Root cell offset||Offset of a root cell in bytes, relative from the start of the hive bins data
 40|4|Hive bins data size||Size of the hive bins data in bytes
-44|4|Clustering factor||Sector size of the underlying disk in bytes divided by 512
+44|4|Clustering factor||Logical sector size of the underlying disk in bytes divided by 512
 48|64|Filename||UTF-16LE string (contains a partial file path to the primary file, or a file name of the primary file), used for debugging purposes
 112|396|Reserved||
 508|4|Checksum||XOR-32 checksum of the previous 508 bytes
@@ -552,7 +552,7 @@ Offset|Length|Field|Value|Description
 0|4|Signature|DIRT|ASCII string
 4|...|Bitmap||Bitmap of dirty pages
 
-Each bit of a bitmap corresponds to the state of a specific *512-byte* page within a hive bins data to be written to a primary file from memory, regardless of a sector size of an underlying disk (these pages don't overlap, there are no gaps between them):
+Each bit of a bitmap corresponds to the state of a specific *512-byte* page within a hive bins data to be written to a primary file from memory, regardless of a logical sector size of an underlying disk (these pages don't overlap, there are no gaps between them):
 * the first bit, *bit #1*, corresponds to the state of the first *512-byte* page within a hive bins data;
 * *bit #2* corresponds to the state of the second *512-byte* page within a hive bins data, etc.
 
@@ -651,7 +651,7 @@ A hive writer will regularly swap the transaction log file being used (\*.LOG1 t
 Both transaction log files are used to recover a dirty hive, i.e. log entries from both transaction log files are applied; the transaction log file with earlier log entries is used first.
 
 ## Sector size and clustering factor
-As of Windows 8, the *Clustering factor* field is always set to 1. Sector size is always assumed to be 512 bytes when working with related offsets and sizes. For example, a backup copy of a base block in a transaction log file is 512 bytes in length regardless of a sector size of an underlying disk.
+As of Windows 8, the *Clustering factor* field is always set to 1. Logical sector size is always assumed to be 512 bytes when working with related offsets and sizes. For example, a backup copy of a base block in a transaction log file is 512 bytes in length regardless of a logical sector size of an underlying disk.
 
 ## Additional sources of information
 1. http://www.sentinelchicken.com/data/TheWindowsNTRegistryFileFormat.pdf
