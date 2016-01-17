@@ -651,7 +651,9 @@ A hive writer will regularly swap the transaction log file being used (\*.LOG1 t
 Both transaction log files are used to recover a dirty hive, i.e. log entries from both transaction log files are applied; the transaction log file with earlier log entries is used first.
 
 ## Sector size and clustering factor
-As of Windows 8, the *Clustering factor* field is always set to 1. Logical sector size is always assumed to be 512 bytes when working with related offsets and sizes. For example, a backup copy of a base block in a transaction log file is 512 bytes in length regardless of a logical sector size of an underlying disk.
+As of Windows 8, the *Clustering factor* field is always set to 1, the logical sector size is always assumed to be 512 bytes when working with related offsets and sizes. For example, a backup copy of a base block in a transaction log file is 512 bytes in length regardless of a logical sector size of an underlying disk.
+
+According to Microsoft, there is no support for a logical sector size different from 512 bytes and 4096 bytes in Windows; a logical sector size equal to 4096 bytes is supported as of Windows 8 and Windows Server 2012 (https://msdn.microsoft.com/en-us/library/windows/desktop/hh848035(v=vs.85).aspx). This why the *Clustering factor* field is expected to be equal to 1.
 
 ## Additional sources of information
 1. http://www.sentinelchicken.com/data/TheWindowsNTRegistryFileFormat.pdf
