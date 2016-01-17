@@ -138,7 +138,7 @@ Offset|Length|Field|Value(s)|Description
 36|4|Root cell offset||Offset of a root cell in bytes, relative from the start of the hive bins data
 40|4|Hive bins data size||Size of the hive bins data in bytes
 44|4|Clustering factor||Logical sector size of the underlying disk in bytes divided by 512
-48|64|Filename||UTF-16LE string (contains a partial file path to the primary file, or a file name of the primary file), used for debugging purposes
+48|64|File name||UTF-16LE string (contains a partial file path to the primary file, or a file name of the primary file), used for debugging purposes
 112|396|Reserved||
 508|4|Checksum||XOR-32 checksum of the previous 508 bytes
 512|3576|Reserved||
