@@ -387,7 +387,7 @@ It is plausible that both a registry key virtualization (when registry writes to
 
 Starting from Windows Vista, user flags were moved away from the first 4 bits of the *Flags* field to the new *User flags* bit field (see above). These user flags in the new location are also called *Wow64 flags*. In Windows XP and Windows Server 2003, user flags are stored in the old location anyway.
 
-It should be noted that, in Windows Vista and Windows 7, the 4th bit of the *Flags* field is set to 1 in many key nodes belonging to different hives; this bit, however, can't be read through the *NtQueryKey()* call. Such key nodes are present in initial primary files within an installation image (*install.wim*), and their number doesn't increase after the installation. A possible explanation for this oddity is that initial primary files were generated on Windows XP or Windows Server 2003 using the Wow64 subsystem (see below).
+It should be noted that, in Windows Vista and Windows 7, the 4th bit (counting from the most significant bit) of the *Flags* field is set to 1 in many key nodes belonging to different hives; this bit, however, can't be read through the *NtQueryKey()* call. Such key nodes are present in initial primary files within an installation image (*install.wim*), and their number doesn't increase after the installation. A possible explanation for this oddity is that initial primary files were generated on Windows XP or Windows Server 2003 using the Wow64 subsystem (see below).
 
 ##### User flags
 The *User flags* field (in the appropriate location for a version of Windows being used) is set according to the following bit masks:
