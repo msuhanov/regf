@@ -519,7 +519,7 @@ Data segments of a *Big data* record, except the last one, always have the maxim
 1. A *Base block* points to a root cell, which contains a *Key node*.
 2. A *Key node* points to a parent *Key node*, to a *Subkeys list* (a subkey is a *Key node* too), to a *Key values list*, to a *Key security* item.
 3. A *Subkeys list* can be subdivided with the help of the *Index root* structure.
-4. A *Key value* points to a data. A data may be stored in the *Data offset* field of a *Key value* structure, in a separate cell, or in a bunch of cells. In the latter case, a *Key value* points to the *Big data* structure in a cell.
+4. A *Key value* points to a data. A data may be stored in the *Data offset* field of a *Key value* structure, in a separate cell, or in a bunch of cells. In the last case, a *Key value* points to the *Big data* structure in a cell.
 
 ## Format of transaction log files
 
@@ -634,7 +634,7 @@ Offset|Length|Field|Description
 A hive is considered to be dirty (i.e. requiring recovery) when a base block in a primary file contains a wrong checksum, or its *primary sequence number* doesn't match its *secondary sequence number*. If a hive isn't dirty, but a transaction log file (new format) contains subsequent log entries, they are ignored.
 
 ## Multiple transaction log files
-A hive writer may use no transaction log files, a single transaction log file (\*.LOG), or two transaction log files (\*.LOG1 and \*.LOG2). In the latter case, also known as a dual-logging scheme (introduced in Windows Vista), a dummy third transaction log file (\*.LOG) may be present for backward compatibility. When a hive writer is using a single transaction log file, two empty transaction log files from the dual-logging scheme (\*.LOG1 and \*.LOG2) may be present as well.
+A hive writer may use no transaction log files, a single transaction log file (\*.LOG), or two transaction log files (\*.LOG1 and \*.LOG2). In the last case, also known as a dual-logging scheme (introduced in Windows Vista), a dummy third transaction log file (\*.LOG) may be present for backward compatibility. When a hive writer is using a single transaction log file, two empty transaction log files from the dual-logging scheme (\*.LOG1 and \*.LOG2) may be present as well.
 
 ### Old format
 Under normal circumstances, only the first transaction log (\*.LOG1) file is used. If an error occurs when writing to a primary file, a switch to the second transaction log file (\*.LOG2) is performed (this file will contain a cumulative log of dirty data, i.e. dirty pages that weren't written to a primary file due to an error and pages dirtied since the failed write, on the next write attempt). If write errors persist, a hive writer will swap the transaction log file being used on every write attempt (\*.LOG2 to \*.LOG1 and vice versa), keeping a cumulative log of dirty data. After a successful write operation on a primary file, the first transaction log file will be used again. If an error occurs when writing a base block to a primary file in the beginning of a write operation (in order to update the *Primary sequence number* and *Last written timestamp* fields), the whole operation fails without changing the log file being used.
