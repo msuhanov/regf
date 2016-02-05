@@ -534,7 +534,7 @@ A partial backup copy of a base block is stored in the first sector of a transac
 A backup copy of a base block isn't an exact copy anyway, the following modifications are performed on it by a hive writer:
 
 1. As of Windows XP, the *File type* field is set to 1 (1 means *transaction log*). In Windows 2000, the *File type* field is set to 2 (while 1 is reserved for in-memory hive recovery management using an alternate file for the System hive – *\WINNT\system32\config\SYSTEM.ALT*, an alternate file is a mirror of a primary file used as a backup copy).
-2. In Windows 2000, Windows XP, and Windows Server 2003, a *primary sequence number* is incremented by 1 before writing a log of dirty data; a *secondary sequence number* is incremented by 1 after a log of dirty data was written. As of Windows Vista, a *primary sequence number* and the same *secondary sequence number* are written at once before writing a log of dirty data.
+2. In Windows 2000, Windows XP, and Windows Server 2003, a *primary sequence number* is incremented by 1 before writing a log of dirty data; a *secondary sequence number* is incremented by 1 after a log of dirty data was written. As of Windows Vista, a *primary sequence number* and the same *secondary sequence number* (incremented by 1) are written at once before writing a log of dirty data.
 3. The *Checksum* field is recalculated for the modified data.
 
 ##### Notes
@@ -600,7 +600,7 @@ Offset|Length|Field|Value|Description
 0|4|Signature|HvLE|ASCII string
 4|4|Size||Size of a current log entry in bytes
 8|4|Flags||Copy of the *Flags* field of the base block at the time of creation of a current log entry (see below)
-12|4|Sequence number||This number constitutes a possible value of the *Primary sequence number* and *Secondary sequence number* fields of the base block after a current log entry is applied (these fields are not modified before the write operation on the recovered hive)
+12|4|Sequence number||This number constitutes a possible value of the *Primary sequence number* and *Secondary sequence number* fields of the base block in memory after a current log entry is applied (these fields are not modified before the write operation on the recovered hive)
 16|4|Hive bins data size||Copy of the *Hive bins data size* field of the base block at the time of creation of a current log entry
 20|4|Dirty pages count||Number of dirty pages attached to a current log entry
 24|8|Hash-1||See below
