@@ -119,7 +119,7 @@ Transactional registry, introduced in Windows Vista, is a feature that allows a 
 Transactional registry and storage files of the CLFS are out of the scope of this document.
 
 ## Format of primary files
-A primary file consists of a base block, also known as a file header, and a hive bins data. A hive bins data consists of hive bins. Each hive bin includes a header and cells, cells are the actual storage of high-level registry entities (like keys, values, etc.). Primary files may contain a padding of an arbitrary size after the end of the last hive bin.
+A primary file consists of a base block, also known as a file header, and hive bins data. Hive bins data consists of hive bins. Each hive bin includes a header and cells, cells are the actual storage of high-level registry entities (like keys, values, etc.). Primary files may contain a padding of an arbitrary size after the end of the last hive bin.
 
 ![Primary file layout](https://raw.githubusercontent.com/msuhanov/regf/master/images/primary.png "Primary file layout")
 
@@ -553,9 +553,9 @@ Offset|Length|Field|Value|Description
 0|4|Signature|DIRT|ASCII string
 4|...|Bitmap||Bitmap of dirty pages
 
-Each bit of a bitmap corresponds to the state of a specific *512-byte* page within a hive bins data to be written to a primary file from memory, regardless of a logical sector size of an underlying disk (these pages don't overlap, there are no gaps between them):
-* the first bit, *bit #1*, corresponds to the state of the first *512-byte* page within a hive bins data;
-* *bit #2* corresponds to the state of the second *512-byte* page within a hive bins data, etc.
+Each bit of a bitmap corresponds to the state of a specific *512-byte* page within hive bins data to be written to a primary file from memory, regardless of a logical sector size of an underlying disk (these pages don't overlap, there are no gaps between them):
+* the first bit, *bit #1*, corresponds to the state of the first *512-byte* page within hive bins data;
+* *bit #2* corresponds to the state of the second *512-byte* page within hive bins data, etc.
 
 Bits of a bitmap are checked using the *bt* instruction or its equivalent based on bit shifting. This means that bits are packed into bytes, the first byte of a bitmap contains bits #1-#8, the second byte contains bits #9-#16, and so on. Within a byte, bit numbering starts at the least significant bit.
 
@@ -571,7 +571,7 @@ Bitmap length (*in bits*) is calculated using the following formula: *Bitmap len
 ##### Notes
 1. The state of a base block isn't recorded in a dirty vector.
 2. A dirty vector is stored in memory as a *RTL_BITMAP* structure. However, only the *Buffer* field of this structure is written to a transaction log file.
-3. Windows tracks changes to a hive bins data in 4096-byte blocks (as of Windows XP). This means that a dirty vector's bitmap is *expected* to contain only the following *bytes*: 0x00 and 0xFF.
+3. Windows tracks changes to hive bins data in 4096-byte blocks (as of Windows XP). This means that a dirty vector's bitmap is *expected* to contain only the following *bytes*: 0x00 and 0xFF.
 4. A padding is likely to be present after the end of a bitmap (up to a sector boundary).
 
 #### Dirty pages
@@ -652,7 +652,7 @@ A hive writer will regularly swap the transaction log file being used (\*.LOG1 t
 Both transaction log files are used to recover a dirty hive, i.e. log entries from both transaction log files are applied; the transaction log file with earlier log entries is used first.
 
 ## Flush strategies
-Flushing a hive ensures that dirty data of this hive was written to a disk. When the old format of transaction log files is used, this means that dirty data was stored in a primary file. When the new format of transaction log files is used, a flush operation on a hive may succeed after dirty data was stored in a transaction log file (but not yet in a primary file).
+Flushing a hive ensures that its dirty data was written to a disk. When the old format of transaction log files is used, this means that dirty data was stored in a primary file. When the new format of transaction log files is used, a flush operation on a hive will succeed after dirty data was stored in a transaction log file (but not yet in a primary file); a hive writer may delay writing to a primary file.
 
 ## Sector size and clustering factor
 As of Windows 8, the *Clustering factor* field is always set to 1, the logical sector size is always assumed to be 512 bytes when working with related offsets and sizes. For example, a backup copy of a base block in a transaction log file is 512 bytes in length regardless of a logical sector size of an underlying disk.
