@@ -174,7 +174,7 @@ Mask|Description
 1. *File offset of a root cell = 4096 + Root cell offset*. This formula also applies to any other offset relative from the start of the hive bins data (however, if such a relative offset is equal to -1, it doesn't point anywhere).
 2. The XOR-32 checksum is calculated using the following algorithm:
    * let C be a 32-bit value, initial value is zero;
-   * let D be a data containing 508 bytes;
+   * let D be data containing 508 bytes;
    * split D into non-overlapping groups of 32 bits, and for each group, G[i], do the following: C = C xor G[i];
    * C is the checksum.
 3. The *Boot type* and *Boot recover* fields are used for in-memory hive recovery management by a boot loader and a kernel, they are not written to a disk in most cases (when *Clustering factor* is 8, these fields may be written to a disk, but they have no meaning there).
@@ -437,16 +437,16 @@ Offset|Length|Field|Value|Description
 0|2|Signature|vk|ASCII string
 2|2|Name length||In bytes, can be 0 (name isn't set)
 4|4|Data size||In bytes, can be 0 (value isn't set), the most significant bit has a special meaning (see below)
-8|4|Data offset||In bytes, relative from the start of the hive bins data (or a data itself, see below)
+8|4|Data offset||In bytes, relative from the start of the hive bins data (or data itself, see below)
 12|4|Data type||See below
 16|2|Flags||Bit mask, see below
 18|2|Spare||Not used
 20|...|Name||ASCII string or UTF-16LE string
 
 ##### Data size
-When the most significant bit is 1, a data (4 bytes or less) is stored in the *Data offset* field directly (when a data contains less than 4 bytes, it is being stored as is in the beginning of the *Data offset* field). The most significant bit (when set to 1) should be ignored when calculating the data size.
+When the most significant bit is 1, data (4 bytes or less) is stored in the *Data offset* field directly (when data contains less than 4 bytes, it is being stored as is in the beginning of the *Data offset* field). The most significant bit (when set to 1) should be ignored when calculating the data size.
 
-When the most significant bit is 0, a data is stored in the *Cell data* field of another cell (pointed by the *Data offset* field) or in the *Cell data* fields of multiple cells (referenced in the *Big data* structure stored in a cell pointed by the *Data offset* field).
+When the most significant bit is 0, data is stored in the *Cell data* field of another cell (pointed by the *Data offset* field) or in the *Cell data* fields of multiple cells (referenced in the *Big data* structure stored in a cell pointed by the *Data offset* field).
 
 ##### Data types
 
@@ -491,7 +491,7 @@ Offset|Length|Field|Value|Description
 4. When a key security item acts as a list entry, flink and blink point to the next and the previous entries of this list respectively. If there is no next entry in a list, flink points to a list header. If there is no previous entry in a list, blink points to a list header.
 
 #### Big data
-The *Big data* is used to reference a data larger than 16344 bytes (when the *Minor version* field of the base block is greater than 3), it has the following structure:
+The *Big data* is used to reference data larger than 16344 bytes (when the *Minor version* field of the base block is greater than 3), it has the following structure:
 
 Offset|Length|Field|Value|Description
 ---|---|---|---|---
@@ -520,7 +520,7 @@ Data segments of a *Big data* record, except the last one, always have the maxim
 1. A *Base block* points to a root cell, which contains a *Key node*.
 2. A *Key node* points to a parent *Key node*, to a *Subkeys list* (a subkey is a *Key node* too), to a *Key values list*, to a *Key security* item.
 3. A *Subkeys list* can be subdivided with the help of the *Index root* structure.
-4. A *Key value* points to a data. A data may be stored in the *Data offset* field of a *Key value* structure, in a separate cell, or in a bunch of cells. In the last case, a *Key value* points to the *Big data* structure in a cell.
+4. A *Key value* points to data. Data may be stored in the *Data offset* field of a *Key value* structure, in a separate cell, or in a bunch of cells. In the last case, a *Key value* points to the *Big data* structure in a cell.
 
 ## Format of transaction log files
 
@@ -539,7 +539,7 @@ A backup copy of a base block isn't an exact copy anyway, the following modifica
 3. The *Checksum* field is recalculated for the modified data.
 
 ##### Notes
-1. A partial backup copy of a base block is made using a data from memory, not from a primary file.
+1. A partial backup copy of a base block is made using data from memory, not from a primary file.
 2. A transaction log file is considered to be valid when it has an expected base block (including the modifications mentioned above), and its *primary sequence number* is equal to its *secondary sequence number*. An invalid transaction log file can be repaired by the self-healing process (this will reset the fields of a base block in memory to reasonable values, i.e. the *Signature* field will be reset to the proper value, the *Hive bins data size* field will be reset to a value calculated from the file size of a primary file, the *Clustering factor* field will be reset to a value for an underlying disk, the sequence numbers will be reset to 1, the *Checksum* field will be recalculated).
 3. A valid transaction log file can be applied to a dirty hive when a *Last written timestamp* in its base block is equal to a *Last written timestamp* in a base block of a primary file (when a base block of a primary file is invalid, i.e. it has a wrong *Checksum*, a *Timestamp* from the first hive bin is used instead). Also, a transaction log file can be applied to a dirty hive after the self-healing process.
 4. If a base block of a primary file has a wrong *Checksum*, it is being recovered using a base block from a transaction log file (and the *File type* field is set back to 0).
@@ -642,7 +642,7 @@ Under normal circumstances, only the first transaction log (\*.LOG1) file is use
 
 In the general case, the first transaction log file is used to recover a dirty hive. Before Windows 8, if a primary file contains an invalid base block (i.e. it has a wrong *Checksum*), and the first transaction log file doesn't contain a valid backup copy of a base block (or, if this copy of a base block is valid, it doesn't contain a matching *Last written timestamp*, i.e. this transaction log file can't be applied to a dirty hive, see above), and the second transaction log file contains a valid backup copy of a base block with a mismatching *Last written timestamp* and a more recent log of dirty data than the first transaction log file (according to the *Last written timestamp* fields of the backup copies of a base block in these files), then the second transaction log file is used to recover a dirty hive.
 
-Such a recovery algorithm is extremely ineffective, because it doesn't use the second transaction log file unless a base block of a primary file is invalid, and this base block is likely to be valid, because an error when writing a base block to a primary file in the beginning of a write operation will not trigger the switch to the second transaction log file, so the most probable event triggering this switch is a write error when storing a dirty data in a primary file, that is likely to leave a valid base block in a primary file (the mid-update state).
+Such a recovery algorithm is extremely ineffective, because it doesn't use the second transaction log file unless a base block of a primary file is invalid, and this base block is likely to be valid, because an error when writing a base block to a primary file in the beginning of a write operation will not trigger the switch to the second transaction log file, so the most probable event triggering this switch is a write error when storing dirty data in a primary file, that is likely to leave a valid base block in a primary file (the mid-update state).
 
 In Windows 8, the second transaction log file is used to recover a dirty hive when the conditions mentioned above are met, with the following exceptions: the second transaction log file is used even if a base block of a primary file is valid, the second transaction log file is used even if its backup copy of a base block has a matching *Last written timestamp*. The new algorithm is much more sound.
 
@@ -652,7 +652,7 @@ A hive writer will regularly swap the transaction log file being used (\*.LOG1 t
 Both transaction log files are used to recover a dirty hive, i.e. log entries from both transaction log files are applied; the transaction log file with earlier log entries is used first.
 
 ## Flush strategies
-Flushing a hive ensures that a dirty data of this hive was written to a disk. When the old format of transaction log files is used, this means that a dirty data was stored in a primary file. When the new format of transaction log files is used, a flush operation on a hive may succeed after a dirty data was stored in a transaction log file (but not yet in a primary file).
+Flushing a hive ensures that dirty data of this hive was written to a disk. When the old format of transaction log files is used, this means that dirty data was stored in a primary file. When the new format of transaction log files is used, a flush operation on a hive may succeed after dirty data was stored in a transaction log file (but not yet in a primary file).
 
 ## Sector size and clustering factor
 As of Windows 8, the *Clustering factor* field is always set to 1, the logical sector size is always assumed to be 512 bytes when working with related offsets and sizes. For example, a backup copy of a base block in a transaction log file is 512 bytes in length regardless of a logical sector size of an underlying disk.
