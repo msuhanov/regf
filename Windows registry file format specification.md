@@ -55,6 +55,7 @@
   * [Multiple transaction log files](#multiple-transaction-log-files)
     * [Old format](#old-format-1)
     * [New format](#new-format-1)
+  * [Flush strategies](#flush-strategies)
   * [Sector size and clustering factor](#sector-size-and-clustering-factor)
   * [Additional sources of information](#additional-sources-of-information)
 
@@ -649,6 +650,9 @@ In Windows 8, the second transaction log file is used to recover a dirty hive wh
 A hive writer will regularly swap the transaction log file being used (\*.LOG1 to \*.LOG2 and vice versa). This may divide log entries between two transaction log files; the first transaction log file isn't guaranteed to contain earlier log entries.
 
 Both transaction log files are used to recover a dirty hive, i.e. log entries from both transaction log files are applied; the transaction log file with earlier log entries is used first.
+
+## Flush strategies
+Flushing a hive ensures that a dirty data of this hive was written to a disk. When the old format of transaction log files is used, this means that a dirty data was stored in a primary file. When the new format of transaction log files is used, a flush operation on a hive may succeed after a dirty data was stored in a transaction log file (but not yet in a primary file).
 
 ## Sector size and clustering factor
 As of Windows 8, the *Clustering factor* field is always set to 1, the logical sector size is always assumed to be 512 bytes when working with related offsets and sizes. For example, a backup copy of a base block in a transaction log file is 512 bytes in length regardless of a logical sector size of an underlying disk.
