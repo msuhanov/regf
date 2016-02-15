@@ -60,7 +60,7 @@
   * [Additional sources of information](#additional-sources-of-information)
 
 ## Types of files
-Registry hives consist of primary files, transaction log files, and backup copies of primary files. Primary files and their backup copies share the same format to hold an actual data making up a Windows registry, transaction log files are used to perform fault-tolerant writes to primary files. Before writing a modified (dirty) data to a primary file, a hive writer will store this data in a transaction log file. If an error (like a system crash) occurs when writing to a transaction log file, a primary file will remain consistent; if an error occurs when writing to a primary file, a transaction log file will contain enough data to recover a primary file and bring it back to the consistent state.
+Registry hives consist of primary files, transaction log files, and backup copies of primary files. Primary files and their backup copies share the same format to hold an actual data making up a Windows registry, transaction log files are used to perform fault-tolerant writes to primary files. Before writing modified (dirty) data to a primary file, a hive writer will store this data in a transaction log file. If an error (like a system crash) occurs when writing to a transaction log file, a primary file will remain consistent; if an error occurs when writing to a primary file, a transaction log file will contain enough data to recover a primary file and bring it back to the consistent state.
 
 ### Examples of hives and supporting files
 
