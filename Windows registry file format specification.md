@@ -652,7 +652,7 @@ A hive writer will regularly swap the transaction log file being used (\*.LOG1 t
 Both transaction log files are used to recover a dirty hive, i.e. log entries from both transaction log files are applied; the transaction log file with earlier log entries is used first.
 
 ## Flush strategies
-Flushing a hive ensures that its dirty data was written to a disk. When the old format of transaction log files is used, this means that dirty data was stored in a primary file. When the new format of transaction log files is used, a flush operation on a hive will succeed after dirty data was stored in a transaction log file (but not yet in a primary file); a hive writer may delay writing to a primary file.
+Flushing a hive ensures that its dirty data was written to a disk. When the old format of transaction log files is used, this means that dirty data was stored in a primary file. When the new format of transaction log files is used, a flush operation on a hive will succeed after dirty data was stored in a transaction log file (but not yet in a primary file); a hive writer may delay writing to a primary file (up to an hour).
 
 ## Sector size and clustering factor
 As of Windows 8, the *Clustering factor* field is always set to 1, the logical sector size is always assumed to be 512 bytes when working with related offsets and sizes. For example, a backup copy of a base block in a transaction log file is 512 bytes in length regardless of a logical sector size of an underlying disk.
