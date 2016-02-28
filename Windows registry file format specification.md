@@ -168,7 +168,7 @@ The *Flags* field is used to record the state of the Kernel Transaction Manager 
 Mask|Description
 ---|---
 0x00000001|KTM locked the hive (there are pending or anticipated transactions)
-0x00000002|The hive was defragmented and it is being written to a disk (Windows 8 and Windows Server 2012 only)
+0x00000002|The hive was defragmented (and all pages are dirty) and it is being written to a disk (Windows 8 and Windows Server 2012 only, this flag is used to speed up hive recovery by reading a transaction log file instead of a primary file)
 
 #### Notes
 1. *File offset of a root cell = 4096 + Root cell offset*. This formula also applies to any other offset relative from the start of the hive bins data (however, if such a relative offset is equal to -1, it doesn't point anywhere).
