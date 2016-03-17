@@ -368,8 +368,8 @@ In Windows XP and Windows Server 2003, the first 4 bits, counting from the most 
 
 Mask|Name|Description
 ---|---|---
-0x0001|KEY_VOLATILE|Is volatile
-0x0002|KEY_HIVE_EXIT|Is the mount point of another hive
+0x0001|KEY_VOLATILE|Is volatile (a key node on a disk is not expected to have this flag set)
+0x0002|KEY_HIVE_EXIT|Is the mount point of another hive (a key node on a disk is not expected to have this flag set)
 0x0004|KEY_HIVE_ENTRY|Is the root key for this hive
 0x0008|KEY_NO_DELETE|This key can't be deleted
 0x0010|KEY_SYM_LINK|This key is a symlink (a target key is specified as a UTF-16LE string (REG_LINK) in a value named "SymbolicLinkValue")
@@ -464,6 +464,8 @@ Value|Name(s)
 0x00000009|REG_FULL_RESOURCE_DESCRIPTOR
 0x0000000a|REG_RESOURCE_REQUIREMENTS_LIST
 0x0000000b|REG_QWORD, REG_QWORD_LITTLE_ENDIAN
+
+Other values are allowed as well (but they are not predefined).
 
 ##### Flags
 
