@@ -57,6 +57,7 @@
     * [New format](#new-format-1)
   * [Flush strategies](#flush-strategies)
   * [Sector size and clustering factor](#sector-size-and-clustering-factor)
+  * [Very old versions of Windows](#very-old-versions-of-windows)
   * [Additional sources of information](#additional-sources-of-information)
 
 ## Types of files
@@ -368,8 +369,8 @@ In Windows XP and Windows Server 2003, the first 4 bits, counting from the most 
 
 Mask|Name|Description
 ---|---|---
-0x0001|KEY_VOLATILE|Is volatile (a key node on a disk is not expected to have this flag set)
-0x0002|KEY_HIVE_EXIT|Is the mount point of another hive (a key node on a disk is not expected to have this flag set)
+0x0001|KEY_VOLATILE|Is volatile (a key node on a disk isn't expected to have this flag set)
+0x0002|KEY_HIVE_EXIT|Is the mount point of another hive (a key node on a disk isn't expected to have this flag set)
 0x0004|KEY_HIVE_ENTRY|Is the root key for this hive
 0x0008|KEY_NO_DELETE|This key can't be deleted
 0x0010|KEY_SYM_LINK|This key is a symlink (a target key is specified as a UTF-16LE string (REG_LINK) in a value named "SymbolicLinkValue")
@@ -441,7 +442,7 @@ Offset|Length|Field|Value|Description
 12|4|Data type||See below
 16|2|Flags||Bit mask, see below
 18|2|Spare||Not used
-20|...|Name||ASCII string or UTF-16LE string
+20|...|Value name string||ASCII string or UTF-16LE string
 
 ##### Data size
 When the most significant bit is 1, data (4 bytes or less) is stored in the *Data offset* field directly (when data contains less than 4 bytes, it is being stored as is in the beginning of the *Data offset* field). The most significant bit (when set to 1) should be ignored when calculating the data size.
@@ -660,6 +661,19 @@ Flushing a hive ensures that its dirty data was written to a disk. When the old 
 As of Windows 8, the *Clustering factor* field is always set to 1, the logical sector size is always assumed to be 512 bytes when working with related offsets and sizes. For example, a backup copy of a base block in a transaction log file is 512 bytes in length regardless of a logical sector size of an underlying disk.
 
 According to Microsoft, there is no support for a logical sector size different from 512 bytes and 4096 bytes in Windows; a logical sector size equal to 4096 bytes is supported as of Windows 8 and Windows Server 2012 (https://msdn.microsoft.com/en-us/library/windows/desktop/hh848035(v=vs.85).aspx). This is why the *Clustering factor* field is expected to be equal to 1.
+
+## Very old versions of Windows
+The format description above applies to registry hives with the following major and minor version numbers in the *Base block* structure: 1.3, 1.4, and 1.5. However, the following major and minor version numbers can be found in registry hives of Windows NT 3.1, Windows NT 3.5, and Windows NT 3.51: 1.1 and 1.2.
+
+When the *Minor version* field of the base block is equal to 2, the *Fast leaf* records are not supported.
+
+When the *Minor version* field of the base block is equal to 1, the *Fast leaf* records are not supported, the *Key name string* of the *Key node* and the *Value name string* of the *Key value* are always UTF-16LE, and every cell has the following structure:
+
+Offset|Length|Field|Description
+---|---|---|---
+0|4|Size|Size of a current cell in bytes, including this field (aligned to 16 bytes): the size is positive if a cell is unallocated or negative if a cell is allocated (use absolute values for calculations)
+4|4|Last|Offset of a previous cell in bytes, relative from the start of a current hive bin (or -1 for the first cell in a hive bin)
+8|...|Cell data|
 
 ## Additional sources of information
 1. http://www.sentinelchicken.com/data/TheWindowsNTRegistryFileFormat.pdf
