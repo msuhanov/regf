@@ -172,7 +172,7 @@ Mask|Description
 0x00000002|The hive was defragmented (all its pages are dirty therefore) and it is being written to a disk (Windows 8 and Windows Server 2012 only, this flag is used to speed up hive recovery by reading a transaction log file instead of a primary file)
 
 #### Notes
-1. *File offset of a root cell = 4096 + Root cell offset*. This formula also applies to any other offset relative from the start of the hive bins data (however, if such a relative offset is equal to -1, it doesn't point anywhere).
+1. *File offset of a root cell = 4096 + Root cell offset*. This formula also applies to any other offset relative from the start of the hive bins data (however, if such a relative offset is equal to 0xFFFFFFFF, it doesn't point anywhere).
 2. The XOR-32 checksum is calculated using the following algorithm:
    * let C be a 32-bit value, initial value is zero;
    * let D be data containing 508 bytes;
@@ -225,7 +225,7 @@ Big data (db)|List of data segments
 
 Also, *Cell data* may contain raw data (e.g. *Key value* data) and any lists defined below. A padding may be present at the end of a cell.
 
-When a record contains an offset field pointing to another record, the offset points to a cell containing the latter record. As already mentioned above, an offset relative from the start of the hive bins data doesn't point anywhere when it is equal to -1.
+When a record contains an offset field pointing to another record, the offset points to a cell containing the latter record. As already mentioned above, an offset relative from the start of the hive bins data doesn't point anywhere when it is equal to 0xFFFFFFFF.
 
 #### Index leaf
 The *Index leaf* has the following structure:
@@ -672,10 +672,10 @@ When the *Minor version* field of the base block is equal to 1, the *Fast leaf* 
 Offset|Length|Field|Description
 ---|---|---|---
 0|4|Size|Size of a current cell in bytes, including this field (aligned to 16 bytes): the size is positive if a cell is unallocated or negative if a cell is allocated (use absolute values for calculations)
-4|4|Last|Offset of a previous cell in bytes, relative from the start of a current hive bin (or -1 for the first cell in a hive bin)
+4|4|Last|Offset of a previous cell in bytes, relative from the start of a current hive bin (or 0xFFFFFFFF for the first cell in a hive bin)
 8|...|Cell data|
 
-The *File type* field of a base block in a transaction log file is set to 2 (like in Windows 2000).
+Also, the *File type* field of a base block in a transaction log file is set to 2 (like in Windows 2000).
 
 ## Additional sources of information
 1. http://www.sentinelchicken.com/data/TheWindowsNTRegistryFileFormat.pdf
