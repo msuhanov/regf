@@ -675,6 +675,8 @@ Offset|Length|Field|Description
 4|4|Last|Offset of a previous cell in bytes, relative from the start of a current hive bin (or -1 for the first cell in a hive bin)
 8|...|Cell data|
 
+The *File type* field of a base block in a transaction log file is set to 2 (like in Windows 2000).
+
 ## Additional sources of information
 1. http://www.sentinelchicken.com/data/TheWindowsNTRegistryFileFormat.pdf
 2. https://github.com/libyal/libregf/blob/master/documentation/Windows%20NT%20Registry%20File%20(REGF)%20format.asciidoc
