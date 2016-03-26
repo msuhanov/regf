@@ -401,7 +401,7 @@ Mask|Description
 0x4|Disable registry reflection for this key
 0x8|In the old location of the *User flags* field: execute the *int 3* instruction on an access to this key (both retail and checked Windows kernels), this bit was superseded by the *Debug* field (see below)
 
-In Windows 7 and more recent versions of Windows, the bit mask 0x1 doesn't seem to be used to mark 32-bit keys created by userspace programs.
+In Windows 7, Windows Server 2008 R2, and more recent versions of Windows, the bit mask 0x1 isn't used to mark 32-bit keys created by userspace programs.
 
 ##### Virtualization control flags
 The *Virtualization control flags* field is set according to the following bit masks:
@@ -662,7 +662,7 @@ Flushing a hive ensures that its dirty data was written to a disk. When the old 
 ## Sector size and clustering factor
 As of Windows 8, the *Clustering factor* field is always set to 1, the logical sector size is always assumed to be 512 bytes when working with related offsets and sizes. For example, a backup copy of a base block in a transaction log file is 512 bytes in length regardless of a logical sector size of an underlying disk.
 
-According to Microsoft, there is no support for a logical sector size different from 512 bytes and 4096 bytes in Windows; a logical sector size equal to 4096 bytes is supported as of Windows 8 and Windows Server 2012 (https://msdn.microsoft.com/en-us/library/windows/desktop/hh848035(v=vs.85).aspx). This is why the *Clustering factor* field is expected to be equal to 1.
+According to Microsoft, there is no support for a logical sector size different from 512 bytes and 4096 bytes in Windows; a logical sector size equal to 4096 bytes is supported as of Windows 8 and Windows Server 2012 [[2](https://msdn.microsoft.com/en-us/library/windows/desktop/hh848035(v=vs.85).aspx)]. This is why the *Clustering factor* field is expected to be equal to 1.
 
 ## Very old versions of Windows
 The format description above applies to registry hives with the following major and minor version numbers in the *Base block* structure: 1.3, 1.4, and 1.5. However, the following major and minor version numbers can be found in registry hives of Windows NT 3.1, Windows NT 3.5, and Windows NT 3.51: 1.1 and 1.2.
