@@ -399,9 +399,11 @@ Mask|Description
 0x1|Is a 32-bit key: this key was created through the Wow64 subsystem or this key shall not be used by a 64-bit program (e.g. by a 64-bit driver during the boot)
 0x2|This key was created by the reflection process (when reflecting a key from another view)
 0x4|Disable registry reflection for this key
-0x8|In the old location of the *User flags* field: execute the *int 3* instruction on an access to this key (both retail and checked Windows kernels), this bit was superseded by the *Debug* field (see below)
+0x8|In the old location of the *User flags* field: execute the *int 3* instruction on an access to this key (both retail and checked Windows kernels), this bit was superseded by the *Debug* field (see below); in the new location of the *User flags* field: disable registry reflection for this key if a corresponding key exists in another view and it wasn't created by a caller (see below)
 
 In Windows 7, Windows Server 2008 R2, and more recent versions of Windows, the bit mask 0x1 isn't used to mark 32-bit keys created by userspace programs.
+
+The bit mask 0x8 was supported in the new location of the *User flags* field only in pre-release versions of Windows Vista, e.g. beta 2 [[1](https://web.archive.org/web/20051230061259/http://msdn.microsoft.com/library/en-us/sysinfo/base/regsetkeyflags.asp)].
 
 ##### Virtualization control flags
 The *Virtualization control flags* field is set according to the following bit masks:
