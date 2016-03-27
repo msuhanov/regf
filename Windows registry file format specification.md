@@ -649,9 +649,7 @@ In the general case, the first transaction log file is used by a kernel to recov
 
 Such a recovery algorithm is extremely ineffective, because it doesn't use the second transaction log file unless a base block of a primary file is invalid, and this base block is likely to be valid, because an error when writing a base block to a primary file in the beginning of a write operation will not trigger the switch to the second transaction log file, so the most probable event triggering this switch is a write error when storing dirty data in a primary file, that is likely to leave a valid base block in a primary file (the mid-update state).
 
-In Windows 8, the second transaction log file is used by a kernel to recover a dirty hive when the conditions mentioned above are met, with the following exceptions: the second transaction log file is used even if a base block of a primary file is valid, the second transaction log file is used even if its backup copy of a base block has a matching *Last written timestamp*. The new algorithm is much more sound.
-
-> In March 2016, Microsoft released an updated kernel for Windows 7 (6.1.7601.19160, KB3140410). This kernel implements a recovery algorithm similar to existing in Windows 8.
+In Windows 8, the second transaction log file is used by a kernel to recover a dirty hive when the conditions mentioned above are met, with the following exceptions: the second transaction log file is used even if a base block of a primary file is valid, the second transaction log file is used even if its backup copy of a base block has a matching *Last written timestamp*. The new algorithm is much more sound. In March 2016, Microsoft released an updated kernel for Windows 7 (6.1.7601.19160, KB3140410). This kernel implements a recovery algorithm similar to existing in Windows 8.
 
 When a dirty hive is loaded by a boot loader (not by a kernel), the applicable transaction log file (i.e. having a matching *Last written timestamp* in a valid backup copy of a base block) is used in the recovery. The first transaction log file is tried first.
 
