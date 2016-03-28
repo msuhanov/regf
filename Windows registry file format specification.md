@@ -350,7 +350,7 @@ Offset (bits)|Length (bits)|Field|Description
 When implementing the structure defined above in a program, keep in mind that a compiler may pack the *Virtualization control flags* and *User flags* bit fields in a different way. In C, two or more bit fields inside an integer may be packed right-to-left, so the first bit field defined in an integer may reside in the less significant (right) bits. In debug symbols for Windows, the *UserFlags* field is defined before the *VirtControlFlags* field exactly for this reason (however, these fields are written to a file in the order indicated in the table above).
 
 ##### Access bits
-Access bits are used to track when key nodes are being accessed, the field is set according to the following bit masks:
+Access bits are used to track when key nodes are being accessed (e.g. via the *RegCreateKeyEx()* and *RegOpenKeyEx* calls), the field is set according to the following bit masks:
 
 Mask|Description
 ---|---
