@@ -195,11 +195,11 @@ Offset|Length|Field|Value|Description
 8|4|Size||Size of a current hive bin in bytes
 12|8|Reserved||
 20|8|Timestamp||FILETIME (UTC), defined for the first hive bin only (see below)
-28|4|Spare||This field has no meaning on a disk
+28|4|Spare (*or* MemAlloc)||This field has no meaning on a disk (see below)
 
 #### Notes
 1. A hive bin size is multiple of 4096 bytes.
-2. The *Spare* field is used when shifting hive bins and cells in memory.
+2. The *Spare* field is used when shifting hive bins and cells in memory. In Windows 2000, the same field is called *MemAlloc*, it is used to track memory allocations for hive bins.
 3. A *Timestamp* in the header of the first hive bin acts as a backup copy of a *Last written timestamp* in the base block.
 
 ### Cell
@@ -673,13 +673,15 @@ The format description above applies to registry hives with the following major 
 
 When the *Minor version* field of the base block is equal to 2, the *Fast leaf* records are not supported.
 
-When the *Minor version* field of the base block is equal to 1, the *Fast leaf* records are not supported, the *Key name string* of the *Key node* and the *Value name string* of the *Key value* are always UTF-16LE, and every cell has the following structure:
+When the *Minor version* field of the base block is equal to 1, the *Fast leaf* records are not supported; the *Key name string* of the *Key node* and the *Value name string* of the *Key value* are always UTF-16LE; the *Flags* and *Spare* fields of the *Key value* don't exist, there is a *TitleIndex* field at offset 16 bytes with the length of 4 bytes; the *Access bits* (*Spare*) field of the *Key node* doesn't exist, there is a *TitleIndex* field at offset 12 bytes with the length of 4 bytes; and every cell has the following structure:
 
 Offset|Length|Field|Description
 ---|---|---|---
 0|4|Size|Size of a current cell in bytes, including this field (aligned to 16 bytes): the size is positive if a cell is unallocated or negative if a cell is allocated (use absolute values for calculations)
 4|4|Last|Offset of a previous cell in bytes, relative from the start of a current hive bin (or 0xFFFFFFFF for the first cell in a hive bin)
 8|...|Cell data|
+
+The *TitleIndex* field is used to store an index of a localized alias for a name string (there is no alias for a name string if this field is equal to 0). Although the *TitleIndex* field can be set and read in Windows NT 3.1, localized aliases were never supported.
 
 Also, the *File type* field of a base block in a transaction log file is set to 2 in all versions of Windows NT up to and including Windows 2000.
 
