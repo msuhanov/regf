@@ -184,6 +184,7 @@ Mask|Description
 6. The *LogId* field usually contains the same value as the *RmId* field.
 7. When the *RmId* field is null, the *LogId* and *TmId* fields may contain garbage data.
 8. The *ThawTmId*, *ThawRmId*, and *ThawLogId* fields are used to restore the state of the *TmId*, *RmId*, and *LogId* fields respectively when thawing a hive (after it was frozen in order to create a shadow copy).
+9. The *Last written timestamp* field isn't updated as of Windows 8.1 and Windows Server 2012 R2.
 
 ### Hive bin
 The *Hive bin* is variable in size and consists of a header and cells. A hive bin's header is 32 bytes in length, it contains the following structure:
@@ -627,7 +628,7 @@ Offset|Length|Field|Description
 1. *Hash-1* is the Marvin32 hash of the data starting from the beginning of the first page reference of a current log entry with the length of *Size - 40* bytes.
 2. *Hash-2* is the Marvin32 hash of the first 32 bytes of a current log entry (including the *Hash-1* calculated before).
 3. The following seed is used for calculating the *Hash-1* and *Hash-2* (hexadecimal bytes): 82 EF 4D 88 7A 4E 55 C5.
-4. A transaction log file may contain multiple log entries written together, as well as old (already applied) log entries.
+4. A transaction log file may contain multiple log entries written together (the base block in a transaction log file is updated only when writing the first log entry), as well as old (already applied) log entries.
 5. If a primary file is dirty and has a valid *Checksum* (in the base block), only subsequent log entries are applied. A subsequent log entry is a log entry with a sequence number equal to or greater than a *primary sequence number* of the base block in a transaction log file.
 6. If a primary file is dirty and has a wrong *Checksum*, its base block is recovered from a transaction log file. Then subsequent log entries are applied.
 7. If a log entry with a sequence number *N* is *not* followed by a log entry with a sequence number *N + 1*, recovery stops after applying a log entry with a sequence number *N*. If the first log entry doesn't contain an expected sequence number (equal to a *primary sequence number* of the base block in a transaction log file), recovery stops.
