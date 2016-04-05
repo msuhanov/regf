@@ -681,7 +681,7 @@ Offset|Length|Field|Description
 4|4|Last|Offset of a previous cell in bytes, relative from the start of a current hive bin (or 0xFFFFFFFF for the first cell in a hive bin)
 8|...|Cell data|
 
-The *TitleIndex* field is used to store an index of a localized alias for a name string (there is no alias for a name string if this field is equal to 0). Although the *TitleIndex* field can be set and read in Windows NT 3.1, localized aliases were never supported.
+The *TitleIndex* field is used to store an index of a localized alias for a name string (there is no alias for a name string if this field is equal to 0). Although the *TitleIndex* field can be set and read in Windows NT 3.1, localized aliases were never supported (and the *TitleIndex* field became deprecated in Windows NT 3.5).
 
 Also, the *File type* field of a base block in a transaction log file is set to 2 in all versions of Windows NT up to and including Windows 2000.
 
