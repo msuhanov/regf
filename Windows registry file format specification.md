@@ -654,7 +654,7 @@ In Windows 8, the second transaction log file is used by a kernel to recover a d
 
 When a dirty hive is loaded by a boot loader (not by a kernel), the applicable transaction log file (i.e. having a matching *Last written timestamp* in a valid backup copy of a base block) is used in the recovery. The first transaction log file is tried first.
 
-Another shortcoming in the implementation of the dual-logging scheme is that sequence numbers in a backup copy of a base block in a transaction log file are not used to record its mid-update state (see above). If a system crash occurs when writing to a transaction log file, there will be no clear indicators of which transaction log file is inconsistent. It's possible for an operating system to pick an inconsistent transaction log file for the recovery.
+Another shortcoming in the implementation of the dual-logging scheme is that sequence numbers in a backup copy of a base block in a transaction log file are not used to record its mid-update state (see above). If a system crash occurs when writing to a transaction log file, there will be no clear indicators of which transaction log file is inconsistent. It is possible for an operating system to pick an inconsistent transaction log file for the recovery.
 
 ### New format
 A hive writer will regularly swap the transaction log file being used (\*.LOG1 to \*.LOG2 and vice versa). This may divide log entries between two transaction log files; the first transaction log file isn't guaranteed to contain earlier log entries.
@@ -683,6 +683,8 @@ Offset|Length|Field|Description
 8|...|Cell data|
 
 The *TitleIndex* field is used to store an index of a localized alias for a name string (there is no alias for a name string if this field is equal to 0). Although the *TitleIndex* field can be set and read in Windows NT 3.1, localized aliases were never supported (and the *TitleIndex* field became deprecated in Windows NT 3.5).
+
+Registry hives with the *Minor version* field of the base block set to 0 can be found in pre-release versions Windows NT 3.1. This hive version is similar to the version 1.1, but it is out of the scope of this document.
 
 Also, the *File type* field of a base block in a transaction log file is set to 2 in all versions of Windows NT up to and including Windows 2000.
 
