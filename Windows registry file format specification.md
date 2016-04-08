@@ -684,7 +684,7 @@ Offset|Length|Field|Description
 
 The *TitleIndex* field is used to store an index of a localized alias for a name string (there is no alias for a name string if this field is equal to 0). Although the *TitleIndex* field can be set and read in Windows NT 3.1, localized aliases were never supported (and the *TitleIndex* field became deprecated in Windows NT 3.5).
 
-Registry hives with the *Minor version* field of the base block set to 0 can be found in pre-release versions Windows NT 3.1. This hive version is similar to the version 1.1, but it is out of the scope of this document.
+Registry hives with the *Minor version* field of the base block set to 0 can be found in pre-release versions of Windows NT 3.1. This hive version is similar to the version 1.1, but it is out of the scope of this document.
 
 Also, the *File type* field of a base block in a transaction log file is set to 2 in all versions of Windows NT up to and including Windows 2000.
 
