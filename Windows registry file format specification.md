@@ -177,6 +177,8 @@ Mask|Description
    * let C be a 32-bit value, initial value is zero;
    * let D be data containing 508 bytes;
    * split D into non-overlapping groups of 32 bits, and for each group, G[i], do the following: C = C xor G[i];
+   * if C is equal to -1, set C to -2;
+   * if C is equal to 0, set C to 1;
    * C is the checksum.
 3. The *Boot type* and *Boot recover* fields are used for in-memory hive recovery management by a boot loader and a kernel, they are not written to a disk in most cases (when *Clustering factor* is 8, these fields may be written to a disk, but they have no meaning there).
 4. New fields, except the *Last reorganized timestamp*, were introduced in Windows Vista as a part of the CLFS. The *Last reorganized timestamp* field was introduced in Windows 8 and Windows Server 2012.
