@@ -674,7 +674,7 @@ The format description above applies to registry hives with the following major 
 
 When the *Minor version* field of the base block is equal to 2, the *Fast leaf* records are not supported.
 
-When the *Minor version* field of the base block is equal to 1, the *Fast leaf* records are not supported; the *Key name string* of the *Key node* and the *Value name string* of the *Key value* are always UTF-16LE; the *Flags* and *Spare* fields of the *Key value* don't exist, there is a *TitleIndex* field at offset 16 bytes with the length of 4 bytes; the *Access bits* (*Spare*) field of the *Key node* doesn't exist, there is a *TitleIndex* field at offset 12 bytes with the length of 4 bytes; and every cell has the following structure:
+When the *Minor version* field of the base block is equal to 1, the *Fast leaf* records are not supported; the *Key name string* of the *Key node* and the *Value name string* of the *Key value* are always UTF-16LE; the *Flags* and *Spare* fields of the *Key value* don't exist, there is a *Title index* field at offset 16 bytes with the length of 4 bytes; the *Access bits* (*Spare*) field of the *Key node* doesn't exist, there is a *Title index* field at offset 12 bytes with the length of 4 bytes; and every cell has the following structure:
 
 Offset|Length|Field|Description
 ---|---|---|---
@@ -682,7 +682,7 @@ Offset|Length|Field|Description
 4|4|Last|Offset of a previous cell in bytes, relative from the start of a current hive bin (or 0xFFFFFFFF for the first cell in a hive bin)
 8|...|Cell data|
 
-The *TitleIndex* field is used to store an index of a localized alias for a name string (there is no alias for a name string if this field is equal to 0). Although the *TitleIndex* field can be set and read in Windows NT 3.1, localized aliases were never supported (and the *TitleIndex* field became deprecated in Windows NT 3.5).
+The *Title index* field is used to store an index of a localized alias for a name string (there is no alias for a name string if this field is equal to 0). Although the *Title index* field can be set and read in Windows NT 3.1, localized aliases were never supported (and the *Title index* field became deprecated in Windows NT 3.5).
 
 Registry hives with the *Minor version* field of the base block set to 0 can be found in pre-release versions of Windows NT 3.1. This hive version is similar to the version 1.1, but it is out of the scope of this document.
 
