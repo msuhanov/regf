@@ -632,8 +632,8 @@ Offset|Length|Field|Description
 3. The following seed is used for calculating the *Hash-1* and *Hash-2* (hexadecimal bytes): 82 EF 4D 88 7A 4E 55 C5.
 4. A transaction log file may contain multiple log entries written together (the base block in a transaction log file is updated only when writing the first log entry), as well as old (already applied) log entries.
 5. If a primary file is dirty and has a valid *Checksum* (in the base block), only subsequent log entries are applied. A subsequent log entry is a log entry with a sequence number equal to or greater than a *primary sequence number* of the base block in a transaction log file.
-6. If a primary file is dirty and has a wrong *Checksum*, its base block is recovered from a transaction log file. Then subsequent log entries are applied.
-7. If a log entry with a sequence number *N* is *not* followed by a log entry with a sequence number *N + 1*, recovery stops after applying a log entry with a sequence number *N*. If the first log entry doesn't contain an expected sequence number (equal to a *primary sequence number* of the base block in a transaction log file), recovery stops.
+6. If a primary file is dirty and has a wrong *Checksum* (in the base block), its base block is recovered from a transaction log file. Then subsequent log entries are applied.
+7. If a log entry with a sequence number *N* is *not* followed by a log entry with a sequence number *N + 1*, recovery stops after applying a log entry with a sequence number *N*. If the first log entry doesn't contain an expected sequence number (equal to a *primary sequence number* of the base block in a transaction log file, not less than a *secondary sequence number* of the valid base block in a primary file), recovery stops.
 8. If a log entry has a wrong value in the field *Hash-1*, *Hash-2*, or *Hive bins data size* (i.e. it isn't multiple of 4096 bytes), recovery stops, only previous log entries (preceding a bogus one) are applied.
 9. A primary file is grown according to the *Hive bins data size* field of a log entry being applied.
 10. Dirty hive bins are verified for correctness during recovery (but recovery doesn't stop on an invalid hive bin, an invalid hive bin is replaced with a dummy hive bin instead).
@@ -661,7 +661,7 @@ Another shortcoming in the implementation of the dual-logging scheme is that seq
 ### New format
 A hive writer will regularly swap the transaction log file being used (\*.LOG1 to \*.LOG2 and vice versa). This may divide log entries between two transaction log files; the first transaction log file isn't guaranteed to contain earlier log entries.
 
-Both transaction log files are used to recover a dirty hive, i.e. log entries from both transaction log files are applied; the transaction log file with earlier log entries is used first.
+Both transaction log files are used to recover a dirty hive, i.e. log entries from both transaction log files are applied; the transaction log file with earlier log entries is used first (if recovery stops when applying log entries from this transaction log file, then recovery is resumed with the next transaction log file; the first log entry of the next transaction log file is expected to have a sequence number equal to *N + 1*, where *N* is a sequence number of the last log entry applied).
 
 ## Flush strategies
 Flushing a hive ensures that its dirty data was written to a disk. When the old format of transaction log files is used, this means that dirty data was stored in a primary file. When the new format of transaction log files is used, a flush operation on a hive will succeed after dirty data was stored in a transaction log file (but not yet in a primary file); a hive writer may delay writing to a primary file (up to an hour), in this situation dirty data becomes unreconciled.
