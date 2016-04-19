@@ -339,7 +339,7 @@ Offset|Length|Field|Value|Description
 74|2|Class name length||In bytes
 76|...|Key name string||ASCII string or UTF-16LE string
 
-Starting from Windows Vista, Windows Server 2003 SP2, and Windows XP SP3, the *Largest subkey name length* field has been split into 4 fields (the offsets below are relative from the beginning of the old *Largest subkey name length* field):
+Starting from Windows Vista, Windows Server 2003 SP2, and Windows XP SP3, the *Largest subkey name length* field has been split into 4 bit fields (the offsets below are relative from the beginning of the old *Largest subkey name length* field, i.e. the first bit field starts within the byte at the lowest address):
 
 Offset (bits)|Length (bits)|Field|Description
 ---|---|---|---
