@@ -418,7 +418,20 @@ Mask|Name|Description
 0x8|REG_KEY_RECURSE_FLAG|Propagate virtualization flags to new child keys (subkeys)
 
 ##### Debug
-When the *Debug* field of a key node and the *CmpRegDebugBreakEnabled* kernel variable are set to 1, a checked Windows kernel will execute the *int 3* instruction on an access to the registry key. A retail Windows kernel has this feature disabled.
+When the *CmpRegDebugBreakEnabled* kernel variable is set to 1, a checked Windows kernel will execute the *int 3* instruction on various events according to the bit mask in the *Debug* field. A retail Windows kernel has this feature disabled.
+
+The following bit masks are supported:
+
+Mask|Name|Event description
+---|---|---
+0x01|BREAK_ON_OPEN|This key is opened
+0x02|BREAK_ON_DELETE|This key is deleted
+0x04|BREAK_ON_SECURITY_CHANGE|A key security is changed for this key
+0x08|BREAK_ON_CREATE_SUBKEY|A subkey of this key is created
+0x10|BREAK_ON_DELETE_SUBKEY|A subkey of this key is deleted
+0x20|BREAK_ON_SET_VALUE|A value is set to this key
+0x40|BREAK_ON_DELETE_VALUE|A key value is deleted from this key
+0x80|BREAK_ON_KEY_VIRTUALIZE|This key is virtualized
 
 #### Key values list
 The *Key values list* has the following structure:
