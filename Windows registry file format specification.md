@@ -38,6 +38,7 @@
         * [Notes](#notes-3)
       * [Big data](#big-data)
         * [Data segment](#data-segment)
+    * [Unallocated cell](#unallocated-cell)
     * [Summary](#summary)
   * [Format of transaction log files](#format-of-transaction-log-files)
     * [Old format](#old-format)
@@ -228,7 +229,7 @@ Big data (db)|List of data segments
 
 Also, *Cell data* may contain raw data (e.g. *Key value* data) and any lists defined below. A padding may be present at the end of a cell.
 
-When a record contains an offset field pointing to another record, the offset points to a cell containing the latter record. As already mentioned above, an offset relative from the start of the hive bins data doesn't point anywhere when it is equal to 0xFFFFFFFF.
+When a record contains an offset field pointing to another record (entity), the offset points to a cell containing the latter record (entity). As already mentioned above, an offset relative from the start of the hive bins data doesn't point anywhere when it is equal to 0xFFFFFFFF.
 
 #### Index leaf
 The *Index leaf* has the following structure:
@@ -537,6 +538,17 @@ A *data segment* is stored in the *Cell data* field of a cell pointed by the *Da
 
 Data segments of a *Big data* record, except the last one, always have the maximum size.
 
+### Unallocated cell
+If a cell to be marked as unallocated has an adjacent unallocated cell, these cells are coalesced, this is why a single unallocated cell may contain multiple remnant records (entities).
+
+In Windows 2000, the following record is written to beginning of the *Cell data* field of an unallocated cell:
+
+Offset|Length|Field|Description
+---|---|---|---
+0|4|Next|Offset of a next unallocated cell in a free list (in bytes, relative from the start of the hive bins data) or 0xFFFFFFFF, if there is no such a cell in that list (there are many free lists for a single hive in memory)
+
+The record described above isn't used as of Windows XP.
+
 ### Summary
 1. A *Base block* points to a root cell, which contains a *Key node*.
 2. A *Key node* points to a parent *Key node*, to a *Subkeys list* (a subkey is a *Key node* too), to a *Key values list*, to a *Key security* item.
@@ -698,6 +710,13 @@ Offset|Length|Field|Description
 8|...|Cell data|
 
 The *Title index* field is used to store an index of a localized alias for a name string (there is no alias for a name string if this field is equal to 0). Although the *Title index* field can be set and read in Windows NT 3.1, localized aliases were never supported (and the *Title index* field became deprecated in Windows NT 3.5).
+
+In Windows NT 3.1, the following record is written to beginning of the *Cell data* field of an unallocated cell:
+
+Offset|Length|Field|Description
+---|---|---|---
+0|4|Next|Offset of a next unallocated cell in a free list (in bytes, relative from the start of the hive bins data) or 0xFFFFFFFF, if there is no such a cell in that list
+4|8|Previous|Offset of a previous unallocated cell in a free list (in bytes, relative from the start of the hive bins data) or 0xFFFFFFFF, if there is no such a cell in that list
 
 Registry hives with the *Minor version* field of the base block set to 0 can be found in pre-release versions of Windows NT 3.1. This hive version is similar to the version 1.1, but it is out of the scope of this document.
 
