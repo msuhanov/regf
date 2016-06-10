@@ -716,7 +716,7 @@ In Windows NT 3.1, the following record is written to beginning of the *Cell dat
 Offset|Length|Field|Description
 ---|---|---|---
 0|4|Next|Offset of a next unallocated cell in a free list (in bytes, relative from the start of the hive bins data) or 0xFFFFFFFF, if there is no such a cell in that list
-4|8|Previous|Offset of a previous unallocated cell in a free list (in bytes, relative from the start of the hive bins data) or 0xFFFFFFFF, if there is no such a cell in that list
+4|4|Previous|Offset of a previous unallocated cell in a free list (in bytes, relative from the start of the hive bins data) or 0xFFFFFFFF, if there is no such a cell in that list
 
 Registry hives with the *Minor version* field of the base block set to 0 can be found in pre-release versions of Windows NT 3.1. This hive version is similar to the version 1.1, but it is out of the scope of this document.
 
