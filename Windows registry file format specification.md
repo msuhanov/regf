@@ -541,7 +541,7 @@ Data segments of a *Big data* record, except the last one, always have the maxim
 ### Unallocated cell
 If a cell to be marked as unallocated has an adjacent unallocated cell, these cells are coalesced, this is why a single unallocated cell may contain multiple remnant records (entities).
 
-In Windows 2000, the following record is written to beginning of the *Cell data* field of an unallocated cell:
+In Windows 2000, the following record is written to the beginning of the *Cell data* field of an unallocated cell:
 
 Offset|Length|Field|Description
 ---|---|---|---
@@ -711,7 +711,7 @@ Offset|Length|Field|Description
 
 The *Title index* field is used to store an index of a localized alias for a name string (there is no alias for a name string if this field is equal to 0). Although the *Title index* field can be set and read in Windows NT 3.1, localized aliases were never supported (and the *Title index* field became deprecated in Windows NT 3.5).
 
-In Windows NT 3.1, the following record is written to beginning of the *Cell data* field of an unallocated cell:
+In Windows NT 3.1, the following record is written to the beginning of the *Cell data* field of an unallocated cell:
 
 Offset|Length|Field|Description
 ---|---|---|---
