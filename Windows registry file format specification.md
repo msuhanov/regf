@@ -365,7 +365,7 @@ Offset|Length|Field|Description
 1|1|Layered key bit fields|See below
 2|2|Spare|Not used
 
-The *Layered key bit fields* has the following structure (the offsets below are relative from the most significant bit):
+The *Layered key bit fields* have the following structure (the offsets below are relative from the most significant bit):
 
 Offset (bits)|Length (bits)|Field|Value(s)|Description
 ---|---|---|---|---
