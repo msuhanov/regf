@@ -531,7 +531,7 @@ Other values are allowed as well (but they are not predefined).
 Mask|Name|Description
 ---|---|---
 0x0001|VALUE_COMP_NAME|Name is an ASCII string, possibly an extended ASCII string (otherwise it is a UTF-16LE string)
-0x0002||Is a tombstone value (the flag is used starting from Insider Preview builds of Windows 10 "Redstone 1"), a tombstone value also has the *Data type* set to REG_NONE, the *Data size* field set to 0, and the *Data offset* field set to 0xFFFFFFFF.
+0x0002||Is a tombstone value (the flag is used starting from Insider Preview builds of Windows 10 "Redstone 1"), a tombstone value also has the *Data type* set to REG_NONE, the *Data size* field set to 0, and the *Data offset* field set to 0xFFFFFFFF
 
 #### Key security
 The *Key security* item has the following structure:
