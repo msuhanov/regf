@@ -24,11 +24,13 @@
         * [Notes](#notes-2)
       * [Key node](#key-node)
         * [Access bits](#access-bits)
+        * [Class name](#class-name)
         * [WorkVar](#workvar)
         * [Flags](#flags)
         * [User flags](#user-flags)
         * [Virtualization control flags](#virtualization-control-flags)
         * [Debug](#debug)
+        * [Layered keys](#layered-keys)
       * [Key values list](#key-values-list)
       * [Key value](#key-value)
         * [Data size](#data-size)
@@ -135,7 +137,7 @@ Offset|Length|Field|Value(s)|Description
 8|4|Secondary sequence number||This number is incremented by 1 at the end of a write operation on the primary file, a *primary sequence number* and a *secondary sequence number* should be equal after a successful write operation
 12|8|Last written timestamp||FILETIME (UTC)
 20|4|Major version|1|Major version of a hive writer
-24|4|Minor version|3, 4, or 5|Minor version of a hive writer
+24|4|Minor version|3, 4, 5 or 6|Minor version of a hive writer
 28|4|File type|0|0 means *primary file*
 32|4|File format|1|1 means *direct memory load*
 36|4|Root cell offset||Offset of a root cell in bytes, relative from the start of the hive bins data
@@ -170,7 +172,7 @@ The *Flags* field is used to record the state of the Kernel Transaction Manager 
 Mask|Description
 ---|---
 0x00000001|KTM locked the hive (there are pending or anticipated transactions)
-0x00000002|The hive has been defragmented (all its pages are dirty therefore) and it is being written to a disk (Windows 8 and Windows Server 2012 only, this flag is used to speed up hive recovery by reading a transaction log file instead of a primary file)
+0x00000002|The hive has been defragmented (all its pages are dirty therefore) and it is being written to a disk (Windows 8 and Windows Server 2012 only, this flag is used to speed up hive recovery by reading a transaction log file instead of a primary file); this hive supports the layered keys feature (starting from Insider Preview builds of Windows 10 "Redstone 1").
 
 #### Notes
 1. *File offset of a root cell = 4096 + Root cell offset*. This formula also applies to any other offset relative from the start of the hive bins data (however, if such a relative offset is equal to 0xFFFFFFFF, it doesn't point anywhere).
@@ -353,6 +355,24 @@ Offset (bits)|Length (bits)|Field|Description
 
 When implementing the structure defined above in a program, keep in mind that a compiler may pack the *Virtualization control flags* and *User flags* bit fields in a different way. In C, two or more bit fields inside an integer may be packed right-to-left, so the first bit field defined in an integer may reside in the less significant (right) bits. In debug symbols for Windows, the *UserFlags* field is defined before the *VirtControlFlags* field exactly for this reason (however, these fields are written to a file in the order indicated in the table above).
 
+**End of warning**
+
+Starting from Insider Preview builds of Windows 10 "Redstone 1", the *Access bits* field has been split into the following fields:
+
+Offset|Length|Field|Description
+---|---|---|---
+0|1|Access bits|
+1|1|Layered key bit fields|See below
+2|2|Spare|Not used
+
+The *Layered key bit fields* has the following structure (the offsets below are relative from the most significant bit):
+
+Offset (bits)|Length (bits)|Field||Value(s)|Description
+---|---|---|---|---
+0|1|Inherit class|0 or 1|See below
+1|5|Spare||Not used
+6|2|Layer semantics|0, 1, 2, or 3|See below
+
 ##### Access bits
 Access bits are used to track when key nodes are being accessed (e.g. via the *RegCreateKeyEx()* and *RegOpenKeyEx()* calls), the field is set according to the following bit masks:
 
@@ -362,6 +382,9 @@ Mask|Description
 0x2|This key was accessed after a Windows registry was initialized with the *NtInitializeRegistry()* routine during the boot
 
 When the *Access bits* field is equal to 0, the access history of a key is clear.
+
+##### Class name
+Typically, a class name is a UTF-16LE string assigned to a key node; it doesn't have any particular meaning. For example, Microsoft was using class names to store keys for the Syskey encryption. Originally, class names were intended to be used to define key node types (similar to data types of the *Key value*).
 
 ##### WorkVar
 In Windows 2000, the *WorkVar* field may contain a zero-based index of a subkey in a subkeys list found at the last successful lookup (used to speed up lookups when the same subkey is accessed many times consecutively: a list element with the cached index is always tried first); such a cached index may point to a list element either in a subkeys list or in a volatile subkeys list, the latter is examined last.
@@ -373,7 +396,7 @@ In Windows XP and Windows Server 2003, the first 4 bits, counting from the most 
 
 Mask|Name|Description
 ---|---|---
-0x0001|KEY_VOLATILE|Is volatile (a key node on a disk isn't expected to have this flag set)
+0x0001|KEY_VOLATILE|Is volatile (not used, a key node on a disk isn't expected to have this flag set)
 0x0002|KEY_HIVE_EXIT|Is the mount point of another hive (a key node on a disk isn't expected to have this flag set)
 0x0004|KEY_HIVE_ENTRY|Is the root key for this hive
 0x0008|KEY_NO_DELETE|This key can't be deleted
@@ -434,6 +457,22 @@ Mask|Name|Event description
 0x40|BREAK_ON_DELETE_VALUE|A value is deleted from this key
 0x80|BREAK_ON_KEY_VIRTUALIZE|This key is virtualized
 
+##### Layered keys
+Layered keys were introduced in Insider Preview builds of Windows 10 "Redstone 1". When a hive supports the layered keys feature, a kernel may treat some key nodes in a special way.
+
+When a kernel is accessing a key node treated as a part of a layered key, it builds a key node stack, including the key node being accessed, its parent key node and no more than 2 parent key nodes towards the root key node. Then this stack is used to produce cumulative information about the layered key. For example, if you query the last written timestamp for a layered key, the most recent timestamp will be returned from the key node stack; if you enumerate key values from a layered key, key values from key nodes in the stack will be returned (except tombstone values; if there are two or more values with the same name in the key node stack, a value from a lower key node takes precedence).
+
+When the *Inherit class* field is set to 0, the layered key will have the same class name as the key node originally accessed by a kernel. Otherwise, the layered key will receive the same class name (possibly an empty class name) as an upper key node having the *Inherit class* field set to 0.
+
+The *Layer semantics* field is set using the following values:
+
+Value|Description
+---|---
+0|This key node and its parent key nodes can be included in the layered key
+1|Is a tombstone key node: this key node and its parent key nodes can't be included in the layered key (also, such a key node has no class name, no subkeys, and no values)
+2|This key node can be included in the layered key, but its parent key nodes can't
+3|This key node can be included in the layered key, but its parent key nodes can't; child key nodes, except tombstone key nodes, are required to have the same value set in the field
+
 #### Key values list
 The *Key values list* has the following structure:
 
@@ -492,6 +531,7 @@ Other values are allowed as well (but they are not predefined).
 Mask|Name|Description
 ---|---|---
 0x0001|VALUE_COMP_NAME|Name is an ASCII string, possibly an extended ASCII string (otherwise it is a UTF-16LE string)
+0x0002||Is a tombstone value (the flag is used starting from Insider Preview builds of Windows 10 "Redstone 1"), a tombstone value also has the *Data type* set to REG_NONE, the *Data size* field set to 0, and the *Data offset* field set to 0xFFFFFFFF.
 
 #### Key security
 The *Key security* item has the following structure:
@@ -633,7 +673,7 @@ Offset|Length|Field|Value|Description
 ---|---|---|---|---
 0|4|Signature|HvLE|ASCII string
 4|4|Size||Size of a current log entry in bytes
-8|4|Flags||Copy of the *Flags* field of the base block at the time of creation of a current log entry (see below)
+8|4|Flags||Partial copy of the *Flags* field of the base block at the time of creation of a current log entry (see below)
 12|4|Sequence number||This number constitutes a possible value of the *Primary sequence number* and *Secondary sequence number* fields of the base block in memory after a current log entry is applied (these fields are not modified before the write operation on the recovered hive)
 16|4|Hive bins data size||Copy of the *Hive bins data size* field of the base block at the time of creation of a current log entry
 20|4|Dirty pages count||Number of dirty pages attached to a current log entry
@@ -662,7 +702,7 @@ Offset|Length|Field|Description
 8. If a log entry has a wrong value in the field *Hash-1*, *Hash-2*, or *Hive bins data size* (i.e. it isn't multiple of 4096 bytes), recovery stops, only previous log entries (preceding a bogus one) are applied.
 9. A primary file is grown according to the *Hive bins data size* field of a log entry being applied.
 10. Dirty hive bins are verified for correctness during recovery (but recovery doesn't stop on an invalid hive bin, an invalid hive bin is replaced with a dummy hive bin instead).
-11. The *Flags* field of a log entry is set to a value of the *Flags* field of the base block. During recovery, the *Flags* field of the base block is set to a value taken from a log entry being applied.
+11. The *Flags* field of a log entry is set to 0x00000001 when a value of the *Flags* field of the base block has the bit mask 0x00000001 set, otherwise the *Flags* field of a log entry is set to 0x00000000. During recovery, the bit mask 0x00000001 is set or unset in the *Flags* field of the base block according to a value taken from a log entry being applied. This means that only the bit mask 0x00000001 is saved to or restored from a log entry.
 
 ## Dirty state of a hive
 A hive is considered to be dirty (i.e. requiring recovery) when a base block in a primary file contains a wrong checksum, or its *primary sequence number* doesn't match its *secondary sequence number*. If a hive isn't dirty, but a transaction log file (new format) contains subsequent log entries, they are ignored.
