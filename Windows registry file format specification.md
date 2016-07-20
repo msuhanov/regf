@@ -137,7 +137,7 @@ Offset|Length|Field|Value(s)|Description
 8|4|Secondary sequence number||This number is incremented by 1 at the end of a write operation on the primary file, a *primary sequence number* and a *secondary sequence number* should be equal after a successful write operation
 12|8|Last written timestamp||FILETIME (UTC)
 20|4|Major version|1|Major version of a hive writer
-24|4|Minor version|3, 4, 5 or 6|Minor version of a hive writer
+24|4|Minor version|3, 4, 5, or 6|Minor version of a hive writer
 28|4|File type|0|0 means *primary file*
 32|4|File format|1|1 means *direct memory load*
 36|4|Root cell offset||Offset of a root cell in bytes, relative from the start of the hive bins data
