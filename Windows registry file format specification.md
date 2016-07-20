@@ -367,7 +367,7 @@ Offset|Length|Field|Description
 
 The *Layered key bit fields* has the following structure (the offsets below are relative from the most significant bit):
 
-Offset (bits)|Length (bits)|Field||Value(s)|Description
+Offset (bits)|Length (bits)|Field|Value(s)|Description
 ---|---|---|---|---
 0|1|Inherit class|0 or 1|See below
 1|5|Spare||Not used
