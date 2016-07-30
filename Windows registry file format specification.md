@@ -400,7 +400,7 @@ Mask|Name|Description
 0x0002|KEY_HIVE_EXIT|Is the mount point of another hive (a key node on a disk isn't expected to have this flag set)
 0x0004|KEY_HIVE_ENTRY|Is the root key for this hive
 0x0008|KEY_NO_DELETE|This key can't be deleted
-0x0010|KEY_SYM_LINK|This key is a symlink (a target key is specified as a UTF-16LE string (REG_LINK) in a value named "SymbolicLinkValue")
+0x0010|KEY_SYM_LINK|This key is a symlink (a target key is specified as a UTF-16LE string (REG_LINK) in a value named "SymbolicLinkValue", example: *\REGISTRY\MACHINE\SOFTWARE\Classes\Wow6432Node*)
 0x0020|KEY_COMP_NAME|Name is an ASCII string, possibly an extended ASCII string (otherwise it is a UTF-16LE string)
 0x0040|KEY_PREDEF_HANDLE|Is a predefined handle (a handle is stored in the *Number of key values* field)
 
@@ -460,7 +460,7 @@ Mask|Name|Event description
 ##### Layered keys
 Layered keys were introduced in Insider Preview builds of Windows 10 "Redstone 1". When a hive supports the layered keys feature, a kernel may treat some key nodes in a special way.
 
-When a kernel is accessing a key node treated as a part of a layered key, it builds a key node stack, including the key node being accessed, its parent key node and no more than 2 parent key nodes towards the root key node. Then this stack is used to produce cumulative information about the layered key. For example, if you query the last written timestamp for a layered key, the most recent timestamp will be returned from the key node stack; if you enumerate key values for a layered key, key values from key nodes in the stack will be returned (except tombstone values; if there are two or more values with the same name in the key node stack, a value from a lower key node takes precedence).
+When a kernel is accessing a key node treated as a part of a layered key, it builds a key node stack, including the key node being accessed, its parent key node and no more than 2 parent key nodes towards the registry root (crossing a mount point is possible). Then this stack is used to produce cumulative information about the layered key. For example, if you query the last written timestamp for a layered key, the most recent timestamp will be returned from the key node stack; if you enumerate key values for a layered key, key values from key nodes in the stack will be returned (except tombstone values; if there are two or more values with the same name in the key node stack, a value from a lower key node takes precedence).
 
 When the *Inherit class* field is set to 0, the layered key will have the same class name as the key node originally accessed by a kernel. Otherwise, the layered key will receive the same class name (possibly an empty class name) as an upper key node (from the stack) having the *Inherit class* field set to 0.
 
