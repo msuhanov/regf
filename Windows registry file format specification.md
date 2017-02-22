@@ -768,4 +768,4 @@ Also, the *File type* field of a base block in a transaction log file is set to 
 3. http://amnesia.gtisc.gatech.edu/~moyix/suzibandit.ltd.uk/MSc/
 
 -------
-© 2015-2016 Maxim Suhanov
+© 2015-2017 Maxim Suhanov
