@@ -737,7 +737,7 @@ As of Windows 8, the *Clustering factor* field is always set to 1, the logical s
 According to Microsoft, there is no support for a logical sector size different from 512 bytes and 4096 bytes in Windows; a logical sector size equal to 4096 bytes is supported as of Windows 8 and Windows Server 2012 [[2](https://msdn.microsoft.com/en-us/library/windows/desktop/hh848035(v=vs.85).aspx)]. This is why the *Clustering factor* field is expected to be equal to 1.
 
 ## Very old versions of Windows
-The format description above applies to registry hives with the following major and minor version numbers in the *Base block* structure: 1.3, 1.4, 1.5 and 1.6. However, the following major and minor version numbers can be found in registry hives of Windows NT 3.1, Windows NT 3.5, and Windows NT 3.51: 1.1 and 1.2.
+The format description above applies to registry hives with the following major and minor version numbers in the *Base block* structure: 1.3, 1.4, 1.5, and 1.6. However, the following major and minor version numbers can be found in registry hives of Windows NT 3.1, Windows NT 3.5, and Windows NT 3.51: 1.1 and 1.2.
 
 When the *Minor version* field of the base block is equal to 2, the *Fast leaf* records are not supported.
 
