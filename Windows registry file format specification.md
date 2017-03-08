@@ -189,7 +189,7 @@ Mask|Description
 6. The *LogId* field usually contains the same value as the *RmId* field.
 7. When the *RmId* field is null, the *LogId* and *TmId* fields may contain garbage data.
 8. The *ThawTmId*, *ThawRmId*, and *ThawLogId* fields are used to restore the state of the *TmId*, *RmId*, and *LogId* fields respectively when thawing a hive (after it was frozen in order to create a shadow copy).
-9. The *Last written timestamp* field isn't updated as of Windows 8.1 and Windows Server 2012 R2.
+9. The *Last written timestamp* field isn't updated as of Windows 8.1 and Windows Server 2012 R2 (but it can be set when a hive is created).
 
 ### Hive bin
 The *Hive bin* is variable in size and consists of a header and cells. A hive bin's header is 32 bytes in length, it contains the following structure:
@@ -708,7 +708,7 @@ Offset|Length|Field|Description
 A hive is considered to be dirty (i.e. requiring recovery) when a base block in a primary file contains a wrong checksum, or its *primary sequence number* doesn't match its *secondary sequence number*. If a hive isn't dirty, but a transaction log file (new format) contains subsequent log entries, they are ignored.
 
 ## Multiple transaction log files
-A hive writer may use no transaction log files, a single transaction log file (\*.LOG), or two transaction log files (\*.LOG1 and \*.LOG2). In the last case, also known as a dual-logging scheme (introduced in Windows Vista), a dummy third transaction log file (\*.LOG) may be present for backward compatibility. When a hive writer is using a single transaction log file, two empty transaction log files from the dual-logging scheme (\*.LOG1 and \*.LOG2) may be present as well.
+A hive writer may use no transaction log files, a single transaction log file (\*.LOG), or two transaction log files (\*.LOG1 and \*.LOG2). In the last case, also known as a dual-logging scheme (introduced in Windows Vista), a dummy third transaction log file (\*.LOG) may be present as an artifact from an installation image. When a hive writer is using a single transaction log file, two empty transaction log files from the dual-logging scheme (\*.LOG1 and \*.LOG2) may be present as well.
 
 ### Old format
 Under normal circumstances, only the first transaction log (\*.LOG1) file is used. If an error occurs when writing to a primary file, a switch to the second transaction log file (\*.LOG2) is performed (this file will contain a cumulative log of dirty data, i.e. dirty pages that weren't written in full to a primary file due to an error and pages dirtied since the failed write, on the next write attempt). If write errors persist, a hive writer will swap the transaction log file being used on every write attempt (\*.LOG2 to \*.LOG1 and vice versa), keeping a cumulative log of dirty data. This allows a hive writer to keep a consistent copy of previous dirty data in another transaction log file on each write attempt (if a system crash occurs when writing to a current transaction log file, thus leaving it in the inconsistent state, a primary file may be recovered later using a previous transaction log file). After a successful write operation on a primary file, the first transaction log file will be used again. If an error occurs when writing a base block to a primary file in the beginning of a write operation (in order to update the *Primary sequence number* and *Last written timestamp* fields), the whole operation fails without changing the log file being used.
