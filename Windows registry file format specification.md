@@ -133,37 +133,37 @@ The base block is 4096 bytes in length, it contains the following structure in W
 Offset|Length|Field|Value(s)|Description
 ---|---|---|---|---
 0|4|Signature|regf|ASCII string
-4|4|Primary sequence number||This number is incremented by 1 in the beginning of a write operation on the primary file
-8|4|Secondary sequence number||This number is incremented by 1 at the end of a write operation on the primary file, a *primary sequence number* and a *secondary sequence number* should be equal after a successful write operation
-12|8|Last written timestamp||FILETIME (UTC)
+4|4|Primary sequence number| |This number is incremented by 1 in the beginning of a write operation on the primary file
+8|4|Secondary sequence number| |This number is incremented by 1 at the end of a write operation on the primary file, a *primary sequence number* and a *secondary sequence number* should be equal after a successful write operation
+12|8|Last written timestamp| |FILETIME (UTC)
 20|4|Major version|1|Major version of a hive writer
 24|4|Minor version|3, 4, 5, or 6|Minor version of a hive writer
 28|4|File type|0|0 means *primary file*
 32|4|File format|1|1 means *direct memory load*
-36|4|Root cell offset||Offset of a root cell in bytes, relative from the start of the hive bins data
-40|4|Hive bins data size||Size of the hive bins data in bytes
-44|4|Clustering factor||Logical sector size of the underlying disk in bytes divided by 512
-48|64|File name||UTF-16LE string (contains a partial file path to the primary file, or a file name of the primary file), used for debugging purposes
-112|396|Reserved||
-508|4|Checksum||XOR-32 checksum of the previous 508 bytes
-512|3576|Reserved||
-4088|4|Boot type||This field has no meaning on a disk
-4092|4|Boot recover||This field has no meaning on a disk
+36|4|Root cell offset| |Offset of a root cell in bytes, relative from the start of the hive bins data
+40|4|Hive bins data size| |Size of the hive bins data in bytes
+44|4|Clustering factor| |Logical sector size of the underlying disk in bytes divided by 512
+48|64|File name| |UTF-16LE string (contains a partial file path to the primary file, or a file name of the primary file), used for debugging purposes
+112|396|Reserved| |
+508|4|Checksum| |XOR-32 checksum of the previous 508 bytes
+512|3576|Reserved| |
+4088|4|Boot type| |This field has no meaning on a disk
+4092|4|Boot recover| |This field has no meaning on a disk
 
 In Windows 10, the following fields are found to be allocated in the previously reserved areas:
 
 Offset|Length|Field|Value|Description
 ---|---|---|---|---
-112|16|RmId||GUID, see below
-128|16|LogId||GUID, see below
-144|4|Flags||Bit mask, see below
-148|16|TmId||GUID, see below
+112|16|RmId| |GUID, see below
+128|16|LogId| |GUID, see below
+144|4|Flags| |Bit mask, see below
+148|16|TmId| |GUID, see below
 164|4|GUID signature|rmtm|ASCII string
-168|8|Last reorganized timestamp||FILETIME (UTC), see below
-...|...|||
-4040|16|ThawTmId||GUID, this field has no meaning on a disk
-4056|16|ThawRmId||GUID, this field has no meaning on a disk
-4072|16|ThawLogId||GUID, this field has no meaning on a disk
+168|8|Last reorganized timestamp| |FILETIME (UTC), see below
+...|...| ||
+4040|16|ThawTmId| |GUID, this field has no meaning on a disk
+4056|16|ThawRmId| |GUID, this field has no meaning on a disk
+4072|16|ThawLogId| |GUID, this field has no meaning on a disk
 
 The *RmId* field contains a GUID of the Resource Manager (RM), and the *TmId* field contains a GUID used to generate a file name of a log file stream for the Transaction Manager (TM), see the *ZwCreateResourceManager()* and *ZwCreateTransactionManager()* routines; the *LogId* field contains a GUID used to generate a file name of a physical log file, see the *ClfsCreateLogFile()* routine. The *GUID signature* field is always set to the "rmtm" ASCII string.
 
@@ -197,11 +197,11 @@ The *Hive bin* is variable in size and consists of a header and cells. A hive bi
 Offset|Length|Field|Value|Description
 ---|---|---|---|---
 0|4|Signature|hbin|ASCII string
-4|4|Offset||Offset of a current hive bin in bytes, relative from the start of the hive bins data
-8|4|Size||Size of a current hive bin in bytes
-12|8|Reserved||
-20|8|Timestamp||FILETIME (UTC), defined for the first hive bin only (see below)
-28|4|Spare (*or* MemAlloc)||This field has no meaning on a disk (see below)
+4|4|Offset| |Offset of a current hive bin in bytes, relative from the start of the hive bins data
+8|4|Size| |Size of a current hive bin in bytes
+12|8|Reserved| |
+20|8|Timestamp| |FILETIME (UTC), defined for the first hive bin only (see below)
+28|4|Spare (*or* MemAlloc)| |This field has no meaning on a disk (see below)
 
 #### Notes
 1. A hive bin size is multiple of 4096 bytes.
@@ -239,8 +239,8 @@ The *Index leaf* has the following structure:
 Offset|Length|Field|Value|Description
 ---|---|---|---|---
 0|2|Signature|li|ASCII string
-2|2|Number of elements||
-4|...|List elements||
+2|2|Number of elements| |
+4|...|List elements| |
 
 A list element has the following structure (a list element is repeated *Number of elements* times):
 
@@ -256,8 +256,8 @@ The *Fast leaf* has the following structure:
 Offset|Length|Field|Value|Description
 ---|---|---|---|---
 0|2|Signature|lf|ASCII string
-2|2|Number of elements||
-4|...|List elements||
+2|2|Number of elements| |
+4|...|List elements| |
 
 A list element has the following structure:
 
@@ -276,8 +276,8 @@ The *Hash leaf* has the following structure:
 Offset|Length|Field|Value|Description
 ---|---|---|---|---
 0|2|Signature|lh|ASCII string
-2|2|Number of elements||
-4|...|List elements||
+2|2|Number of elements| |
+4|...|List elements| |
 
 A list element has the following structure:
 
@@ -301,8 +301,8 @@ The *Index root* has the following structure:
 Offset|Length|Field|Value|Description
 ---|---|---|---|---
 0|2|Signature|ri|ASCII string
-2|2|Number of elements||
-4|...|List elements||
+2|2|Number of elements| |
+4|...|List elements| |
 
 A list element has the following structure:
 
@@ -321,26 +321,26 @@ The *Key node* has the following structure:
 Offset|Length|Field|Value|Description
 ---|---|---|---|---
 0|2|Signature|nk|ASCII string
-2|2|Flags||Bit mask, see below
-4|8|Last written timestamp||FILETIME (UTC)
-12|4|Access bits||Bit mask, see below (this field is used as of Windows 8 and Windows Server 2012; in previous versions of Windows, this field is reserved and called *Spare*)
-16|4|Parent||Offset of a parent key node in bytes, relative from the start of the hive bins data (this field has no meaning on a disk for a root key node)
-20|4|Number of subkeys||
-24|4|Number of volatile subkeys||
-28|4|Subkeys list offset||In bytes, relative from the start of the hive bins data
-32|4|Volatile subkeys list offset||This field has no meaning on a disk (volatile keys are not written to a file)
-36|4|Number of key values||
-40|4|Key values list offset||In bytes, relative from the start of the hive bins data
-44|4|Key security offset||In bytes, relative from the start of the hive bins data
-48|4|Class name offset||In bytes, relative from the start of the hive bins data
-52|4|Largest subkey name length||In bytes, a subkey name is treated as a UTF-16LE string (see below)
-56|4|Largest subkey class name length||In bytes
-60|4|Largest value name length||In bytes, a value name is treated as a UTF-16LE string
-64|4|Largest value data size||In bytes
-68|4|WorkVar||Cached index (see below)
-72|2|Key name length||In bytes
-74|2|Class name length||In bytes
-76|...|Key name string||ASCII string or UTF-16LE string
+2|2|Flags| |Bit mask, see below
+4|8|Last written timestamp| |FILETIME (UTC)
+12|4|Access bits| |Bit mask, see below (this field is used as of Windows 8 and Windows Server 2012; in previous versions of Windows, this field is reserved and called *Spare*)
+16|4|Parent| |Offset of a parent key node in bytes, relative from the start of the hive bins data (this field has no meaning on a disk for a root key node)
+20|4|Number of subkeys| |
+24|4|Number of volatile subkeys| |
+28|4|Subkeys list offset| |In bytes, relative from the start of the hive bins data
+32|4|Volatile subkeys list offset| |This field has no meaning on a disk (volatile keys are not written to a file)
+36|4|Number of key values| |
+40|4|Key values list offset| |In bytes, relative from the start of the hive bins data
+44|4|Key security offset| |In bytes, relative from the start of the hive bins data
+48|4|Class name offset| |In bytes, relative from the start of the hive bins data
+52|4|Largest subkey name length| |In bytes, a subkey name is treated as a UTF-16LE string (see below)
+56|4|Largest subkey class name length| |In bytes
+60|4|Largest value name length| |In bytes, a value name is treated as a UTF-16LE string
+64|4|Largest value data size| |In bytes
+68|4|WorkVar| |Cached index (see below)
+72|2|Key name length| |In bytes
+74|2|Class name length| |In bytes
+76|...|Key name string| |ASCII string or UTF-16LE string
 
 Starting from Windows Vista, Windows Server 2003 SP2, and Windows XP SP3, the *Largest subkey name length* field has been split into 4 bit fields (the offsets below are relative from the beginning of the old *Largest subkey name length* field, i.e. the first bit field starts within the byte at the lowest address):
 
@@ -370,7 +370,7 @@ The *Layered key bit fields* have the following structure (the offsets below are
 Offset (bits)|Length (bits)|Field|Value(s)|Description
 ---|---|---|---|---
 0|1|Inherit class|0 or 1|See below
-1|5|Spare||Not used
+1|5|Spare| |Not used
 6|2|Layer semantics|0, 1, 2, or 3|See below
 
 ##### Access bits
@@ -494,13 +494,13 @@ The *Key value* has the following structure:
 Offset|Length|Field|Value|Description
 ---|---|---|---|---
 0|2|Signature|vk|ASCII string
-2|2|Name length||In bytes, can be 0 (name isn't set)
-4|4|Data size||In bytes, can be 0 (value isn't set), the most significant bit has a special meaning (see below)
-8|4|Data offset||In bytes, relative from the start of the hive bins data (or data itself, see below)
-12|4|Data type||See below
-16|2|Flags||Bit mask, see below
-18|2|Spare||Not used
-20|...|Value name string||ASCII string or UTF-16LE string
+2|2|Name length| |In bytes, can be 0 (name isn't set)
+4|4|Data size| |In bytes, can be 0 (value isn't set), the most significant bit has a special meaning (see below)
+8|4|Data offset| |In bytes, relative from the start of the hive bins data (or data itself, see below)
+12|4|Data type| |See below
+16|2|Flags| |Bit mask, see below
+18|2|Spare| |Not used
+20|...|Value name string| |ASCII string or UTF-16LE string
 
 ##### Data size
 When the most significant bit is 1, data (4 bytes or less) is stored in the *Data offset* field directly (when data contains less than 4 bytes, it is being stored as is in the beginning of the *Data offset* field). The most significant bit (when set to 1) should be ignored when calculating the data size.
@@ -531,7 +531,7 @@ Other values are allowed as well (but they are not predefined).
 Mask|Name|Description
 ---|---|---
 0x0001|VALUE_COMP_NAME|Name is an ASCII string, possibly an extended ASCII string (otherwise it is a UTF-16LE string)
-0x0002||Is a tombstone value (the flag is used starting from Insider Preview builds of Windows 10 "Redstone 1"), a tombstone value also has the *Data type* field set to REG_NONE, the *Data size* field set to 0, and the *Data offset* field set to 0xFFFFFFFF
+0x0002| |Is a tombstone value (the flag is used starting from Insider Preview builds of Windows 10 "Redstone 1"), a tombstone value also has the *Data type* field set to REG_NONE, the *Data size* field set to 0, and the *Data offset* field set to 0xFFFFFFFF
 
 #### Key security
 The *Key security* item has the following structure:
@@ -539,12 +539,12 @@ The *Key security* item has the following structure:
 Offset|Length|Field|Value|Description
 ---|---|---|---|---
 0|2|Signature|sk|ASCII string
-2|2|Reserved||
-4|4|Flink||See below
-8|4|Blink||See below
-12|4|Reference count||Number of key nodes pointing to this item
-16|4|Security descriptor size||In bytes
-20|...|Security descriptor||
+2|2|Reserved| |
+4|4|Flink| |See below
+8|4|Blink| |See below
+12|4|Reference count| |Number of key nodes pointing to this item
+16|4|Security descriptor size| |In bytes
+20|...|Security descriptor| |
 
 ##### Notes
 1. Flink and blink are offsets in bytes, relative from the start of the hive bins data.
@@ -558,8 +558,8 @@ The *Big data* is used to reference data larger than 16344 bytes (when the *Mino
 Offset|Length|Field|Value|Description
 ---|---|---|---|---
 0|2|Signature|db|ASCII string
-2|2|Number of segments||
-4|4|Offset of a list of segments||In bytes, relative from the start of the hive bins data
+2|2|Number of segments| |
+4|4|Offset of a list of segments| |In bytes, relative from the start of the hive bins data
 
 The list of segments has the following structure:
 
@@ -624,7 +624,7 @@ The *Dirty vector* is stored starting from the beginning of the second sector of
 Offset|Length|Field|Value|Description
 ---|---|---|---|---
 0|4|Signature|DIRT|ASCII string
-4|...|Bitmap||Bitmap of dirty pages
+4|...|Bitmap| |Bitmap of dirty pages
 
 Each bit of a bitmap corresponds to the state of a specific *512-byte* page within hive bins data to be written to a primary file from memory, regardless of a logical sector size of an underlying disk (these pages don't overlap, there are no gaps between them):
 * the first bit, *bit #1*, corresponds to the state of the first *512-byte* page within hive bins data;
@@ -672,15 +672,15 @@ A log entry has the following structure:
 Offset|Length|Field|Value|Description
 ---|---|---|---|---
 0|4|Signature|HvLE|ASCII string
-4|4|Size||Size of a current log entry in bytes
-8|4|Flags||Partial copy of the *Flags* field of the base block at the time of creation of a current log entry (see below)
-12|4|Sequence number||This number constitutes a possible value of the *Primary sequence number* and *Secondary sequence number* fields of the base block in memory after a current log entry is applied (these fields are not modified before the write operation on the recovered hive)
-16|4|Hive bins data size||Copy of the *Hive bins data size* field of the base block at the time of creation of a current log entry
-20|4|Dirty pages count||Number of dirty pages attached to a current log entry
-24|8|Hash-1||See below
-32|8|Hash-2||See below
-40|...|Dirty pages references||
-...|...|Dirty pages||
+4|4|Size| |Size of a current log entry in bytes
+8|4|Flags| |Partial copy of the *Flags* field of the base block at the time of creation of a current log entry (see below)
+12|4|Sequence number| |This number constitutes a possible value of the *Primary sequence number* and *Secondary sequence number* fields of the base block in memory after a current log entry is applied (these fields are not modified before the write operation on the recovered hive)
+16|4|Hive bins data size| |Copy of the *Hive bins data size* field of the base block at the time of creation of a current log entry
+20|4|Dirty pages count| |Number of dirty pages attached to a current log entry
+24|8|Hash-1| |See below
+32|8|Hash-2| |See below
+40|...|Dirty pages references| |
+...|...|Dirty pages| |
 
 A dirty page reference describes a single page to be written to a primary file, and it has the following structure:
 
