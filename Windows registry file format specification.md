@@ -160,7 +160,7 @@ Offset|Length|Field|Value|Description
 148|16|TmId| |GUID, see below
 164|4|GUID signature|rmtm|ASCII string
 168|8|Last reorganized timestamp| |FILETIME (UTC), see below
-...|...| ||
+...|...| | |
 4040|16|ThawTmId| |GUID, this field has no meaning on a disk
 4056|16|ThawRmId| |GUID, this field has no meaning on a disk
 4072|16|ThawLogId| |GUID, this field has no meaning on a disk
