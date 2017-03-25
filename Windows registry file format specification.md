@@ -266,7 +266,9 @@ Offset|Length|Field|Description
 0|4|Key node offset|In bytes, relative from the start of the hive bins data
 4|4|Name hint|The first 4 ASCII characters of a key name string (used to speed up lookups)
 
-If a key name string is less than 4 characters in length, it is stored in the beginning of the *Name hint* field (hereinafter, *the beginning of the field* means *the byte at the lowest address or the first few bytes at lower addresses in the field*), unused bytes of this field are set to null. UTF-16LE characters are converted to ASCII, if possible (if it isn't, the first byte of the *Name hint* field is null).
+If a key name string is less than 4 characters in length, it is stored in the beginning of the *Name hint* field (hereinafter, *the beginning of the field* means *the byte at the lowest address or the first few bytes at lower addresses in the field*), unused bytes of this field are set to null. UTF-16LE characters are converted to ASCII (possibly an extended ASCII string), if possible (if it isn't, the first byte of the *Name hint* field is null).
+
+Hereinafter, an extended ASCII string means a string made from UTF-16LE characters with codes less than 256 by removing the null byte.
 
 All list elements are required to be sorted (as described above).
 
