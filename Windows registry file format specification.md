@@ -268,7 +268,7 @@ Offset|Length|Field|Description
 
 If a key name string is less than 4 characters in length, it is stored in the beginning of the *Name hint* field (hereinafter, *the beginning of the field* means *the byte at the lowest address or the first few bytes at lower addresses in the field*), unused bytes of this field are set to null. UTF-16LE characters are converted to ASCII (extended), if possible (if it isn't, the first byte of the *Name hint* field is null).
 
-Hereinafter, an extended ASCII string means a string made from UTF-16LE characters with codes less than 256 by removing the null byte from each character.
+Hereinafter, an extended ASCII string means a string made from UTF-16LE characters with codes less than 256 by removing the null byte (at the highest address) from each character.
 
 All list elements are required to be sorted (as described above).
 
@@ -342,7 +342,7 @@ Offset|Length|Field|Value|Description
 68|4|WorkVar| |Cached index (see below)
 72|2|Key name length| |In bytes
 74|2|Class name length| |In bytes
-76|...|Key name string| |ASCII string or UTF-16LE string
+76|...|Key name string| |ASCII (extended) string or UTF-16LE string
 
 Starting from Windows Vista, Windows Server 2003 SP2, and Windows XP SP3, the *Largest subkey name length* field has been split into 4 bit fields (the offsets below are relative from the beginning of the old *Largest subkey name length* field, i.e. the first bit field starts within the byte at the lowest address):
 
@@ -403,7 +403,7 @@ Mask|Name|Description
 0x0004|KEY_HIVE_ENTRY|Is the root key for this hive
 0x0008|KEY_NO_DELETE|This key can't be deleted
 0x0010|KEY_SYM_LINK|This key is a symlink (a target key is specified as a UTF-16LE string (REG_LINK) in a value named "SymbolicLinkValue", example: *\REGISTRY\MACHINE\SOFTWARE\Classes\Wow6432Node*)
-0x0020|KEY_COMP_NAME|Name is an ASCII string, possibly an extended ASCII string (otherwise it is a UTF-16LE string)
+0x0020|KEY_COMP_NAME|Key name is an ASCII string, possibly an extended ASCII string (otherwise it is a UTF-16LE string)
 0x0040|KEY_PREDEF_HANDLE|Is a predefined handle (a handle is stored in the *Number of key values* field)
 
 The following bits are also used as of Windows Vista:
@@ -502,7 +502,7 @@ Offset|Length|Field|Value|Description
 12|4|Data type| |See below
 16|2|Flags| |Bit mask, see below
 18|2|Spare| |Not used
-20|...|Value name string| |ASCII string or UTF-16LE string
+20|...|Value name string| |ASCII (extended) string or UTF-16LE string
 
 ##### Data size
 When the most significant bit is 1, data (4 bytes or less) is stored in the *Data offset* field directly (when data contains less than 4 bytes, it is being stored as is in the beginning of the *Data offset* field). The most significant bit (when set to 1) should be ignored when calculating the data size.
@@ -532,7 +532,7 @@ Other values are allowed as well (but they are not predefined).
 
 Mask|Name|Description
 ---|---|---
-0x0001|VALUE_COMP_NAME|Name is an ASCII string, possibly an extended ASCII string (otherwise it is a UTF-16LE string)
+0x0001|VALUE_COMP_NAME|Value name is an ASCII string, possibly an extended ASCII string (otherwise it is a UTF-16LE string)
 0x0002| |Is a tombstone value (the flag is used starting from Insider Preview builds of Windows 10 "Redstone 1"), a tombstone value also has the *Data type* field set to REG_NONE, the *Data size* field set to 0, and the *Data offset* field set to 0xFFFFFFFF
 
 #### Key security
