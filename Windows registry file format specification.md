@@ -229,7 +229,7 @@ Key value (vk)|Registry key value
 Key security (sk)|Security descriptor
 Big data (db)|List of data segments
 
-Also, *Cell data* may contain raw data (e.g. *Key value* data) and any lists defined below. A padding may be present at the end of a cell.
+Also, *Cell data* may contain raw data (e.g. *Key value* data) and any list defined below. A padding may be present at the end of a cell.
 
 When a record (entity) contains an offset field pointing to another record (entity), this offset points to a cell containing the latter record (entity). As already mentioned above, an offset relative from the start of the hive bins data doesn't point anywhere when it is equal to 0xFFFFFFFF.
 
@@ -286,7 +286,7 @@ A list element has the following structure:
 Offset|Length|Field|Description
 ---|---|---|---
 0|4|Key node offset|In bytes, relative from the start of the hive bins data
-4|4|Hash|Hash of a key name string, see below (used to speed up lookups)
+4|4|Name hash|Hash of a key name string, see below (used to speed up lookups)
 
 All list elements are required to be sorted (as described above). The *Hash leaf* is used when the *Minor version* field of the base block is greater than 4.
 
@@ -329,7 +329,7 @@ Offset|Length|Field|Value|Description
 16|4|Parent| |Offset of a parent key node in bytes, relative from the start of the hive bins data (this field has no meaning on a disk for a root key node)
 20|4|Number of subkeys| |
 24|4|Number of volatile subkeys| |
-28|4|Subkeys list offset| |In bytes, relative from the start of the hive bins data
+28|4|Subkeys list offset| |In bytes, relative from the start of the hive bins data (also, this field may point to an *Index root*)
 32|4|Volatile subkeys list offset| |This field has no meaning on a disk (volatile keys are not written to a file)
 36|4|Number of key values| |
 40|4|Key values list offset| |In bytes, relative from the start of the hive bins data
