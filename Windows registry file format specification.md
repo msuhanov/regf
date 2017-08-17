@@ -771,3 +771,5 @@ Also, the *File type* field of a base block in a transaction log file is set to 
 
 -------
 © 2015-2017 Maxim Suhanov
+
+This work is licensed under the [Creative Commons Attribution 4.0 International License](https://creativecommons.org/licenses/by/4.0/).
