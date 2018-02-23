@@ -462,18 +462,18 @@ Mask|Name|Event description
 ##### Layered keys
 Layered keys were introduced in Insider Preview builds of Windows 10 "Redstone 1". When a hive supports the layered keys feature, a kernel may treat some key nodes in a special way.
 
-When a kernel is accessing a key node treated as a part of a layered key, it builds a key node stack, including the key node being accessed, its parent key node and no more than 2 (or 14 as of Windows 10 Insider Preview Build 14986, or 126 as of Windows 10 Insider Preview Build 15025) parent key nodes towards the registry root (crossing a mount point is possible). Then this stack is used to produce cumulative information about the layered key. For example, if you query the last written timestamp for a layered key, the most recent timestamp will be returned from the key node stack; if you enumerate key values for a layered key, key values from key nodes in the stack will be returned (except tombstone values; if there are two or more values with the same name in the key node stack, a value from a lower (child) key node takes precedence).
+When a kernel is accessing a key node treated as a part of a layered key, it builds a key node stack, including the key node being accessed, its parent key node and no more than 2 (or 14 as of Windows 10 Insider Preview Build 14986, or 126 as of Windows 10 Insider Preview Build 15025) parent key nodes towards the registry root (crossing a mount point is possible). Then this stack is used to produce cumulative information about the layered key. For example, if you query the last written timestamp for a layered key, the most recent timestamp will be returned from the key node stack; if you enumerate key values for a layered key, key values from key nodes in the stack will be returned (except tombstone values; if there are two or more values with the same name in the key node stack, a value from a lower (child) key node is used and returned).
 
 When the *Inherit class* field is set to 0, the layered key will have the same class name as the key node originally accessed by a kernel. Otherwise, the layered key will receive the same class name (possibly an empty class name) as an upper (parent) key node (from the stack) having the *Inherit class* field set to 0.
 
 The *Layer semantics* field is set using the following values:
 
-Value|Description
----|---
-0|This key node and its parent key nodes can be included in the layered key
-1|Is a tombstone key node: this key node and its parent key nodes can't be included in the layered key (also, such a key node has no class name, no subkeys, and no values)
-2|This key node can be included in the layered key, but its parent key nodes can't
-3|This key node can be included in the layered key, but its parent key nodes can't; child key nodes, except tombstone key nodes, are required to have the same value set in the field
+Value|Name|Description
+---|---|---
+0| |This key node and its parent key nodes can be included in the current layered key (based on the stack built)
+1|IsTombstone|Is a tombstone key node: this key node and its parent key nodes can't be included in the current layered key (also, such a key node has no class name, no subkeys, and no values)
+2|IsSupersedeLocal|This key node can be included in the current layered key, but its parent key nodes can't
+3|IsSupersedeTree|This key node can be included in the current layered key, but its parent key nodes can't; child key nodes, except tombstone key nodes, are required to have the same value set in the field
 
 #### Key values list
 The *Key values list* has the following structure:
@@ -533,7 +533,7 @@ Other values are allowed as well (but they are not predefined).
 Mask|Name|Description
 ---|---|---
 0x0001|VALUE_COMP_NAME|Value name is an ASCII string, possibly an extended ASCII string (otherwise it is a UTF-16LE string)
-0x0002| |Is a tombstone value (the flag is used starting from Insider Preview builds of Windows 10 "Redstone 1"), a tombstone value also has the *Data type* field set to REG_NONE, the *Data size* field set to 0, and the *Data offset* field set to 0xFFFFFFFF
+0x0002|IsTombstone|Is a tombstone value (the flag is used starting from Insider Preview builds of Windows 10 "Redstone 1"), a tombstone value also has the *Data type* field set to REG_NONE, the *Data size* field set to 0, and the *Data offset* field set to 0xFFFFFFFF
 
 #### Key security
 The *Key security* item has the following structure:
