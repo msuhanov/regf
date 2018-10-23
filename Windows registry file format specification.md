@@ -460,20 +460,22 @@ Mask|Name|Event description
 0x80|BREAK_ON_KEY_VIRTUALIZE|This key is virtualized
 
 ##### Layered keys
-Layered keys were introduced in Insider Preview builds of Windows 10 "Redstone 1". When a hive supports the layered keys feature, a kernel may treat some key nodes in a special way.
+Layered keys were introduced in Insider Preview builds of Windows 10 "Redstone 1". When a hive supports the layered keys feature, a kernel may treat some key nodes in a special way. This feature is used to implement the containerized registry.
 
-When a kernel is accessing a key node treated as a part of a layered key, it builds a key node stack, including the key node being accessed, its parent key node and no more than 2 (or 14 as of Windows 10 Insider Preview Build 14986, or 126 as of Windows 10 Insider Preview Build 15025) parent key nodes towards the registry root (crossing a mount point is possible). Then this stack is used to produce cumulative information about the layered key. For example, if you query the last written timestamp for a layered key, the most recent timestamp will be returned from the key node stack; if you enumerate key values for a layered key, key values from key nodes in the stack will be returned (except tombstone values; if there are two or more values with the same name in the key node stack, a value from a lower (child) key node is used and returned).
+When a kernel is accessing a key node treated as a part of a layered key, it builds a key node stack, including the key node being accessed, its "parent" key node and no more than 2 (or 14 as of Windows 10 Insider Preview Build 14986, or 126 as of Windows 10 Insider Preview Build 15025) "parent" key nodes towards the top layer. Then this stack is used to produce cumulative information about the layered key. For example, if you query the last written timestamp for a layered key, the most recent timestamp will be returned from the key node stack; if you enumerate key values for a layered key, key values from key nodes in the stack will be returned (except tombstone values; if there are two or more values with the same name in the key node stack, a value from a lower ("child") key node is used and returned).
 
-When the *Inherit class* field is set to 0, the layered key will have the same class name as the key node originally accessed by a kernel. Otherwise, the layered key will receive the same class name (possibly an empty class name) as an upper (parent) key node (from the stack) having the *Inherit class* field set to 0.
+When the *Inherit class* field is set to 0, the layered key will have the same class name as the key node originally accessed by a kernel. Otherwise, the layered key will receive the same class name (possibly an empty class name) as an upper ("parent") key node (from the stack) having the *Inherit class* field set to 0.
 
 The *Layer semantics* field is set using the following values:
 
 Value|Name|Description
 ---|---|---
-0| |This key node and its parent key nodes can be included in the current layered key (based on the stack built)
-1|IsTombstone|Is a tombstone key node: this key node and its parent key nodes can't be included in the current layered key (also, such a key node has no class name, no subkeys, and no values)
-2|IsSupersedeLocal|This key node can be included in the current layered key, but its parent key nodes can't
-3|IsSupersedeTree|This key node can be included in the current layered key, but its parent key nodes can't; child key nodes, except tombstone key nodes, are required to have the same value set in the field
+0| |This key node and its "parent" key nodes can be included in the current layered key (based on the stack built)
+1|IsTombstone|Is a tombstone key node: this key node and its "parent" key nodes can't be included in the current layered key (also, such a key node has no class name, no subkeys, and no values)
+2|IsSupersedeLocal|This key node can be included in the current layered key, but its "parent" key nodes can't
+3|IsSupersedeTree|This key node can be included in the current layered key, but its "parent" key nodes can't; child key nodes (subkeys), except tombstone key nodes, are required to have the same value set in the field
+
+Here, a "parent" key node doesn't refer to a key node which offset is stored in the *Parent* field of a given key node. And a "child" key node doesn't refer to a subkey of a given key node (unless otherwise mentioned). Instead, these relationships are created between key nodes in different registry hives (a host registry hive, which represents the top layer, and a differencing registry hive, which represents the lower layer; both registry hives are used to provide the merged view of registry data, the top layer provides base data and the lower layer provides modifications to be applied on top of base data).
 
 #### Key values list
 The *Key values list* has the following structure:
