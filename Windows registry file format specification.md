@@ -178,7 +178,7 @@ The Offline Registry Library (offreg.dll) is writing the following additional fi
 
 Offset|Length|Field|Value|Description
 ---|---|---|---|---
-176|4|Signature|gRfO|ASCII string
+176|4|Signature|OfRg|ASCII string
 180|4|Flags|1|This is the only value used
 512|8|Serialization timestamp| |FILETIME (UTC)
 
@@ -186,7 +186,7 @@ These fields are used in current versions of the library (versions: 6.2, 6.3, 10
 
 Offset|Length|Field|Value|Description
 ---|---|---|---|---
-168|4|Signature|gRfO|ASCII string
+168|4|Signature|OfRg|ASCII string
 172|4|Flags|1|This is the only value used
 512|8|Serialization timestamp| |FILETIME (UTC)
 
