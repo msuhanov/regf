@@ -150,7 +150,7 @@ Offset|Length|Field|Value(s)|Description
 4088|4|Boot type| |This field has no meaning on a disk
 4092|4|Boot recover| |This field has no meaning on a disk
 
-In Windows 10, the following fields are found to be allocated in the previously reserved areas:
+In Windows 10, the following fields are found to be allocated in the previously reserved areas (also, see notes below):
 
 Offset|Length|Field|Value|Description
 ---|---|---|---|---
@@ -165,7 +165,7 @@ Offset|Length|Field|Value|Description
 4056|16|ThawRmId| |GUID, this field has no meaning on a disk
 4072|16|ThawLogId| |GUID, this field has no meaning on a disk
 
-The *RmId* field contains a GUID of the Resource Manager (RM), and the *TmId* field contains a GUID used to generate a file name of a log file stream for the Transaction Manager (TM), see the *ZwCreateResourceManager()* and *ZwCreateTransactionManager()* routines; the *LogId* field contains a GUID used to generate a file name of a physical log file, see the *ClfsCreateLogFile()* routine. The *GUID signature* field is always set to the "rmtm" ASCII string.
+The *RmId* field contains a GUID of the Resource Manager (RM) and the *TmId* field contains a GUID used to generate a file name of a log file stream for the Transaction Manager (TM), see the *ZwCreateResourceManager()* and *ZwCreateTransactionManager()* routines; the *LogId* field contains a GUID used to generate a file name of a physical log file, see the *ClfsCreateLogFile()* routine. The *GUID signature* field is always set to the "rmtm" ASCII string (unless a hive is frozen).
 
 The *Flags* field is used to record the state of the Kernel Transaction Manager (KTM) and the hive, possible flags are:
 
@@ -173,6 +173,22 @@ Mask|Description
 ---|---
 0x00000001|KTM locked the hive (there are pending or anticipated transactions)
 0x00000002|The hive has been defragmented (all its pages are dirty therefore) and it is being written to a disk (Windows 8 and Windows Server 2012 only, this flag is used to speed up hive recovery by reading a transaction log file instead of a primary file); this hive supports the layered keys feature (starting from Insider Preview builds of Windows 10 "Redstone 1")
+
+The Offline Registry Library (offreg.dll) is writing the following additional fields to the base block when the hive is serialized (saved):
+
+Offset|Length|Field|Value|Description
+---|---|---|---|---
+176|4|Signature|gRfO|ASCII string
+180|4|Flags|1|This is the only value used
+512|8|Serialization timestamp| |FILETIME (UTC)
+
+These fields are used in current versions of the library (versions: 6.2, 6.3, 10.0). The fields defined below are used in legacy versions of the library (version: 6.1):
+
+Offset|Length|Field|Value|Description
+---|---|---|---|---
+168|4|Signature|gRfO|ASCII string
+172|4|Flags|1|This is the only value used
+512|8|Serialization timestamp| |FILETIME (UTC)
 
 #### Notes
 1. *File offset of a root cell = 4096 + Root cell offset*. This formula also applies to any other offset relative from the start of the hive bins data (however, if such a relative offset is equal to 0xFFFFFFFF, it doesn't point anywhere).
@@ -475,7 +491,7 @@ Value|Name|Description
 2|IsSupersedeLocal|This key node can be included in the current layered key, but its "parent" key nodes can't
 3|IsSupersedeTree|This key node can be included in the current layered key, but its "parent" key nodes can't; child key nodes (subkeys), except tombstone key nodes, are required to have the same value set in the field
 
-Here, a "parent" key node doesn't refer to a key node which offset is stored in the *Parent* field of a given key node. And a "child" key node doesn't refer to a subkey of a given key node (unless otherwise mentioned). Instead, these relationships are created between key nodes in different registry hives (a host registry hive, which represents the top layer, and a differencing registry hive, which represents the lower layer; both registry hives are used to provide the merged view of registry data, the top layer provides base data and the lower layer provides modifications to be applied on top of base data).
+Here, a "parent" key node doesn't mean a key node which offset is stored in the *Parent* field of a given key node. And a "child" key node doesn't mean a subkey of a given key node (unless otherwise mentioned). Instead, these relationships are created between key nodes in different registry hives (a host registry hive, which represents the top layer, and a differencing registry hive, which represents the lower layer; both registry hives are used to provide the merged view of registry data, the top layer provides base data and the lower layer provides modifications to be applied on top of base data).
 
 #### Key values list
 The *Key values list* has the following structure:
